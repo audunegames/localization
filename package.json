@@ -1,0 +1,16 @@
+{
+  "name": "com.audune.localization",
+  "displayName": "Audune Localization",
+  "version": "0.1.0",
+  "unity": "2022.3",
+  "description": "Generic localization system Unity 2022.3 or higher",
+  "documentationUrl": "https://github.com/audunegames/audunelocalization",
+  "changelogUrl": "https://github.com/audunegames/audunelocalization",
+  "licensesUrl": "https://www.gnu.org/licenses/gpl-3.0.html",
+  "license": "GPL-3.0-or-later",
+  "author": {
+    "name": "Audune Games",
+    "email": "support@audune.com",
+    "url": "https://audune.com/"
+  }
+}
