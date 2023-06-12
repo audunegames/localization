@@ -1,0 +1,17 @@
+{
+    "name": "Audune.Localization",
+    "rootNamespace": "Audune.Localization",
+    "references": [
+        "GUID:f3b778087ccf25c439d1623fdfb9cde9",
+        "GUID:26965773348a31c4faadd2014d04a252"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

@@ -1,0 +1,21 @@
+{
+    "name": "Audune.Localization.Editor",
+    "rootNamespace": "Audune.Localization.Editor",
+    "references": [
+        "GUID:f3b778087ccf25c439d1623fdfb9cde9",
+        "GUID:5bf27bd8feae55648bfc632dd99aaa4d",
+        "GUID:26965773348a31c4faadd2014d04a252",
+        "GUID:cae9ba75d7e39b34f8eed004d047cc0e"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
