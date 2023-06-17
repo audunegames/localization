@@ -1,5 +1,7 @@
 using Audune.Utils.Unity;
+using Audune.Utils.Unity.Editor;
 using System;
+using System.Linq;
 using UnityEditor.AssetImporters;
 using UnityEngine;
 
@@ -11,13 +13,16 @@ namespace Audune.Localization.Editor
   {
     // Locale importer settings
     [SerializeField, Tooltip("The parser to use for parsing the locale"), TypeReference(typeof(LocaleParser))]
-    private TypeReference _parser;
+    private TypeReference _parser = typeof(LocaleParser).GetChildTypes().FirstOrDefault();
 
 
     // Import the asset
     public override void OnImportAsset(AssetImportContext context)
     {
       // Create the parser
+      if (_parser.Type == null)
+        throw new ArgumentException("Null type");
+
       var parser = Activator.CreateInstance(_parser) as LocaleParser;
 
       // Parse the locale

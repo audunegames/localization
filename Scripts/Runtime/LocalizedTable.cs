@@ -10,10 +10,10 @@ namespace Audune.Localization
   public class LocalizedTable<TValue> : ISerializationCallbackReceiver
   {
     // Dictionary of entries in the table
-    private readonly Dictionary<string, TValue> _entries = new Dictionary<string, TValue>();
+    private readonly Dictionary<string, TValue> _entries = new();
 
     // Dictionary of child tables in the table
-    private readonly Dictionary<string, LocalizedTable<TValue>> _tables = new Dictionary<string, LocalizedTable<TValue>>();
+    private readonly Dictionary<string, LocalizedTable<TValue>> _tables = new();
 
 
     // Return the entries in the table
@@ -36,6 +36,24 @@ namespace Audune.Localization
       .ToDictionary(e => e.Key, e => e.Value);
 
 
+    // Find an entry in the table with the specified path
+    public TValue Find(string path)
+    {
+      return TryFind(path, out var value) ? value : default;
+    }
+
+    // Return if an entry in the table with the specified path can be found and store the entry
+    public bool TryFind(string path, out TValue value)
+    {
+      if (path == null)
+      {
+        value = default;
+        return false;
+      }
+      return RecursiveEntries.TryGetValue(path, out value);
+    }
+
+
     // Add an entry to the table
     internal void Add(string key, TValue value)
     {
@@ -48,28 +66,8 @@ namespace Audune.Localization
       _entries.Remove(key);
     }
 
-
-    // Find an entry in the table with the specified path
-    public TValue Find(string path)
-    {
-      return RecursiveEntries.TryGetValue(path, out var value) ? value : default;
-    }
-
-    // Return if an entry in the table with the specified path can be found and store the entry
-    public bool TryFind(string path, out TValue value)
-    {
-      return RecursiveEntries.TryGetValue(path, out value);
-    }
-
-
-    // Return a child table in the table
-    public LocalizedTable<TValue> GetTable(string key)
-    {
-      return _tables.TryGetValue(key, out var table) ? table : null;
-    }
-
     // Return a child table in the table or create and add it if it does not exist yet
-    public LocalizedTable<TValue> GetTableOrCreate(string key)
+    internal LocalizedTable<TValue> GetTableOrCreate(string key)
     {
       if (!_tables.TryGetValue(key, out var table))
         table = _tables[key] = new LocalizedTable<TValue>();
@@ -84,7 +82,7 @@ namespace Audune.Localization
 
 
     // Callback received before Unity serializes the table
-    public void OnBeforeSerialize()
+    void ISerializationCallbackReceiver.OnBeforeSerialize()
     {
       _keys.Clear();
       _values.Clear();
@@ -97,7 +95,7 @@ namespace Audune.Localization
     }
 
     // Callback after Unity deserializes the table
-    public void OnAfterDeserialize()
+    void ISerializationCallbackReceiver.OnAfterDeserialize()
     {
       _entries.Clear();
       _tables.Clear();

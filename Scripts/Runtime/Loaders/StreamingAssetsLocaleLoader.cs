@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using UnityEngine;
 
 namespace Audune.Localization.Loaders
@@ -15,7 +16,7 @@ namespace Audune.Localization.Loaders
     [SerializeField, Tooltip("The search pattern for streamed locales")]
     private string _pattern = "*.locale";
     [SerializeField, Tooltip("The parser to parse the streamed locales with"), TypeReference(typeof(LocaleParser))]
-    private TypeReference _parser;
+    private TypeReference _parser = typeof(LocaleParser).GetChildTypes().FirstOrDefault();
 
 
     // Load locales according to this loader
@@ -27,19 +28,26 @@ namespace Audune.Localization.Loaders
       var parser = Activator.CreateInstance(_parser) as LocaleParser;
 
       // Get the files in the directory and parse them
-      var files = Directory.GetFiles(Path.Combine(Application.streamingAssetsPath, _directory), _pattern, SearchOption.AllDirectories);
-      foreach (var file in files)
+      try
       {
-        try
+        var files = Directory.GetFiles(Path.Combine(Application.streamingAssetsPath, _directory), _pattern, SearchOption.AllDirectories);
+        foreach (var file in files)
         {
-          var locale = parser.Parse(file);
-          locales.Add(locale);
+          try
+          {
+            var locale = parser.Parse(file);
+            locales.Add(locale);
+          }
+          catch (LocaleParserException ex)
+          {
+            Debug.LogWarning($"Could not parse locale file {file} in {name}: {ex.Message}");
+            continue;
+          }
         }
-        catch (LocaleParserException ex)
-        {
-          Debug.LogWarning($"Could not parse locale file {file} in {name}: {ex.Message}");
-          continue;
-        }
+      }
+      catch (DirectoryNotFoundException)
+      {
+        Debug.LogWarning($"Could not load locales in {Path.Combine(Application.streamingAssetsPath, _directory)} because the directory cannot be found");
       }
 
       return locales;

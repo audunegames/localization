@@ -1,5 +1,4 @@
-using Audune.Localization.Loaders;
-using Audune.Localization.Selectors;
+using Audune.Localization.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -57,7 +56,11 @@ namespace Audune.Localization
         if (!loaderEntry.executionMode.ShouldExecute())
           continue;
 
-        locales.AddRange(loaderEntry.loader.Load().Where(locale => locale != null).ToList());
+        var loadedLocales = loaderEntry.loader.Load().Where(locale => locale != null).ToList();
+        locales.AddRange(loadedLocales);
+
+        if (Application.isPlaying)
+          Debug.Log($"Loaded {loadedLocales.Count} locales using {loaderEntry.loader.name}{(loadedLocales.Count > 0 ? $": {string.Join(", ", loadedLocales)}" : "")}");
       }
 
       return locales;
@@ -74,6 +77,8 @@ namespace Audune.Localization
         if (!selectorEntry.selector.TrySelect(locales, out var locale))
           continue;
 
+        if (Application.isPlaying)
+          Debug.Log($"Selected locale {locale} using {selectorEntry.selector.name}");
         return locale;
       }
 
