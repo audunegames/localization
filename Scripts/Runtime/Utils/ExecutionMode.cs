@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Audune.Localization
+namespace Audune.Localization.Utils
 {
   // Enum that defines when a component should execute
   public enum ExecutionMode
