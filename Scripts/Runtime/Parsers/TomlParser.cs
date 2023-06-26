@@ -1,7 +1,11 @@
+using Audune.Localization.Strings;
+using Audune.Utils.Collections;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Tommy;
+using Tommy.Extensions;
 using UnityEngine;
 
 namespace Audune.Localization.Parsers
@@ -21,24 +25,30 @@ namespace Audune.Localization.Parsers
         // Create the locale
         var locale = ScriptableObject.CreateInstance<Locale>();
 
-        // Load the locale settings
-        if (!node.TryGetNode("code", out var codeNode) || codeNode is not TomlString codeStringNode)
-          throw new LocaleParserException("Could not find a \"code\" string node");
-        locale._code = codeStringNode.AsString;
+        // Parse the locale name
+        if (node.TryGetNode("name", out var nameNode) && nameNode is TomlString nameStringNode)
+          locale._name = nameStringNode.Value;
+        else
+          throw new FormatException("Could not find a \"name\" string node");
 
-        /*if (!node.TryGetNode("steamCode", out var steamCodeNode) || steamCodeNode is not TomlString steamCodeStringNode)
-          throw new LocaleParserException("Could not find a \"SteamCode\" string node");
-        locale._steamCode = steamCodeStringNode.AsString;*/
+        // Parse the locale code
+        if (node.TryGetNode("code", out var codeNode) && codeNode is TomlString codeStringNode)
+          locale._code = codeStringNode.Value;
+        else
+          throw new FormatException("Could not find a \"code\" string or table node");
 
-        if (!node.TryGetNode("name", out var nameNode) || nameNode is not TomlString nameStringNode)
-          throw new LocaleParserException("Could not find a \"name\" string node");
-        locale._name = nameStringNode.AsString;
+        // Parse the locale alternative codes
+        if (node.TryGetNode("alt_codes", out var altCodesNode) && altCodesNode is TomlTable altCodesTableNode)
+          locale._altCodes = new SerializableDictionary<string, string>(altCodesTableNode.RawTable.Where(e => e.Value.IsString).SelectValue(node => node.AsString.Value).ToDictionary());
+        else
+          locale._altCodes = new SerializableDictionary<string, string>();
 
         // Load the localized string table
-        if (!node.TryGetNode("strings", out var stringsNode) || stringsNode is not TomlTable stringsTableNode)
-          throw new LocaleParserException("Could not find a \"strings\" table node");
-        locale._strings = new LocalizedTable<string>();
-        FillLocalizedTable(locale._strings, stringsTableNode, value => value);
+        if (node.TryGetNode("strings", out var stringsNode) && stringsNode is TomlTable stringsTableNode)
+          locale._strings = new LocalizedStringTable(RecurseLeafStringNodes(stringsTableNode, value => value).ToDictionary());
+        else
+          throw new FormatException("Could not find a \"strings\" table node");
+        
 
         // Return the locale
         return locale;
@@ -46,28 +56,33 @@ namespace Audune.Localization.Parsers
       catch (TomlParseException ex)
       {
         var errorStrings = string.Join("\n", ex.SyntaxErrors.Select(error => $"  at line {error.Line}, col {error.Column}: {error.Message}"));
-        throw new LocaleParserException($"Could not parse TOML\n{errorStrings}");
+        throw new FormatException($"Could not parse TOML\n{errorStrings}");
       }
     }
 
 
-    // Fill a localized table with the leaf nodes of a node
-    private static void FillLocalizedTable<TNode, TValue>(LocalizedTable<TValue> table, TomlNode node, Func<TNode, TValue> valueSelector) where TNode : TomlNode
+    // Recurse over the leaf nodes of a node
+    private IEnumerable<KeyValuePair<string, TValue>> RecurseLeafNodes<TNode, TValue>(TomlNode node, Func<TNode, TValue> valueSelector) where TNode : TomlNode
     {
       foreach (var key in node.Keys)
       {
         var childNode = node[key];
         if (childNode is TomlTable childTableNode)
-          FillLocalizedTable(table.GetTableOrCreate(key), childTableNode, valueSelector);
+        {
+          foreach (var e in RecurseLeafNodes(childTableNode, valueSelector))
+            yield return new KeyValuePair<string, TValue>($"{key}.{e.Key}", e.Value);
+        }
         else if (childNode is TNode childValueNode)
-          table.Add(key, valueSelector(childValueNode));
+        {
+          yield return new KeyValuePair<string, TValue>(key, valueSelector(childValueNode));
+        }
       }
     }
 
-    // Fill a localized table with the leaf nodes of a string node
-    private static void FillLocalizedTable<TValue>(LocalizedTable<TValue> table, TomlNode node, Func<string, TValue> valueSelector)
+    // Recurse over the leaf string nodes of a node
+    private IEnumerable<KeyValuePair<string, TValue>> RecurseLeafStringNodes<TValue>(TomlNode node, Func<string, TValue> valueSelector)
     {
-      FillLocalizedTable<TomlString, TValue>(table, node, node => valueSelector(node.Value));
+      return RecurseLeafNodes<TomlString, TValue>(node, n => valueSelector(n.Value));
     }
   }
 }

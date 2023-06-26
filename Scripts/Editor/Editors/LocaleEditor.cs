@@ -1,16 +1,18 @@
+using Audune.Utils.Editor;
+using System;
 using UnityEditor;
 using UnityEngine;
 
 namespace Audune.Localization.Editor
 {
-  // Property drawer for locale 
+  // Class that defines an editor for locales
   [CustomEditor(typeof(Locale))]
   public sealed class LocaleEditor : UnityEditor.Editor
   {
-    // Properties of the object
-    private SerializedProperty _code;
-    private SerializedProperty _steamCode;
+    // Properties of the editor
     private SerializedProperty _name;
+    private SerializedProperty _code;
+    private SerializedProperty _altCodes;
     private SerializedProperty _strings;
 
 
@@ -21,9 +23,10 @@ namespace Audune.Localization.Editor
     // Constructor
     public void OnEnable()
     {
-      _code = serializedObject.FindProperty("_code");
-      //_steamCode = serializedObject.FindProperty("_steamCode");
+      // Initialize the properties
       _name = serializedObject.FindProperty("_name");
+      _code = serializedObject.FindProperty("_code");
+      _altCodes = serializedObject.FindProperty("_altCodes");
       _strings = serializedObject.FindProperty("_strings");
     }
 
@@ -35,13 +38,14 @@ namespace Audune.Localization.Editor
 
       EditorGUILayout.LabelField("Settings", EditorStyles.boldLabel);
 
-      EditorGUILayout.PropertyField(_code);
-      //EditorGUILayout.PropertyField(_steamCode);
       EditorGUILayout.PropertyField(_name);
+      EditorGUILayout.PropertyField(_code);
+      EditorGUILayout.PropertyField(_altCodes, new GUIContent("Alternative Codes", _altCodes.tooltip));
 
       EditorGUILayout.Space();
 
-      EditorGUILayout.LabelField("Tables", EditorStyles.boldLabel);
+      EditorGUILayout.Space();
+      EditorGUILayout.LabelField("Tables", EditorStyles.boldLabel); 
 
       EditorGUILayout.PropertyField(_strings);
 
