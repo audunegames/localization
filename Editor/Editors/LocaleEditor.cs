@@ -14,9 +14,6 @@ namespace Audune.Localization.Editor
     private SerializedProperty _name;
     private SerializedProperty _code;
     private SerializedProperty _altCodes;
-    private SerializedProperty _strings;
-
-    // Helper objects of the editor
 
 
     // Return the target object of the editor
@@ -30,7 +27,6 @@ namespace Audune.Localization.Editor
       _name = serializedObject.FindProperty("_name");
       _code = serializedObject.FindProperty("_code");
       _altCodes = serializedObject.FindProperty("_altCodes");
-      _strings = serializedObject.FindProperty("_strings");
     }
 
 

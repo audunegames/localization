@@ -19,6 +19,10 @@ namespace Audune.Localization
     internal SerializableDictionary<string, string> _altCodes;
     [SerializeField, Tooltip("The name of the locale")]
     internal string _name;
+    [SerializeField, Tooltip("The pluralization rules of the locale"), SerializableDictionaryDrawerOptions(ReorderableListDrawOptions.DrawFoldout | ReorderableListDrawOptions.DrawInfoField)]
+    internal SerializableDictionary<PluralKeyword, string> _pluralRules;
+    [SerializeField, Tooltip("The format of the locale")]
+    internal LocaleFormat _format;
 
     // Locale tables
     [SerializeField, Tooltip("The strings table of the locale")]
@@ -34,6 +38,11 @@ namespace Audune.Localization
     // Return the name of the locale
     public string Name => _name;
 
+    // Return the pluralization rules of the locale
+    public PluralRules PluralRules => new PluralRules(_pluralRules);
+
+    // Return the format of the locale
+    public LocaleFormat LocaleFormat => _format;
 
 
     // Return the culture of the locale

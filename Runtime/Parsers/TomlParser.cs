@@ -1,3 +1,4 @@
+using Audune.Localization.Plurals;
 using Audune.Localization.Strings;
 using Audune.Utils.Collections;
 using System;
@@ -42,6 +43,23 @@ namespace Audune.Localization.Parsers
           locale._altCodes = new SerializableDictionary<string, string>(altCodesTableNode.RawTable.Where(e => e.Value.IsString).SelectValue(node => node.AsString.Value).ToDictionary());
         else
           locale._altCodes = new SerializableDictionary<string, string>();
+
+        // Parse the locale plural rules
+        if (node.TryGetNode("plural_rules", out var pluralRulesNode) && pluralRulesNode is TomlTable pluralRulesTableNode)
+          locale._pluralRules = new SerializableDictionary<PluralKeyword, string>(pluralRulesTableNode.RawTable.Where(e => e.Value.IsString).SelectKey(key => PluralKeywordUtils.Parse(key)).SelectValue(node => node.AsString.Value).ToDictionary());
+        else
+          locale._pluralRules = new SerializableDictionary<PluralKeyword, string>();
+
+        // Parse the locale format
+        locale._format = new LocaleFormat() {
+          decimalNumberFormat = node.FindNode("number_format.decimal")?.AsString ?? LocaleFormat.DefaultDecimalNumberFormat,
+          percentNumberFormat = node.FindNode("number_format.percent")?.AsString ?? LocaleFormat.DefaultPercentNumberFormat,
+          currencyNumberFormat = node.FindNode("number_format.currency")?.AsString ?? LocaleFormat.DefaultCurrencyNumberFormat,
+          shortDateFormat = node.FindNode("date_format.short")?.AsString ?? LocaleFormat.DefaultShortDateFormat,
+          longDateFormat = node.FindNode("date_format.long")?.AsString ?? LocaleFormat.DefaultLongDateFormat,
+          shortTimeFormat = node.FindNode("time_format.short")?.AsString ?? LocaleFormat.DefaultShortTimeFormat,
+          longTimeFormat = node.FindNode("time_format.long")?.AsString ?? LocaleFormat.DefaultLongTimeFormat,
+        };
 
         // Load the localized string table
         if (node.TryGetNode("strings", out var stringsNode) && stringsNode is TomlTable stringsTableNode)
