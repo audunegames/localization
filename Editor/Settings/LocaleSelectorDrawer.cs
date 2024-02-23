@@ -1,8 +1,8 @@
-using Audune.Utils.Unity.Editor;
+using Audune.Utils.UnityEditor.Editor;
 using UnityEditor;
 using UnityEngine;
 
-namespace Audune.Localization.Settings.Editor
+namespace Audune.Localization.Editor
 {
   // Class that defines a property drawer for locale selectors
   [CustomPropertyDrawer(typeof(LocaleSelector), true)]

@@ -1,12 +1,10 @@
-using Audune.Localization.Settings.Loaders;
-using Audune.Utils.Collections;
-using Audune.Utils.Collections.Editor;
-using Audune.Utils.Unity.Editor;
+using Audune.Utils.UnityEditor;
+using Audune.Utils.UnityEditor.Editor;
 using UnityEditor;
 using UnityEditorInternal;
 using UnityEngine;
 
-namespace Audune.Localization.Settings.Editor
+namespace Audune.Localization.Editor
 {
   // Class that defines a property drawer for locale loaders
   [CustomPropertyDrawer(typeof(LocaleLoader), true)]
@@ -30,7 +28,7 @@ namespace Audune.Localization.Settings.Editor
             InitializeLocalesList(locales);
 
           rect = EditorGUI.IndentedRect(rect);
-          _localesList.DoList(rect, ReorderableListDrawOptions.DrawFoldout);
+          _localesList.DoList(rect, ReorderableListOptions.DrawFoldout);
         }
         else
         {
@@ -50,7 +48,7 @@ namespace Audune.Localization.Settings.Editor
           if (_localesList == null || _localesList.serializedProperty != locales)
             InitializeLocalesList(locales);
 
-          return _localesList.GetHeight(ReorderableListDrawOptions.DrawFoldout);
+          return _localesList.GetHeight(ReorderableListOptions.DrawFoldout);
         }
         else
         {

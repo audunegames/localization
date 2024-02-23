@@ -2,9 +2,11 @@
     "name": "Audune.Localization.Editor",
     "rootNamespace": "Audune.Localization.Editor",
     "references": [
-        "GUID:f3b778087ccf25c439d1623fdfb9cde9",
         "GUID:5bf27bd8feae55648bfc632dd99aaa4d",
-        "GUID:26965773348a31c4faadd2014d04a252",
+        "GUID:f3b778087ccf25c439d1623fdfb9cde9",
+        "GUID:c0115945b6450f544a19881529b3a032",
+        "GUID:425c741b35523ab4ea76b19fb0f4d987",
+        "GUID:8d3eaed832bf78046bfb9b4fc4d6d44e",
         "GUID:cae9ba75d7e39b34f8eed004d047cc0e"
     ],
     "includePlatforms": [
