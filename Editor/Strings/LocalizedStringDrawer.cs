@@ -1,8 +1,8 @@
-﻿using Audune.Utils.Editor;
+﻿using Audune.Utils.UnityEditor.Editor;
 using UnityEditor;
 using UnityEngine;
 
-namespace Audune.Localization.Strings.Editor
+namespace Audune.Localization.Editor
 {
   // Class that defines a drawer for a localized string reference
   [CustomPropertyDrawer(typeof(LocalizedString))]
@@ -15,14 +15,11 @@ namespace Audune.Localization.Strings.Editor
       var value = property.FindPropertyRelative("_value");
       var arguments = property.FindPropertyRelative("_arguments");
 
-      EditorGUI.indentLevel--;
       var pathRect = rect.AlignTop(EditorGUIUtility.singleLineHeight, EditorGUIUtility.standardVerticalSpacing, out rect);
       property.isExpanded = EditorGUI.Foldout(pathRect.AlignLeft(EditorGUIUtility.labelWidth, EditorGUIUtility.standardVerticalSpacing, out pathRect), property.isExpanded, label, true);
-      EditorGUI.indentLevel++;
 
       var pathDropdownLabel = new GUIContent(!string.IsNullOrEmpty(path.stringValue) ? path.stringValue : "<Non-Localized Value>");
-      if (EditorGUI.DropdownButton(pathRect.AlignTop(EditorGUIUtility.singleLineHeight, EditorGUIUtility.standardVerticalSpacing, out pathRect), pathDropdownLabel, FocusType.Keyboard))
-        LocalizedStringWindow.ShowAsDropDown(pathRect, path);
+      EditorGUIExtensions.SearchDropdown<string, LocalizedStringWindow>(pathRect, pathDropdownLabel, path);
 
       if (property.isExpanded)
       {

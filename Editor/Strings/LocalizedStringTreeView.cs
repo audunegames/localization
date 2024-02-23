@@ -1,5 +1,4 @@
-using Audune.Utils.Editor;
-using Audune.Utils.Unity.Editor;
+using Audune.Utils.UnityEditor.Editor;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,7 +6,7 @@ using UnityEditor;
 using UnityEditor.IMGUI.Controls;
 using UnityEngine;
 
-namespace Audune.Localization.Strings.Editor
+namespace Audune.Localization.Editor
 {
   // Class that defines a tree view for selecting a localized string reference
   public class LocalizedStringTreeView : SearchTreeView<string>
@@ -31,7 +30,7 @@ namespace Audune.Localization.Strings.Editor
     public LocalizedStringTreeView(List<Locale> locales) : base(LocalesToKeys(locales), LocalizedReferenceOptions)
     {
       _locales = locales;
-      _values = LocalesToKeys(_locales).ToDictionary(key => key, key => _locales.Select(locale => locale.Strings.Find(key)).Where(value => value != null).ToList());
+      _values = LocalesToKeys(_locales).ToDictionary(key => key, key => _locales.Select(locale => locale.strings.Find(key)).Where(value => value != null).ToList());
 
       multiColumnHeader = new MultiColumnHeader(new MultiColumnHeaderState(Enumerable
         .Repeat(new MultiColumnHeaderState.Column() { headerContent = new GUIContent("Key"), width = 300, allowToggleVisibility = false }, 1)
@@ -67,7 +66,7 @@ namespace Audune.Localization.Strings.Editor
       }
       else if (!string.IsNullOrEmpty(item.data))
       {
-        var label = _locales[columnIndex - 1].Strings.TryFind(item.data, out var value) ? value.Replace("\n", " ") : "<Undefined>";
+        var label = _locales[columnIndex - 1].strings.TryFind(item.data, out var value) ? value.Replace("\n", " ") : "<Undefined>";
         if (string.IsNullOrEmpty(searchString))
           DefaultGUI.Label(columnRect, label, IsSelected(item.id), false);
         else
@@ -89,13 +88,13 @@ namespace Audune.Localization.Strings.Editor
     // Convert a list of locales to keys
     private static IEnumerable<string> LocalesToKeys(List<Locale> locales)
     {
-      return locales?.SelectMany(locale => locale.Strings.Keys).Distinct() ?? Enumerable.Empty<string>();
+      return locales?.SelectMany(locale => locale.strings.Keys).Distinct() ?? Enumerable.Empty<string>();
     }
 
     // Convert a list of locales to tree view columns
     private static IEnumerable<MultiColumnHeaderState.Column> LocalesToColumms(List<Locale> locales)
     {
-      return locales?.Select(locale => new MultiColumnHeaderState.Column() { headerContent = new GUIContent(locale.Name), width = 150 }) ?? Enumerable.Empty<MultiColumnHeaderState.Column>();
+      return locales?.Select(locale => new MultiColumnHeaderState.Column() { headerContent = new GUIContent(locale.nativeName), width = 150 }) ?? Enumerable.Empty<MultiColumnHeaderState.Column>();
     }
   }
 }

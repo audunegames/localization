@@ -1,4 +1,3 @@
-using Audune.Localization.Messages;
 using System;
 
 namespace Audune.Localization
@@ -16,6 +15,7 @@ namespace Audune.Localization
     public const string DefaultLongTimeFormat = "T";
 
 
+    // Locale format properties
     public string decimalNumberFormat = DefaultDecimalNumberFormat;
     public string percentNumberFormat = DefaultPercentNumberFormat;
     public string currencyNumberFormat = DefaultCurrencyNumberFormat;

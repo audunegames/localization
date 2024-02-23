@@ -1,6 +1,4 @@
-﻿using Audune.Localization.Plurals;
-using Audune.Localization.Strings;
-using Audune.Utils.Collections;
+﻿using Audune.Utils.Dictionary;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -9,17 +7,19 @@ using UnityEngine;
 namespace Audune.Localization
 {
   // Class that defines a locale
-  [CreateAssetMenu(menuName = "Audune Localization/Locale")]
+  [CreateAssetMenu(menuName = "Audune/Localization/Locale", fileName = "Locale")]
   public sealed class Locale : ScriptableObject, ILocalizedTable<string>
   {
     // Locale settings
     [SerializeField, Tooltip("The ISO 639 code of the locale")]
     internal string _code;
-    [SerializeField, Tooltip("The alternative codes of the locale, in the format"), SerializableDictionaryDrawerOptions(ReorderableListDrawOptions.DrawFoldout | ReorderableListDrawOptions.DrawInfoField)]
+    [SerializeField, Tooltip("The alternative codes of the locale, in the format"), SerializableDictionaryOptions(keyHeader = "Code")]
     internal SerializableDictionary<string, string> _altCodes;
-    [SerializeField, Tooltip("The name of the locale")]
-    internal string _name;
-    [SerializeField, Tooltip("The pluralization rules of the locale"), SerializableDictionaryDrawerOptions(ReorderableListDrawOptions.DrawFoldout | ReorderableListDrawOptions.DrawInfoField)]
+    [SerializeField, Tooltip("The English name of the locale")]
+    internal string _englishName;
+    [SerializeField, Tooltip("The native name of the locale")]
+    internal string _nativeName;
+    [SerializeField, Tooltip("The pluralization rules of the locale"), SerializableDictionaryOptions(keyHeader = "Keyword")]
     internal SerializableDictionary<PluralKeyword, string> _pluralRules;
     [SerializeField, Tooltip("The format of the locale")]
     internal LocaleFormat _format;
@@ -30,23 +30,26 @@ namespace Audune.Localization
 
 
     // Return the code of the locale
-    public string Code => _code;
+    public string code => _code;
 
     // Return the alternative codes of the locale
-    public IReadOnlyDictionary<string, string> AltCodes => _altCodes;
+    public IReadOnlyDictionary<string, string> altCodes => _altCodes;
 
-    // Return the name of the locale
-    public string Name => _name;
+    // Return the English name of the locale
+    public string englishName => _englishName;
+
+    // Return the native name of the locale
+    public string nativeName => _nativeName;
 
     // Return the pluralization rules of the locale
-    public PluralRules PluralRules => new PluralRules(_pluralRules);
+    public PluralRules pluralRules => new PluralRules(_pluralRules);
 
     // Return the format of the locale
-    public LocaleFormat LocaleFormat => _format;
+    public LocaleFormat localeFormat => _format;
 
 
     // Return the culture of the locale
-    public CultureInfo Culture {
+    public CultureInfo culture {
       get {
         try
         {
@@ -61,7 +64,7 @@ namespace Audune.Localization
 
 
     // Return the strings of the locale
-    public LocalizedStringTable Strings => _strings;
+    public LocalizedStringTable strings => _strings;
 
 
     // Return if an entry in the strings table with the specified path can be found and store the value of the entry
@@ -70,17 +73,11 @@ namespace Audune.Localization
       return _strings.TryFind(path, out value);
     }
 
-    // Return the value of the entry in the strings table with the specified path, or a default value if one cannot be found
-    public string Find(string path, string defaultValue = default)
-    {
-      return _strings.Find(path, defaultValue);
-    }
-
 
     // Return the string representation of the locale
     public override string ToString()
     {
-      return $"{_name} ({Code})";
+      return _nativeName;
     }
   }
 }

@@ -1,10 +1,9 @@
-﻿using Audune.Localization.Settings;
-using Audune.Utils.Editor;
+﻿using Audune.Utils.UnityEditor.Editor;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 
-namespace Audune.Localization.Strings.Editor
+namespace Audune.Localization.Editor
 {
   // Class that defines a search window for selecting a localized string reference
   public class LocalizedStringWindow : SearchWindow<string>
@@ -13,22 +12,15 @@ namespace Audune.Localization.Strings.Editor
     private List<Locale> _loadedLocales;
 
 
-    // Show the window as a dropdown at the specified button position
-    public static void ShowAsDropDown(Rect buttonRect, SerializedProperty property)
-    {
-      ShowAsDropDown<LocalizedStringWindow>(buttonRect, property);
-    }
-
-
     // Refresh
     public void Refresh()
     {
-      var assets = AssetDatabase.FindAssets($"t:{typeof(LocalizationSettings).Name}");
+      /*var assets = AssetDatabase.FindAssets($"t:{typeof(LocalizationSettings).Name}");
       var settingsAsset = assets.Length > 0 ? AssetDatabase.GUIDToAssetPath(assets[0]) : null;
       var settings = settingsAsset != null ? AssetDatabase.LoadAssetAtPath<LocalizationSettings>(settingsAsset) : null;
 
       if (settings != null)
-        _loadedLocales = settings.LoadLocales();
+        _loadedLocales = settings.LoadLocales();*/
     }
 
 

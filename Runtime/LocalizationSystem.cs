@@ -37,7 +37,7 @@ namespace Audune.Localization
 
     // Return and set the current culture
     public CultureInfo currentCulture {
-      get => _currentLocale != null ? _currentLocale.Culture : CultureInfo.InvariantCulture;
+      get => _currentLocale != null ? _currentLocale.culture : CultureInfo.InvariantCulture;
       set => _currentLocale = _definedLocales.Where(locale => locale.code == value.TwoLetterISOLanguageName).FirstOrDefault();
     }
 

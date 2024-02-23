@@ -1,7 +1,7 @@
 ﻿using UnityEditor;
 using UnityEngine;
 
-namespace Audune.Localization.Strings.Editor
+namespace Audune.Localization.Editor
 {
   // Class that defines a property drawer for a localized string reference diictionary
   [CustomPropertyDrawer(typeof(LocalizedStringDictionary<>))]
