@@ -11,7 +11,8 @@ using UnityEngine;
 namespace Audune.Localization
 {
   // Class that parses a locale file in TOML format
-  public class TomlParser : LocaleParser
+  [TypeDisplayName("TOML")]
+  public class TomlLocaleParser : LocaleParser
   {
     // Parse a locale from a reader
     public override Locale Parse(TextReader reader)
@@ -25,17 +26,23 @@ namespace Audune.Localization
         // Create the locale
         var locale = ScriptableObject.CreateInstance<Locale>();
 
-        // Parse the locale name
-        if (node.TryGetNode("name", out var nameNode) && nameNode is TomlString nameStringNode)
-          locale._nativeName = nameStringNode.Value;
-        else
-          throw new FormatException("Could not find a \"name\" string node");
-
         // Parse the locale code
         if (node.TryGetNode("code", out var codeNode) && codeNode is TomlString codeStringNode)
           locale._code = codeStringNode.Value;
         else
-          throw new FormatException("Could not find a \"code\" string or table node");
+          throw new LocaleParserException("Could not find a \"code\" string or table node");
+
+        // Parse the English name of the locale
+        if (node.TryGetNode("english_name", out var englishNameNode) && englishNameNode is TomlString englishNameStringNode)
+          locale._englishName = englishNameStringNode.Value;
+        else
+          throw new LocaleParserException("Could not find a \"english_name\" string node");
+
+        // Parse the native name of the locale
+        if (node.TryGetNode("native_name", out var nativeNameNode) && nativeNameNode is TomlString nativeNameStringNode)
+          locale._nativeName = nativeNameStringNode.Value;
+        else
+          throw new LocaleParserException("Could not find a \"native_name\" string node");
 
         // Parse the locale alternative codes
         if (node.TryGetNode("alt_codes", out var altCodesNode) && altCodesNode is TomlTable altCodesTableNode)
@@ -64,7 +71,7 @@ namespace Audune.Localization
         if (node.TryGetNode("strings", out var stringsNode) && stringsNode is TomlTable stringsTableNode)
           locale._strings = new LocalizedStringTable(RecurseLeafStringNodes(stringsTableNode, value => value).ToDictionary());
         else
-          throw new FormatException("Could not find a \"strings\" table node");
+          throw new LocaleParserException("Could not find a \"strings\" table node");
         
 
         // Return the locale
@@ -73,7 +80,7 @@ namespace Audune.Localization
       catch (TomlParseException ex)
       {
         var errorStrings = string.Join("\n", ex.SyntaxErrors.Select(error => $"  at line {error.Line}, col {error.Column}: {error.Message}"));
-        throw new FormatException($"Could not parse TOML\n{errorStrings}");
+        throw new LocaleParserException($"Could not parse TOML\n{errorStrings}");
       }
     }
 

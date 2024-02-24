@@ -14,10 +14,10 @@ namespace Audune.Localization
     // Locale loader properties
     [SerializeField, Tooltip("The directory where to load streamed locales from, relative to Application.streamingAssetsPath")]
     private string _directory;
-    [SerializeField, Tooltip("The search pattern for streamed locales")]
+    [SerializeField, Tooltip("The search pattern for locale files")]
     private string _pattern = "*.locale";
-    [SerializeField, Tooltip("The parser to parse the streamed locales with"), SerializableTypeOptions(typeof(LocaleParser))]
-    private SerializableType _parser = typeof(LocaleParser).GetChildTypes().FirstOrDefault();
+    [SerializeField, Tooltip("The format of the locale files"), SerializableTypeOptions(typeof(LocaleParser))]
+    private SerializableType _localeFileFormat = typeof(LocaleParser).GetChildTypes().FirstOrDefault();
 
 
     // Load locales according to this loader
@@ -26,7 +26,7 @@ namespace Audune.Localization
       var locales = new List<Locale>();
 
       // Create the parser
-      var parser = Activator.CreateInstance(_parser) as LocaleParser;
+      var parser = Activator.CreateInstance(_localeFileFormat) as LocaleParser;
 
       // Get the files in the directory and parse them
       try
@@ -39,9 +39,9 @@ namespace Audune.Localization
             var locale = parser.Parse(file);
             locales.Add(locale);
           }
-          catch (FormatException ex)
+          catch (LocaleParserException ex)
           {
-            Debug.LogWarning($"Could not parse locale file {file} in {name}: {ex.Message}");
+            Debug.LogWarning($"Could not parse locale file {file} as format {_localeFileFormat}: {ex.Message}");
             continue;
           }
         }

@@ -11,7 +11,7 @@ namespace Audune.Localization
     private SerializedProperty _executionMode;
     private SerializedProperty _directory;
     private SerializedProperty _pattern;
-    private SerializedProperty _parser;
+    private SerializedProperty _localeFileFormat;
 
     // Foldout state of the editor
     private bool _loaderSettingsFoldout = true;
@@ -29,7 +29,7 @@ namespace Audune.Localization
       _executionMode = serializedObject.FindProperty("_executionMode");
       _directory = serializedObject.FindProperty("_directory");
       _pattern = serializedObject.FindProperty("_pattern");
-      _parser = serializedObject.FindProperty("_parser");
+      _localeFileFormat = serializedObject.FindProperty("_localeFileFormat");
     }
 
     // Draw the inspector GUI
@@ -43,7 +43,7 @@ namespace Audune.Localization
       {
         EditorGUILayout.PropertyField(_directory);
         EditorGUILayout.PropertyField(_pattern);
-        EditorGUILayout.PropertyField(_parser);
+        EditorGUILayout.PropertyField(_localeFileFormat);
 
         EditorGUILayout.Space();
       }

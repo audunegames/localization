@@ -28,8 +28,8 @@ namespace Audune.Localization.Editor
     protected void OnEnable()
     {
       // Initialize the generic menus for types
-      _localeLoadersTypesMenu = typeof(LocaleLoader).CreateGenericMenuForChildTypes(TypeDisplayOptions.None, null, type => target.gameObject.AddComponent(type));
-      _localeSelectorsTypesMenu = typeof(LocaleSelector).CreateGenericMenuForChildTypes(TypeDisplayOptions.None, null, type => target.gameObject.AddComponent(type));
+      _localeLoadersTypesMenu = typeof(LocaleLoader).CreateGenericMenuForChildTypes(TypeDisplayOptions.DontShowNamespace, null, type => target.gameObject.AddComponent(type));
+      _localeSelectorsTypesMenu = typeof(LocaleSelector).CreateGenericMenuForChildTypes(TypeDisplayOptions.DontShowNamespace, null, type => target.gameObject.AddComponent(type));
     }
 
     // Draw the inspector GUI

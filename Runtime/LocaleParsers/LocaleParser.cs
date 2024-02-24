@@ -3,11 +3,12 @@ using System.Text;
 
 namespace Audune.Localization
 {
-  // Class that parses a locale file
+  // Base class that defines a locale parser
   public abstract class LocaleParser
   {
     // Parse a locale from a text reader
     public abstract Locale Parse(TextReader textReader);
+
 
     // Parse a locale from a file with the specified encoding
     public Locale Parse(string path, Encoding encoding)
