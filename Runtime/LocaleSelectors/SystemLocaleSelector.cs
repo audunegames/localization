@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
@@ -24,7 +23,7 @@ namespace Audune.Localization
       if (_checkTypes.HasFlag(SystemLocaleCheckType.CultureInfo))
       {
         var culture = CultureInfo.CurrentUICulture;
-        locale = locales.Where(locale => locale.code == culture.IetfLanguageTag ||  locale.code == culture.TwoLetterISOLanguageName).FirstOrDefault();
+        locale = locales.Where(locale => locale.code == culture.Name || locale.code == culture.TwoLetterISOLanguageName).FirstOrDefault();
 
         if (locale != null)
           return true;

@@ -54,9 +54,6 @@ namespace Audune.Localization
     // Return the code of the locale
     public string code => _code;
 
-    // Return the alternative codes of the locale
-    public IReadOnlyDictionary<string, string> altCodes => _altCodes;
-
     // Return the English name of the locale
     public string englishName => _englishName;
 
@@ -65,76 +62,37 @@ namespace Audune.Localization
 
     // Return the pluralization rules of the locale
     public PluralRules pluralRules => new PluralRules(_pluralRules);
+    // Return the alternative codes of the locale
+    public IReadOnlyDictionary<string, string> altCodes => _altCodes;
 
-    // Return the strings of the locale
+    // Return the strings table of the locale
     public LocalizedStringTable strings => _strings;
 
-
     // Return the culture of the locale
-    public CultureInfo culture {
-      get {
-        try
-        {
-          return CultureInfo.GetCultureInfo(_code);
-        }
-        catch (Exception ex) when (ex is CultureNotFoundException || ex is ArgumentException)
-        {
-          return CultureInfo.InvariantCulture;
-        }
-      }
-    }
+    public CultureInfo culture => CultureInfoExtensions.GetCultureInfoOrInvariant(_code);
 
     // Return a message formatter for the locale
-    public MessageFormatter formatter => new MessageFormatter(this, pluralRules);
-
-
-    
+    public MessageFormatter formatter => new MessageFormatter(this);
 
 
     // Return the string representation of the locale
     public override string ToString()
     {
-      return _nativeName;
+      return _englishName;
     }
 
-
-
-    // Return the default number format for a number format style
-    public static string GetDefaultNumberFormat(NumberFormatStyle style)
-    {
-      return style switch {
-        NumberFormatStyle.Decimal => defaultDecimalNumberFormat,
-        NumberFormatStyle.Percent => defaultPercentNumberFormat,
-        NumberFormatStyle.Currency => defaultCurrencyNumberFormat,
-        _ => throw new ArgumentException($"Number format style {style} is unsupported"),
-      };
-    }
-
-    // Return the default date format for a date format style
-    public static string GetDefaultDateFormat(DateFormatStyle style)
-    {
-      return style switch {
-        DateFormatStyle.Short => defaultShortDateFormat,
-        DateFormatStyle.Long => defaultLongDateFormat,
-        _ => throw new ArgumentException($"Date format style {style} is unsupported"),
-      };
-    }
-
-    // Return the default time format for a date format style
-    public static string GetDefaultTimeFormat(DateFormatStyle style)
-    {
-      return style switch {
-        DateFormatStyle.Short => defaultShortTimeFormat,
-        DateFormatStyle.Long => defaultLongTimeFormat,
-        _ => throw new ArgumentException($"Date format style {style} is unsupported"),
-      };
-    }
 
     #region Localized string table implementation
     // Return if an entry in the strings table with the specified path can be found and store the value of the entry
     public bool TryFind(string path, out string value)
     {
       return _strings.TryFind(path, out value);
+    }
+
+    // Return the value of the entry in the strings table with the specified path, or a default value if one cannot be found
+    public string Find(string path, string defaultValue = default)
+    {
+      return _strings.Find(path, defaultValue);
     }
     #endregion
 
@@ -174,53 +132,33 @@ namespace Audune.Localization
     // Return the formatted representation of a number as an integer
     public string FormatNumber(int value, NumberFormatStyle style = NumberFormatStyle.Decimal)
     {
-      try
-      {
-        return value.ToString(GetNumberFormat(style), culture);
-      }
-      catch (FormatException)
-      {
-        return value.ToString(GetDefaultNumberFormat(style), culture);
-      }
+      return value.ToString(GetNumberFormat(style), culture);
     }
 
     // Return the formatted representation of a number as a float
     public string FormatNumber(float value, NumberFormatStyle style = NumberFormatStyle.Decimal)
     {
-      try
-      {
-        return value.ToString(GetNumberFormat(style), culture);
-      }
-      catch (FormatException)
-      {
-        return value.ToString(GetDefaultNumberFormat(style), culture);
-      }
+      return value.ToString(GetNumberFormat(style), culture);
     }
 
     // Return the formatted representation of a date
     public string FormatDate(DateTime value, DateFormatStyle style = DateFormatStyle.Short)
     {
-      try
-      {
-        return value.ToString(GetDateFormat(style), culture);
-      }
-      catch (FormatException)
-      {
-        return value.ToString(GetDefaultDateFormat(style), culture);
-      }
+      return value.ToString(GetDateFormat(style), culture);
     }
 
     // Return the formatted representation of a time
     public string FormatTime(DateTime value, DateFormatStyle style = DateFormatStyle.Short)
     {
-      try
-      {
-        return value.ToString(GetTimeFormat(style), culture);
-      }
-      catch (FormatException)
-      {
-        return value.ToString(GetDefaultTimeFormat(style), culture);
-      }
+      return value.ToString(GetTimeFormat(style), culture);
+    }
+    #endregion
+
+    #region Plural rules provider implementation
+    // Select a plural keyword based on the specified value
+    public PluralKeyword SelectPluralKeyword(float value)
+    {
+      return PluralKeyword.Other;
     }
     #endregion
   }
