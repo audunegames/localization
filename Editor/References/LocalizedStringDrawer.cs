@@ -24,7 +24,7 @@ namespace Audune.Localization.Editor
 
         if (string.IsNullOrEmpty(path.stringValue))
         {
-          var valueButtonIcon = Resources.Load<Texture>("ValueButton");
+          var valueButtonIcon = Resources.Load<Texture>("Icons/Buttons/ValueButton");
           if (GUI.Button(rect, new GUIContent(valueButtonIcon, "Enter the non-localized value for the localized string")))
             property.isExpanded = true;
         }
@@ -34,7 +34,7 @@ namespace Audune.Localization.Editor
         var fieldRect = rect.AlignLeft(rect.width - 24, EditorGUIUtility.standardVerticalSpacing, out rect);
         EditorGUI.PropertyField(fieldRect, value, new GUIContent($"{label.text} (Value)", label.tooltip));
 
-        var pathButtonIcon = Resources.Load<Texture>("PathButton");
+        var pathButtonIcon = Resources.Load<Texture>("Icons/Buttons/PathButton");
         if (GUI.Button(rect, new GUIContent(pathButtonIcon, "Select the path for the localized string")))
           property.isExpanded = false;
       }
