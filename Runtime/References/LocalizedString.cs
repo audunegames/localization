@@ -1,34 +1,37 @@
-using Audune.Utils.Collections;
+using Audune.Utils.Dictionary;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Text;
 using UnityEngine;
 
-namespace Audune.Localization.Strings
+namespace Audune.Localization
 {
   // Class that defines a localized string reference
   [Serializable]
   public class LocalizedString : ILocalizedReference<string>, IEquatable<LocalizedString>
   {
-    // Localized string settings
+    // Localized string properties
     [SerializeField, Tooltip("The path of the reference, in case the reference is a localized reference")]
     private string _path;
     [SerializeField, Tooltip("The value of the reference, in case the reference is a non-localized reference")]
     private string _value;
-    [SerializeField, Tooltip("The formatting arguments of the reference"), SerializableDictionaryDrawerOptions(ReorderableListDrawOptions.DrawFoldout | ReorderableListDrawOptions.DrawInfoField)]
+
+    // Internal state of the localized string
     private SerializableDictionary<string, object> _arguments;
 
 
     // Return the path of the localized string
-    public string Path => _path;
+    public string path => _path;
 
     // Return the value of the localized string
-    public string Value => _value;
+    public string value => _value;
 
     // Return the arguments of the localized string
-    public IReadOnlyDictionary<string, object> Arguments => _arguments;
+    public IReadOnlyDictionary<string, object> arguments => _arguments;
+
+    // Return if the string is empty
+    public bool isEmpty => string.IsNullOrEmpty(_path) && string.IsNullOrEmpty(_value);
 
 
     // Private constructor
@@ -40,19 +43,24 @@ namespace Audune.Localization.Strings
     }
 
     // Private constructor that copies the values from another localized string
-    private LocalizedString(LocalizedString localizedReference)
+    private LocalizedString(LocalizedString localizedString)
     {
-      _path = localizedReference._path;
-      _value = localizedReference._value;
-      _arguments = new SerializableDictionary<string, object>(localizedReference._arguments);
+      _path = localizedString._path;
+      _value = localizedString._value;
+      _arguments = new SerializableDictionary<string, object>(localizedString._arguments);
     }
 
-    // Constructor for a localized string
-    public LocalizedString(string path, IDictionary<string, object> arguments = null)
+
+    // Return if the reference can be resolved
+    public bool TryResolve(ILocalizedTable<string> table, out string value)
     {
-      _path = path;
-      _value = null;
-      _arguments = arguments != null ? new SerializableDictionary<string, object>(arguments) : new SerializableDictionary<string, object>();
+      if (!string.IsNullOrEmpty(_path))
+        return table.TryFind(_path, out value);
+      else
+      {
+        value = _value;
+        return true;
+      }
     }
 
 
@@ -124,29 +132,6 @@ namespace Audune.Localization.Strings
     }
     #endregion
 
-    #region Localized reference implementation
-    // Return if the reference can be resolved
-    public bool TryResolve(ILocalizedTable<string> table, out string value)
-    {
-      if (!string.IsNullOrEmpty(_path))
-        return table.TryFind(_path, out value);
-      else
-      {
-        value = _value;
-        return true;
-      }
-    }
-
-    // Return the resolved value of the reference, or a default value if it cannot be resolved
-    public string Resolve(ILocalizedTable<string> table, string defaultValue = default)
-    {
-      if (!string.IsNullOrEmpty(_path))
-        return table.Find(_path, defaultValue);
-      else
-        return _value;
-    }
-    #endregion
-
     #region Equatable implementation
     // Return if the localized string equals another object
     public override bool Equals(object obj)
@@ -185,7 +170,7 @@ namespace Audune.Localization.Strings
     // Convert a value to a non-localized string
     public static implicit operator LocalizedString(string value)
     {
-      return new LocalizedString();
+      return new LocalizedString().WithValue(value);
     }
     #endregion
   }

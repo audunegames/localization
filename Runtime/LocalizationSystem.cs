@@ -151,7 +151,7 @@ namespace Audune.Localization
       // TODO: Check reference for null value properly
       if (reference != null && _currentLocale != null && reference.TryResolve(_currentLocale, out var value))
       {
-        var message = new MessageFormatter(_currentLocale).Format(value, new Dictionary<string, object>(reference?.Arguments));
+        var message = new MessageFormatter(_currentLocale).Format(value, new Dictionary<string, object>(reference?.arguments));
         //message = localizedRegex.Replace(message, EvaluateLocalizedMatch);
         //message = inputRegex.Replace(message, EvaluateInputMatch);
         return message;

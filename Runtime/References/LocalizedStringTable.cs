@@ -1,16 +1,16 @@
-using Audune.Utils.Collections;
+using Audune.Utils.Dictionary;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Audune.Localization.Strings
+namespace Audune.Localization
 {
   // Class that defines a table of localized string values
   [Serializable]
   public sealed class LocalizedStringTable : ILocalizedTable<string>
   {
     // Dictionary of entries in the table
-    [SerializeField, SerializableDictionaryDrawerOptions(ReorderableListDrawOptions.DrawFoldout | ReorderableListDrawOptions.DrawInfoField)]
+    [SerializeField]
     private SerializableDictionary<string, string> _entries;
 
 
