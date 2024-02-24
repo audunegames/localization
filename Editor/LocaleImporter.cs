@@ -12,7 +12,7 @@ namespace Audune.Localization.Editor
   public class LocaleImporter : ScriptedImporter
   {
     // Locale importer settings
-    [SerializeField, Tooltip("The format of the locale file"), SerializableTypeOptions(typeof(LocaleParser))]
+    [SerializeField, Tooltip("The format of the locale file"), SerializableTypeOptions(typeof(LocaleParser), TypeDisplayOptions.DontShowNamespace)]
     private SerializableType _localeFileFormat = typeof(LocaleParser).GetChildTypes().FirstOrDefault();
 
 
