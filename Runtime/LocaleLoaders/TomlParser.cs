@@ -27,7 +27,7 @@ namespace Audune.Localization
 
         // Parse the locale name
         if (node.TryGetNode("name", out var nameNode) && nameNode is TomlString nameStringNode)
-          locale._name = nameStringNode.Value;
+          locale._nativeName = nameStringNode.Value;
         else
           throw new FormatException("Could not find a \"name\" string node");
 
