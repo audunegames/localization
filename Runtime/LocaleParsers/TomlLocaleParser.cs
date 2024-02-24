@@ -44,28 +44,28 @@ namespace Audune.Localization
         else
           throw new LocaleParserException("Could not find a \"native_name\" string node");
 
-        // Parse the locale alternative codes
+        // Parse the alternative codes of the locale
         if (node.TryGetNode("alt_codes", out var altCodesNode) && altCodesNode is TomlTable altCodesTableNode)
           locale._altCodes = new SerializableDictionary<string, string>(altCodesTableNode.RawTable.Where(e => e.Value.IsString).SelectOnValue(node => node.AsString.Value).ToDictionary());
         else
           locale._altCodes = new SerializableDictionary<string, string>();
 
-        // Parse the locale plural rules
+        // Parse the locale formats
+        locale._decimalNumberFormat = node.FindNode("number_format.decimal")?.AsString ?? Locale.defaultDecimalNumberFormat;
+        locale._percentNumberFormat = node.FindNode("number_format.percent")?.AsString ?? Locale.defaultPercentNumberFormat;
+        locale._currencyNumberFormat = node.FindNode("number_format.currency")?.AsString ?? Locale.defaultCurrencyNumberFormat;
+        locale._shortDateFormat = node.FindNode("date_format.short")?.AsString ?? Locale.defaultShortDateFormat;
+        locale._longDateFormat = node.FindNode("date_format.long")?.AsString ?? Locale.defaultLongDateFormat;
+        locale._shortTimeFormat = node.FindNode("time_format.short")?.AsString ?? Locale.defaultShortTimeFormat;
+        locale._longTimeFormat = node.FindNode("time_format.long")?.AsString ?? Locale.defaultLongTimeFormat;
+
+        // Parse the plural rules of the locale
         if (node.TryGetNode("plural_rules", out var pluralRulesNode) && pluralRulesNode is TomlTable pluralRulesTableNode)
           locale._pluralRules = new SerializableDictionary<PluralKeyword, string>(pluralRulesTableNode.RawTable.Where(e => e.Value.IsString).SelectOnKey(key => PluralKeywordUtils.Parse(key)).SelectOnValue(node => node.AsString.Value).ToDictionary());
         else
           locale._pluralRules = new SerializableDictionary<PluralKeyword, string>();
 
-        // Parse the locale format
-        locale._format = new LocaleFormat() {
-          decimalNumberFormat = node.FindNode("number_format.decimal")?.AsString ?? LocaleFormat.DefaultDecimalNumberFormat,
-          percentNumberFormat = node.FindNode("number_format.percent")?.AsString ?? LocaleFormat.DefaultPercentNumberFormat,
-          currencyNumberFormat = node.FindNode("number_format.currency")?.AsString ?? LocaleFormat.DefaultCurrencyNumberFormat,
-          shortDateFormat = node.FindNode("date_format.short")?.AsString ?? LocaleFormat.DefaultShortDateFormat,
-          longDateFormat = node.FindNode("date_format.long")?.AsString ?? LocaleFormat.DefaultLongDateFormat,
-          shortTimeFormat = node.FindNode("time_format.short")?.AsString ?? LocaleFormat.DefaultShortTimeFormat,
-          longTimeFormat = node.FindNode("time_format.long")?.AsString ?? LocaleFormat.DefaultLongTimeFormat,
-        };
+        
 
         // Load the localized string table
         if (node.TryGetNode("strings", out var stringsNode) && stringsNode is TomlTable stringsTableNode)

@@ -24,7 +24,7 @@ namespace Audune.Localization
       if (_checkTypes.HasFlag(SystemLocaleCheckType.CultureInfo))
       {
         var culture = CultureInfo.CurrentUICulture;
-        locale = locales.Where(locale => locale.code == culture.TwoLetterISOLanguageName).FirstOrDefault();
+        locale = locales.Where(locale => locale.code == culture.IetfLanguageTag ||  locale.code == culture.TwoLetterISOLanguageName).FirstOrDefault();
 
         if (locale != null)
           return true;

@@ -14,7 +14,7 @@
     "url": "https://audune.com/"
   },
   "dependencies": {
-    "com.audune.utils.dictionary": "0.1.0",
+    "com.audune.utils.dictionary": "0.1.1",
     "com.audune.utils.unityeditor": "1.0.1"
   }
 }

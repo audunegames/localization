@@ -1,4 +1,5 @@
 using Audune.Utils.Dictionary;
+using Audune.Utils.UnityEditor;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -10,7 +11,7 @@ namespace Audune.Localization
   public sealed class LocalizedStringTable : ILocalizedTable<string>
   {
     // Dictionary of entries in the table
-    [SerializeField]
+    [SerializeField, SerializableDictionaryOptions(keyHeader = "String Table Key", listOptions = ReorderableListOptions.None)]
     private SerializableDictionary<string, string> _entries;
 
 
