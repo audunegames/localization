@@ -11,26 +11,32 @@ namespace Audune.Localization.Editor
     // Draw the property GUI
     public override void OnGUI(Rect rect, SerializedProperty property, GUIContent label)
     {
+      using var scope = new EditorGUI.PropertyScope(rect, label, property);
+
       var path = property.FindPropertyRelative("_path");
       var value = property.FindPropertyRelative("_value");
-      var arguments = property.FindPropertyRelative("_arguments");
 
-      var pathRect = rect.AlignTop(EditorGUIUtility.singleLineHeight, EditorGUIUtility.standardVerticalSpacing, out rect);
-      property.isExpanded = EditorGUI.Foldout(pathRect.AlignLeft(EditorGUIUtility.labelWidth, EditorGUIUtility.standardVerticalSpacing, out pathRect), property.isExpanded, label, true);
-
-      var pathDropdownLabel = new GUIContent(!string.IsNullOrEmpty(path.stringValue) ? path.stringValue : "<Non-Localized Value>");
-      EditorGUIExtensions.SearchDropdown<string, LocalizedStringWindow>(pathRect, pathDropdownLabel, path);
-
-      if (property.isExpanded)
+      if (!property.isExpanded)
       {
-        EditorGUI.indentLevel++;
+        var fieldRect = string.IsNullOrEmpty(path.stringValue) ? rect.AlignLeft(rect.width - 24, EditorGUIUtility.standardVerticalSpacing, out rect) : rect;
+        var pathDropdownLabel = new GUIContent(!string.IsNullOrEmpty(path.stringValue) ? path.stringValue : "<Non-Localized Value>");
+        EditorGUIExtensions.SearchDropdown<string, LocalizedStringSearchWindow>(fieldRect, label, pathDropdownLabel, path);
 
         if (string.IsNullOrEmpty(path.stringValue))
-          EditorGUI.PropertyField(rect.AlignTop(EditorGUIUtility.singleLineHeight, EditorGUIUtility.standardVerticalSpacing, out rect), value);
+        {
+          var valueButtonIcon = Resources.Load<Texture>("ValueButton");
+          if (GUI.Button(rect, new GUIContent(valueButtonIcon, "Enter the non-localized value for the localized string")))
+            property.isExpanded = true;
+        }
+      }
+      else
+      {
+        var fieldRect = rect.AlignLeft(rect.width - 24, EditorGUIUtility.standardVerticalSpacing, out rect);
+        EditorGUI.PropertyField(fieldRect, value, new GUIContent($"{label.text} (Value)", label.tooltip));
 
-        EditorGUI.PropertyField(rect, arguments);
-
-        EditorGUI.indentLevel--;
+        var pathButtonIcon = Resources.Load<Texture>("PathButton");
+        if (GUI.Button(rect, new GUIContent(pathButtonIcon, "Select the path for the localized string")))
+          property.isExpanded = false;
       }
     }
 
@@ -39,17 +45,11 @@ namespace Audune.Localization.Editor
     {
       var path = property.FindPropertyRelative("_path");
       var value = property.FindPropertyRelative("_value");
-      var arguments = property.FindPropertyRelative("_arguments");
 
-      var height = EditorGUI.GetPropertyHeight(path);
-      if (property.isExpanded)
-      {
-        if (string.IsNullOrEmpty(path.stringValue))
-          height += EditorGUIUtility.standardVerticalSpacing + EditorGUI.GetPropertyHeight(value);
-        height += EditorGUIUtility.standardVerticalSpacing + EditorGUI.GetPropertyHeight(arguments);
-      }
-
-      return height;
+      if (!property.isExpanded)
+        return EditorGUI.GetPropertyHeight(path);
+      else
+        return EditorGUI.GetPropertyHeight(value);
     }
   }
 }

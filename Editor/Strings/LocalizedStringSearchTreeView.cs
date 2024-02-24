@@ -9,7 +9,7 @@ using UnityEngine;
 namespace Audune.Localization.Editor
 {
   // Class that defines a tree view for selecting a localized string reference
-  public class LocalizedStringTreeView : SearchTreeView<string>
+  public class LocalizedStringSearchTreeView : SearchTreeView<string>
   {
     // Default options for the localized reference search tree view
     public static readonly Options LocalizedReferenceOptions = new Options {
@@ -27,9 +27,9 @@ namespace Audune.Localization.Editor
 
 
     // Constructor
-    public LocalizedStringTreeView(List<Locale> locales) : base(LocalesToKeys(locales), LocalizedReferenceOptions)
+    public LocalizedStringSearchTreeView(IEnumerable<Locale> locales) : base(LocalesToKeys(locales), LocalizedReferenceOptions)
     {
-      _locales = locales;
+      _locales = locales.ToList();
       _values = LocalesToKeys(_locales).ToDictionary(key => key, key => _locales.Select(locale => locale.strings.Find(key)).Where(value => value != null).ToList());
 
       multiColumnHeader = new MultiColumnHeader(new MultiColumnHeaderState(Enumerable
@@ -86,13 +86,13 @@ namespace Audune.Localization.Editor
 
 
     // Convert a list of locales to keys
-    private static IEnumerable<string> LocalesToKeys(List<Locale> locales)
+    private static IEnumerable<string> LocalesToKeys(IEnumerable<Locale> locales)
     {
       return locales?.SelectMany(locale => locale.strings.Keys).Distinct() ?? Enumerable.Empty<string>();
     }
 
     // Convert a list of locales to tree view columns
-    private static IEnumerable<MultiColumnHeaderState.Column> LocalesToColumms(List<Locale> locales)
+    private static IEnumerable<MultiColumnHeaderState.Column> LocalesToColumms(IEnumerable<Locale> locales)
     {
       return locales?.Select(locale => new MultiColumnHeaderState.Column() { headerContent = new GUIContent(locale.nativeName), width = 150 }) ?? Enumerable.Empty<MultiColumnHeaderState.Column>();
     }
