@@ -1,5 +1,3 @@
-using System;
-
 namespace Audune.Localization
 {
   // Class that defines a predicate in a plural rule
@@ -12,20 +10,20 @@ namespace Audune.Localization
       False = 0x01,
       True = 0x02,
       Const = 0x03,
-      ValueAsNumber = 0x08,
-      ValueAsInt = 0x09,
-      ValueAsFracDigitsCount = 0x0A,
-      ValueAsSignificantFracDigitsCount = 0x0B,
-      ValueAsFracDigits = 0x0C,
-      ValueAsSignificantFracDigits = 0x0D,
-      ValueAsExp = 0x0E,
-      Modulo = 0x11,
-      Equals = 0x18,
-      NotEquals = 0x19,
-      InRange = 0x1A,
-      NotInRange = 0x1B,
-      And = 0x21,
-      Or = 0x22,
+      OperandN = 0x08,
+      OperandI = 0x09,
+      OperandV = 0x0A,
+      OperandW = 0x0B,
+      OperandF = 0x0C,
+      OperandT = 0x0D,
+      OperandC = 0x0E,
+      Modulo = 0x14,
+      Equals = 0x20,
+      NotEquals = 0x21,
+      InRange = 0x22,
+      NotInRange = 0x23,
+      And = 0x2E,
+      Or = 0x2F,
     }
 
 
@@ -52,12 +50,6 @@ namespace Audune.Localization
     public bool Matches(NumberContext number)
     {
       return _evaluator.Matches(number);
-    }
-
-
-    public override string ToString()
-    {
-      return $"{keyword}: {BitConverter.ToString(_code).Replace("-", " ")}";
     }
 
 

@@ -1,12 +1,15 @@
 using System;
+using System.Collections.Generic;
+using System.Globalization;
+using Unity.VisualScripting.YamlDotNet.Core.Tokens;
 
 namespace Audune.Localization
 {
   // Class that defines a selector for a plural format message component
   internal abstract class PluralSelector : IComparable<PluralSelector>
   {
-    // Return if the selector matches the specified number
-    public abstract bool Matches(NumberContext number, IPluralizer pluralRulesProvider);
+    // Return if the selector matches the specified number or keyword
+    public abstract bool Matches(NumberContext number, PluralKeyword keyword);
 
     // Compare the selector to another selector
     public abstract int CompareTo(PluralSelector other);
@@ -27,8 +30,8 @@ namespace Audune.Localization
       }
 
 
-      // Return if the selector matches the specified number
-      public override bool Matches(NumberContext number, IPluralizer pluralRulesProvider)
+      // Return if the selector matches the specified number or keyword
+      public override bool Matches(NumberContext number, PluralKeyword keyword)
       {
         return value == number.value;
       }
@@ -42,7 +45,7 @@ namespace Audune.Localization
       // Compare the selector to another explicit selector
       public int CompareTo(Explicit other)
       {
-        return value.CompareTo(other.value);
+        return Comparer<float>.Default.Compare(value, other.value);
       }
     }
     #endregion
@@ -62,10 +65,10 @@ namespace Audune.Localization
       }
 
 
-      // Return if the selector matches the specified number
-      public override bool Matches(NumberContext number, IPluralizer pluralRulesProvider)
+      // Return if the selector matches the specified number or keyword
+      public override bool Matches(NumberContext number, PluralKeyword keyword)
       {
-        return keyword == pluralRulesProvider.Pluralize(number);
+        return this.keyword == keyword;
       }
 
       // Compare the selector to another selector
@@ -77,7 +80,7 @@ namespace Audune.Localization
       // Compare the selector to another keyword selector
       public int CompareTo(Keyword other)
       {
-        return keyword.CompareTo(other.keyword);
+        return Comparer<PluralKeyword>.Default.Compare(keyword, other.keyword);
       }
     }
     #endregion

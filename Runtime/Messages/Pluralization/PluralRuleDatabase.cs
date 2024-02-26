@@ -84,7 +84,6 @@ namespace Audune.Localization
       {
         // Get the codes
         var codes = pluralRulesNode.Attributes["locales"]?.Value.Split(" ") ?? Enumerable.Empty<string>();
-        Debug.Log($"Codes: {string.Join(", ", codes)}");
 
         // Iterate over the <pluralRule> nodes in the <pluralRules> node
         var list = new List<PluralRule>();
@@ -92,10 +91,14 @@ namespace Audune.Localization
         {
           // Get the keyword and rule
           var keyword = ParsePluralKeyword(pluralRuleNode.Attributes["count"]?.Value ?? string.Empty);
-          var rule = PluralRuleParser.Parse(keyword, pluralRuleNode.InnerText);
-          list.Add(rule);
+          var ruleString = pluralRuleNode.InnerText;
 
-          Debug.Log($"- {rule} (\"{pluralRuleNode.InnerText}\")");
+          var samplesIndex = ruleString.IndexOf('@');
+          if (samplesIndex > -1)
+            ruleString = ruleString[..(samplesIndex - 1)].TrimEnd();
+
+          var rule = PluralRuleParser.Parse(keyword, ruleString);
+          list.Add(rule);
         }
 
         // Create a new plural rule list and assign it to the database for each code

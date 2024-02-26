@@ -5,6 +5,9 @@ using System.Text.RegularExpressions;
 
 namespace Audune.Localization
 {
+  using PluralFormatType = MessageComponent.PluralFormat.Type;
+
+
   // Class that formats a message
   internal sealed class MessageFormatter : IMessageFormatter, MessageComponent.IVisitor<string, MessageEnvironment>
   {
@@ -15,13 +18,15 @@ namespace Audune.Localization
     // Messsage formatter properties
     public readonly IMessageFormatProvider formatProvider;
     public readonly IPluralizer pluralizer;
+    public readonly IPluralizer ordinalPluralizer;
 
 
     // Constructor
-    public MessageFormatter(IMessageFormatProvider formatProvider, IPluralizer pluralizer)
+    public MessageFormatter(IMessageFormatProvider formatProvider, IPluralizer pluralizer, IPluralizer ordinalPluralizer)
     {
       this.formatProvider = formatProvider;
       this.pluralizer = pluralizer;
+      this.ordinalPluralizer = ordinalPluralizer;
     }
 
 
@@ -101,7 +106,13 @@ namespace Audune.Localization
         _ => throw new MessageException($"Argument \"{component.name}\" has an invalid number format"),
       };
 
-      if (component.TryGetBranch(number, pluralizer, out var message))
+      var keyword = component.type switch {
+        PluralFormatType.Plural => pluralizer.Pluralize(number),
+        PluralFormatType.Ordinal => ordinalPluralizer.Pluralize(number),
+        _ => throw new MessageException($"Argument \"{component.name}\" has an invalid plural format type"),
+      };
+
+      if (component.TryGetBranch(number, keyword, out var message))
         return Format(message, env.WithNumber(number.Offset(component.offset)));
       else
         throw new MessageException($"Argument \"{component.name}\" is missing a default \"other\" keyword");

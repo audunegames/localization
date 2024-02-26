@@ -7,6 +7,9 @@ using System.Text;
 
 namespace Audune.Localization
 {
+  using PluralFormatType = MessageComponent.PluralFormat.Type;
+
+
   // Class that defines a parser for a message
   internal static class MessageParser
   {
@@ -126,7 +129,9 @@ namespace Audune.Localization
       else if (typeKeyword == "time")
         return new MessageComponent.DateFormat(name, DateFormatType.Date, ParseDateFormatStyle(scanner));
       else if (typeKeyword == "plural")
-        return ParsePluralFormatComponent(scanner, contexts, name);
+        return ParsePluralFormatComponent(scanner, contexts, name, PluralFormatType.Plural);
+      else if (typeKeyword == "selectordinal")
+        return ParsePluralFormatComponent(scanner, contexts, name, PluralFormatType.Ordinal);
       else if (typeKeyword == "select")
         return ParseSelectFormatComponent(scanner, contexts, name);
       else
@@ -134,7 +139,7 @@ namespace Audune.Localization
     }
 
     // Parse a plural format component
-    private static MessageComponent ParsePluralFormatComponent(Scanner scanner, Stack<ContextType> contexts, string name)
+    private static MessageComponent ParsePluralFormatComponent(Scanner scanner, Stack<ContextType> contexts, string name, PluralFormatType type)
     {
       var offset = 0.0f;
 
@@ -170,7 +175,7 @@ namespace Audune.Localization
       if (!pluralBranches.SelectKey().OfType<PluralSelector.Keyword>().Any(s => s.keyword == PluralKeyword.Other))
         throw new FormatException("Plural component is missing a default \"other\" argument");
 
-      return new MessageComponent.PluralFormat(name, pluralBranches, offset);
+      return new MessageComponent.PluralFormat(name, type, pluralBranches, offset);
     }
 
     // Parse a select component

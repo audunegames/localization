@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using UnityEngine;
 
 namespace Audune.Localization
 {
@@ -19,7 +20,7 @@ namespace Audune.Localization
     }
 
 
-    // Evaluate if the plural rule matches for a number context value
+    // Return if the plural rule matches for the specified number
     public bool Matches(NumberContext number)
     {
       // Clear the stack
@@ -36,11 +37,7 @@ namespace Audune.Localization
         var opcode = (PluralRule.Opcode)reader.ReadByte();
 
         // Check the opcode
-        if (opcode == PluralRule.Opcode.Nop)
-        {
-          // Do nothing
-        }
-        else if (opcode == PluralRule.Opcode.False)
+        if (opcode == PluralRule.Opcode.False)
         {
           // Push a false boolean value to the stack
           PushBool(false);
@@ -53,39 +50,40 @@ namespace Audune.Localization
         else if (opcode == PluralRule.Opcode.Const)
         {
           // Push a constant float value to the stack
-          PushFloat(reader.ReadSingle());
+          var value = reader.ReadSingle();
+          PushFloat(value);
         }
-        else if (opcode == PluralRule.Opcode.ValueAsNumber)
+        else if (opcode == PluralRule.Opcode.OperandN)
         {
           // Push the absolute value of the value to match against to the stack
           PushFloat(number.absoluteValue);
         }
-        else if (opcode == PluralRule.Opcode.ValueAsInt)
+        else if (opcode == PluralRule.Opcode.OperandI)
         {
           // Push the absolute integer value of the value to match against to the stack
           PushFloat(number.absoluteIntValue);
         }
-        else if (opcode == PluralRule.Opcode.ValueAsFracDigitsCount)
+        else if (opcode == PluralRule.Opcode.OperandV)
         {
           // Push the number of fraction digits *with* trailing zeroes of the value to match against to the stack
           PushFloat(number.fractionDigitsCount);
         }
-        else if (opcode == PluralRule.Opcode.ValueAsSignificantFracDigitsCount)
+        else if (opcode == PluralRule.Opcode.OperandW)
         {
           // Push the number of fraction digits *without* trailing zeroes of the value to match against to the stack
           PushFloat(number.significantFractionDigitsCount);
         }
-        else if (opcode == PluralRule.Opcode.ValueAsFracDigits)
+        else if (opcode == PluralRule.Opcode.OperandF)
         {
           // Push the fraction digits *with* trailing zeroes of the value to match against to the stack
           PushFloat(number.fractionDigits);
         }
-        else if (opcode == PluralRule.Opcode.ValueAsSignificantFracDigits)
+        else if (opcode == PluralRule.Opcode.OperandT)
         {
           //  Push the fraction digits *without* trailing zeroes of the value to match against to the stack
           PushFloat(number.significantFractionDigits);
         }
-        else if (opcode == PluralRule.Opcode.ValueAsExp)
+        else if (opcode == PluralRule.Opcode.OperandC)
         {
           // Push the exponent of the value to match against to the stack
           PushFloat(number.exponent);
@@ -93,55 +91,55 @@ namespace Audune.Localization
         else if (opcode == PluralRule.Opcode.Modulo)
         {
           // Push the modulo of the two topmost floats to the stack
-          var left = PopFloat();
           var right = PopFloat();
+          var left = PopFloat();
           PushFloat(left % right);
         }
         else if (opcode == PluralRule.Opcode.Equals)
         {
           // Push if the two topmost floats are equal to each other to the stack
-          var left = PopFloat();
           var right = PopFloat();
+          var left = PopFloat();
           PushBool(left == right);
         }
         else if (opcode == PluralRule.Opcode.NotEquals)
         {
           // Push if the two topmost floats are not equal to each other to the stack
-          var left = PopFloat();
           var right = PopFloat();
+          var left = PopFloat();
           PushBool(left != right);
         }
         else if (opcode == PluralRule.Opcode.InRange)
         {
           // Push if the topmost float are is in the range of the next two floats to the stack
-          var left = PopFloat();
-          var min = PopFloat();
           var max = PopFloat();
+          var min = PopFloat();
+          var left = PopFloat();
           PushBool(left >= min && left <= max);
         }
         else if (opcode == PluralRule.Opcode.NotInRange)
         {
           // Push if the topmost float are is in the range of the next two floats to the stack
-          var left = PopFloat();
-          var min = PopFloat();
           var max = PopFloat();
-          PushBool(!(left >= min && left <= max));
+          var min = PopFloat();
+          var left = PopFloat();
+          PushBool(left < min || left > max);
         }
         else if (opcode == PluralRule.Opcode.And)
         {
           // Push the logical and of the two topmost bool values on the stack
-          var left = PopBool();
           var right = PopBool();
+          var left = PopBool();
           PushBool(left && right);
         }
         else if (opcode == PluralRule.Opcode.Or)
         {
           // Push the logical or of the two topmost bool values on the stack
-          var left = PopBool();
           var right = PopBool();
+          var left = PopBool();
           PushBool(left || right);
         }
-        else
+        else if (opcode != PluralRule.Opcode.Nop)
         {
           // Invalid opcode
           throw new ArgumentException($"Invalid opcode {opcode}");

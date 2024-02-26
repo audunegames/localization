@@ -23,16 +23,15 @@ namespace Audune.Localization
 
       if (keyword == PluralKeyword.Other)
       {
-        if (Try(scanner, ParseRule, out var code))
-          return new PluralRule(keyword, code.ToArray());
-        else
-          return new PluralRule(keyword, new[] { (byte)PluralRule.Opcode.True });
+        if (!Try(scanner, ParseRule, out var code))
+          code = new List<byte>() { (byte)PluralRule.Opcode.True };
+        scanner.AssertAtEnd();
+        return new PluralRule(keyword, code.ToArray());
       }
       else
       {
         var code = ParseRule(scanner);
-        // TODO: Parse samples
-        //scanner.AssertAtEnd();
+        scanner.AssertAtEnd();
         return new PluralRule(keyword, code.ToArray());
       }
     }
@@ -134,19 +133,19 @@ namespace Audune.Localization
     private static byte ParseOperand(Scanner scanner)
     {
       if (scanner.Match('n'))
-        return (byte)PluralRule.Opcode.ValueAsNumber;
+        return (byte)PluralRule.Opcode.OperandN;
       else if (scanner.Match('i'))
-        return (byte)PluralRule.Opcode.ValueAsInt;
+        return (byte)PluralRule.Opcode.OperandI;
       else if (scanner.Match('v'))
-        return (byte)PluralRule.Opcode.ValueAsFracDigitsCount;
+        return (byte)PluralRule.Opcode.OperandV;
       else if (scanner.Match('w'))
-        return (byte)PluralRule.Opcode.ValueAsSignificantFracDigitsCount;
+        return (byte)PluralRule.Opcode.OperandW;
       else if (scanner.Match('f'))
-        return (byte)PluralRule.Opcode.ValueAsFracDigits;
+        return (byte)PluralRule.Opcode.OperandF;
       else if (scanner.Match('t'))
-        return (byte)PluralRule.Opcode.ValueAsSignificantFracDigits;
+        return (byte)PluralRule.Opcode.OperandT;
       else if (scanner.Match('c', 'e'))
-        return (byte)PluralRule.Opcode.ValueAsExp;
+        return (byte)PluralRule.Opcode.OperandC;
       else
         throw new FormatException($"Expected one of \"n\", \"i\", \"v\", \"w\", \"f\", \"t\", \"c\", \"e\" at index {scanner.index}");
     }

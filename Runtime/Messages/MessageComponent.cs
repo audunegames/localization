@@ -1,5 +1,7 @@
+using Audune.Utils.Dictionary;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEngine;
 
 namespace Audune.Localization
 {
@@ -160,26 +162,37 @@ namespace Audune.Localization
     // Class that defines a message component containing a plural format argument
     public class PluralFormat : Format
     {
+      // Enum that defines the type of a plural format argument
+      public enum Type
+      {
+        Plural,
+        Ordinal,
+      }
+
+
+      // The type of a plural format argument
+      public readonly Type type;
+
       // The branches of the component
-      public readonly IReadOnlyDictionary<PluralSelector, Message> branches;
+      public readonly SortedDictionary<PluralSelector, Message> branches;
 
       // The offset of the component
       public readonly float offset;
 
 
       // Constructor
-      public PluralFormat(string name, IReadOnlyDictionary<PluralSelector, Message> branches, float offset = 0.0f) : base(name)
+      public PluralFormat(string name, Type type, SortedDictionary<PluralSelector, Message> branches, float offset = 0.0f) : base(name)
       {
+        this.type = type;
         this.branches = branches;
         this.offset = offset;
       }
 
 
-      // Return a branch for the specified plural selector based on the value and the pluralization rules
-      public bool TryGetBranch(NumberContext number, IPluralizer pluralRulesProvider, out Message message)
+      // Return a branch for the specified plural selector based on the specified number or keyword
+      public bool TryGetBranch(NumberContext number, PluralKeyword keyword, out Message message)
       {
-        number = number.Offset(offset);
-        message = branches.Where(e => e.Key.Matches(number, pluralRulesProvider)).Select(e => e.Value).FirstOrDefault();
+        message = branches.Where(e => e.Key.Matches(number, keyword)).SelectValue().FirstOrDefault();
         return message != null;
       }
 

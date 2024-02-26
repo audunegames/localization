@@ -54,6 +54,12 @@ namespace Audune.Localization
       return Of(value - offset);
     }
 
+    // Return the string representation of the number context
+    public override string ToString()
+    {
+      return value.ToString("R", CultureInfo.InvariantCulture);
+    }
+
 
     // Create a number context from a float value
     public static NumberContext Of(float floatValue)

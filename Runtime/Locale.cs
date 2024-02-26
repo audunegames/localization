@@ -99,7 +99,7 @@ namespace Audune.Localization
     // Format a message with the specified arguments
     public string Format(string message, IDictionary<string, object> arguments)
     {
-      return new MessageFormatter(this, pluralRules).Format(message, arguments);
+      return new MessageFormatter(this, pluralRules, ordinalPluralRules).Format(message, arguments);
     }
     #endregion
 
