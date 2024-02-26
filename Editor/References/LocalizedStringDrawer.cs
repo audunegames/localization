@@ -32,7 +32,7 @@ namespace Audune.Localization.Editor
       else
       {
         var fieldRect = rect.AlignLeft(rect.width - 24, EditorGUIUtility.standardVerticalSpacing, out rect);
-        EditorGUI.PropertyField(fieldRect, value, new GUIContent($"{label.text} (Value)", label.tooltip));
+        EditorGUI.PropertyField(fieldRect, value, label != GUIContent.none ? new GUIContent($"{label.text} (Value)", label.tooltip) : GUIContent.none);
 
         var pathButtonIcon = Resources.Load<Texture>("Icons/Buttons/PathButton");
         if (GUI.Button(rect, new GUIContent(pathButtonIcon, "Select the path for the localized string")))
