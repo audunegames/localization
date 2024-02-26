@@ -1,7 +1,6 @@
 using Audune.Utils.Dictionary;
 using System.Collections.Generic;
 using System.Linq;
-using UnityEngine;
 
 namespace Audune.Localization
 {
@@ -17,6 +16,8 @@ namespace Audune.Localization
       TResult VisitDateFormatComponent(DateFormat component);
       TResult VisitPluralFormatComponent(PluralFormat component);
       TResult VisitSelectFormatComponent(SelectFormat component);
+      TResult VisitFunctionComponent(Function component);
+      TResult VisitLocalizationKeyComponent(LocalizationKey component);
     }
 
     // Interface that defines a visitor for message components with a context
@@ -28,6 +29,8 @@ namespace Audune.Localization
       TResult VisitDateFormatComponent(DateFormat component, TContext context);
       TResult VisitPluralFormatComponent(PluralFormat component, TContext context);
       TResult VisitSelectFormatComponent(SelectFormat component, TContext context);
+      TResult VisitFunctionComponent(Function component, TContext context);
+      TResult VisitLocalizationKeyComponent(LocalizationKey component, TContext context);
     }
 
 
@@ -100,7 +103,7 @@ namespace Audune.Localization
     // Class that defines a message component containing a number format argument
     public class NumberFormat : Format
     {
-      // The style of the argument
+      // The style of the component
       public readonly NumberFormatStyle style;
 
 
@@ -159,7 +162,7 @@ namespace Audune.Localization
     #endregion
 
     #region Plural format component
-    // Class that defines a message component containing a plural format argument
+    // Class that defines a message component containing a plural format component
     public class PluralFormat : Format
     {
       // Enum that defines the type of a plural format argument
@@ -170,7 +173,7 @@ namespace Audune.Localization
       }
 
 
-      // The type of a plural format argument
+      // The type of the component
       public readonly Type type;
 
       // The branches of the component
@@ -243,6 +246,68 @@ namespace Audune.Localization
       public override TResult Accept<TResult, TContext>(IVisitor<TResult, TContext> visitor, TContext context)
       {
         return visitor.VisitSelectFormatComponent(this, context);
+      }
+    }
+    #endregion
+
+    #region Function component
+    // Class that defines a message component containing a function
+    public class Function : MessageComponent
+    {
+      // The name of the function
+      public readonly string name;
+
+      // The argument of the function
+      public readonly string argument;
+
+
+      // Constructor
+      public Function(string name, string argument = null)
+      {
+        this.name = name;
+        this.argument = argument;
+      }
+
+
+      // Accept a visitor on the component
+      public override TResult Accept<TResult>(IVisitor<TResult> visitor)
+      {
+        return visitor.VisitFunctionComponent(this);
+      }
+
+      // Accept a visitor on the component with a context
+      public override TResult Accept<TResult, TContext>(IVisitor<TResult, TContext> visitor, TContext context)
+      {
+        return visitor.VisitFunctionComponent(this, context);
+      }
+    }
+    #endregion
+
+    #region Localization key component
+    // Class that defines a message component containing a localization key
+    public class LocalizationKey : MessageComponent
+    {
+      // The key of the component
+      public readonly string key;
+
+
+      // Constructor
+      public LocalizationKey(string key)
+      {
+        this.key = key;
+      }
+
+
+      // Accept a visitor on the component
+      public override TResult Accept<TResult>(IVisitor<TResult> visitor)
+      {
+        return visitor.VisitLocalizationKeyComponent(this);
+      }
+
+      // Accept a visitor on the component with a context
+      public override TResult Accept<TResult, TContext>(IVisitor<TResult, TContext> visitor, TContext context)
+      {
+        return visitor.VisitLocalizationKeyComponent(this, context);
       }
     }
     #endregion

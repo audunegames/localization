@@ -53,64 +53,33 @@ namespace Audune.Localization
     {
       if (scanner.Match('{'))
       {
-        var argumentComponent = ParseArgumentComponent(scanner, contexts);
+        MessageComponent component;
+        if (scanner.Match('$'))
+          component = ParseFunctionComponent(scanner, contexts);
+        else if (scanner.Match('='))
+          component = ParseLocalizationKeyComponent(scanner, contexts);
+        else
+          component = ParseFormatComponent(scanner, contexts);
 
         scanner.Consume('}');
 
-        return argumentComponent;
+        return component;
       }
-
-      return ParseTextComponent(scanner, contexts);
+      else
+      {
+        return ParseTextComponent(scanner, contexts);
+      }
     }
 
     // Parse a text component
     private static MessageComponent ParseTextComponent(Scanner scanner, Stack<ContextType> contexts)
     {
-      var builder = new StringBuilder();
-      var quoted = false;
-
-      while (!scanner.atEnd)
-      {
-        if (quoted)
-        {
-          if (scanner.Match('\''))
-          {
-            if (scanner.Match('\''))
-              builder.Append('\'');
-            else
-              quoted = false;
-          }
-          else
-          {
-            builder.Append(scanner.Advance());
-          }
-        }
-        else
-        {
-          if (scanner.Match('\''))
-          {
-            if (scanner.Match('\''))
-              builder.Append('\'');
-            else if (scanner.Check(c => c == '{' || c == '}' || (contexts.TryPeek(out var context) && context == ContextType.Plural && c == '#')))
-              quoted = true;
-            else
-              builder.Append('\'');
-          }
-          else
-          {
-            if (scanner.Check(c => c == '{' || c == '}'))
-              break;
-            else
-              builder.Append(scanner.Advance());
-          }
-        }
-      }
-
-      return new MessageComponent.Text(builder.ToString());
+      var text = ParseString(scanner, contexts);
+      return new MessageComponent.Text(text);
     }
 
-    // Parse an argument component
-    private static MessageComponent ParseArgumentComponent(Scanner scanner, Stack<ContextType> contexts)
+    // Parse a format component
+    private static MessageComponent ParseFormatComponent(Scanner scanner, Stack<ContextType> contexts)
     {
       var name = ParseName(scanner);
       scanner.SkipWhile(Scanner.IsWhitespace);
@@ -189,7 +158,7 @@ namespace Audune.Localization
       {
         scanner.SkipWhile(Scanner.IsWhitespace);
 
-        var keyword = ParseKeyword(scanner);
+        var key = ParseKeyword(scanner);
         scanner.SkipWhile(Scanner.IsWhitespace);
 
         scanner.Consume('{');
@@ -200,7 +169,7 @@ namespace Audune.Localization
 
         scanner.Consume('}');
 
-        selectBranches.Add(keyword, message);
+        selectBranches.Add(key, message);
       } while (!scanner.Check('}') && !scanner.atEnd);
 
       if (!selectBranches.Any(e => e.Key == "other"))
@@ -208,9 +177,76 @@ namespace Audune.Localization
 
       return new MessageComponent.SelectFormat(name, selectBranches);
     }
+
+    // Parse a function component
+    private static MessageComponent ParseFunctionComponent(Scanner scanner, Stack<ContextType> contexts)
+    {
+      var name = ParseName(scanner);
+      scanner.SkipWhile(Scanner.IsWhitespace);
+
+      if (scanner.Match('}'))
+        return new MessageComponent.Function(name);
+      scanner.SkipWhile(Scanner.IsWhitespace);
+
+      var argument = ParseString(scanner, contexts);
+      return new MessageComponent.Function(name, argument);
+    }
+
+    // Parse a localization key component
+    private static MessageComponent ParseLocalizationKeyComponent(Scanner scanner, Stack<ContextType> contexts)
+    {
+      var key = ParseLocalizationKey(scanner);
+      return new MessageComponent.LocalizationKey(key);
+    }
     #endregion
 
     #region Primitive parser functions
+    // Parse a string
+    private static string ParseString(Scanner scanner, Stack<ContextType> contexts)
+    {
+      var builder = new StringBuilder();
+      var quoted = false;
+
+      while (!scanner.atEnd)
+      {
+        if (quoted)
+        {
+          if (scanner.Match('\''))
+          {
+            if (scanner.Match('\''))
+              builder.Append('\'');
+            else
+              quoted = false;
+          }
+          else
+          {
+            builder.Append(scanner.Advance());
+          }
+        }
+        else
+        {
+          if (scanner.Match('\''))
+          {
+            if (scanner.Match('\''))
+              builder.Append('\'');
+            else if (scanner.Check(c => c == '{' || c == '}' || (contexts.TryPeek(out var context) && (context == ContextType.Plural && c == '#'))))
+              quoted = true;
+            else
+              builder.Append('\'');
+          }
+          else
+          {
+            if (scanner.Check(c => c == '{' || c == '}'))
+              break;
+            else
+              builder.Append(scanner.Advance());
+          }
+        }
+      }
+
+      return builder.ToString();
+    }
+
     // Parse a number
     private static float ParseNumber(Scanner scanner)
     {
@@ -305,6 +341,17 @@ namespace Audune.Localization
         return PluralKeyword.Other;
       else
         throw new FormatException("Expected one of \"zero\", \"one\", \"two\", \"few\", \"many\", \"other\"");
+    }
+
+    // Parse a localization key
+    private static string ParseLocalizationKey(Scanner scanner)
+    {
+      var key = scanner.ReadWhile(Scanner.IsLetterOrUnderscore, "letter or underscore", Scanner.IsLetterOrDigitOrUnderscore);
+
+      while (scanner.Match('.'))
+        key += "." + scanner.ReadWhile(Scanner.IsLetterOrUnderscore, "letter or underscore", Scanner.IsLetterOrDigitOrUnderscore);
+
+      return key;
     }
     #endregion
   }

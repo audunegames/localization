@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text.RegularExpressions;
 
 namespace Audune.Localization
 {
@@ -11,10 +10,6 @@ namespace Audune.Localization
   // Class that formats a message
   internal sealed class MessageFormatter : IMessageFormatter, MessageComponent.IVisitor<string, MessageEnvironment>
   {
-    // Pattern for the number replacement character
-    private static readonly Regex _numberReplacement = new Regex("(?<escaped>')?#", RegexOptions.Compiled);
-
-
     // Messsage formatter properties
     public readonly IMessageFormatProvider formatProvider;
     public readonly IPluralizer pluralizer;
@@ -49,7 +44,7 @@ namespace Audune.Localization
     {
       var text = component.text;
       if (env.TryGetNumber(out var number))
-        text = _numberReplacement.Replace(text, m => m.Groups["escaped"].Success ? m.Groups["char"].Value : formatProvider.FormatNumber(number.value));
+        text = text.Replace("#", formatProvider.FormatNumber(number.value));
       return text;
     }
 
@@ -132,6 +127,18 @@ namespace Audune.Localization
         return Format(defaultMessage, env.WithoutNumber());
       else
         throw new MessageException($"Argument \"{component.name}\" is missing a default \"other\" keyword");
+    }
+
+    // Visit a function component
+    string MessageComponent.IVisitor<string, MessageEnvironment>.VisitFunctionComponent(MessageComponent.Function component, MessageEnvironment env)
+    {
+      return $"<Function {component.name} with argument {component.argument ?? "Null"}>";
+    }
+
+    // Visit a localization key component
+    string MessageComponent.IVisitor<string, MessageEnvironment>.VisitLocalizationKeyComponent(MessageComponent.LocalizationKey component, MessageEnvironment env)
+    {
+      return $"<LocalizationKey \"{component.key}\">";
     }
     #endregion
   }
