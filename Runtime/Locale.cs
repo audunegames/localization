@@ -8,7 +8,7 @@ namespace Audune.Localization
 {
   // Class that defines a locale
   [CreateAssetMenu(menuName = "Audune/Localization/Locale", fileName = "Locale")]
-  public sealed class Locale : ScriptableObject, ILocalizedTable<string>, IMessageFormatProvider
+  public sealed class Locale : ScriptableObject, ILocalizedTable<string>, IMessageFormatter, IMessageFormatProvider
   {
     // Constans that define defaults for formats
     public const string defaultDecimalNumberFormat = "n";
@@ -18,7 +18,7 @@ namespace Audune.Localization
     public const string defaultLongDateFormat = "D";
     public const string defaultShortTimeFormat = "t";
     public const string defaultLongTimeFormat = "T";
-    
+
 
     // Locale properties
     [SerializeField, Tooltip("The ISO 639 code of the locale")]
@@ -43,8 +43,6 @@ namespace Audune.Localization
     internal string _shortTimeFormat = defaultShortTimeFormat;
     [SerializeField, Tooltip("The long time format of the locale")]
     internal string _longTimeFormat = defaultLongTimeFormat;
-    [SerializeField, Tooltip("The pluralization rules of the locale"), SerializableDictionaryOptions(keyHeader = "Plural Keyword")]
-    internal SerializableDictionary<PluralKeyword, string> _pluralRules;
 
     // Locale tables
     [SerializeField, Tooltip("The strings table of the locale")]
@@ -60,8 +58,6 @@ namespace Audune.Localization
     // Return the native name of the locale
     public string nativeName => _nativeName;
 
-    // Return the pluralization rules of the locale
-    public PluralRules pluralRules => new PluralRules(_pluralRules);
     // Return the alternative codes of the locale
     public IReadOnlyDictionary<string, string> altCodes => _altCodes;
 
@@ -71,8 +67,11 @@ namespace Audune.Localization
     // Return the culture of the locale
     public CultureInfo culture => CultureInfoExtensions.GetCultureInfoOrInvariant(_code);
 
-    // Return a message formatter for the locale
-    public MessageFormatter formatter => new MessageFormatter(this);
+    // Return a plural rule list for plurals for the locale
+    public PluralRuleList pluralRules => PluralRuleDatabase.plurals.TryGetRules(this, out var rules) ? rules : null;
+
+    // Return a plural rule list for ordinal plurals for the locale
+    public PluralRuleList ordinalPluralRules => PluralRuleDatabase.ordinalPlurals.TryGetRules(this, out var rules) ? rules : null;
 
 
     // Return the string representation of the locale
@@ -93,6 +92,14 @@ namespace Audune.Localization
     public string Find(string path, string defaultValue = default)
     {
       return _strings.Find(path, defaultValue);
+    }
+    #endregion
+
+    #region Message formatter implementation
+    // Format a message with the specified arguments
+    public string Format(string message, IDictionary<string, object> arguments)
+    {
+      return new MessageFormatter(this, pluralRules).Format(message, arguments);
     }
     #endregion
 
@@ -151,14 +158,6 @@ namespace Audune.Localization
     public string FormatTime(DateTime value, DateFormatStyle style = DateFormatStyle.Short)
     {
       return value.ToString(GetTimeFormat(style), culture);
-    }
-    #endregion
-
-    #region Plural rules provider implementation
-    // Select a plural keyword based on the specified value
-    public PluralKeyword SelectPluralKeyword(float value)
-    {
-      return PluralKeyword.Other;
     }
     #endregion
   }

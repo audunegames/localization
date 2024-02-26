@@ -57,15 +57,7 @@ namespace Audune.Localization
         locale._shortDateFormat = node.FindNode("date_format.short")?.AsString ?? Locale.defaultShortDateFormat;
         locale._longDateFormat = node.FindNode("date_format.long")?.AsString ?? Locale.defaultLongDateFormat;
         locale._shortTimeFormat = node.FindNode("time_format.short")?.AsString ?? Locale.defaultShortTimeFormat;
-        locale._longTimeFormat = node.FindNode("time_format.long")?.AsString ?? Locale.defaultLongTimeFormat;
-
-        // Parse the plural rules of the locale
-        if (node.TryGetNode("plural_rules", out var pluralRulesNode) && pluralRulesNode is TomlTable pluralRulesTableNode)
-          locale._pluralRules = new SerializableDictionary<PluralKeyword, string>(pluralRulesTableNode.RawTable.Where(e => e.Value.IsString).SelectOnKey(key => PluralKeywordUtils.Parse(key)).SelectOnValue(node => node.AsString.Value).ToDictionary());
-        else
-          locale._pluralRules = new SerializableDictionary<PluralKeyword, string>();
-
-        
+        locale._longTimeFormat = node.FindNode("time_format.long")?.AsString ?? Locale.defaultLongTimeFormat;        
 
         // Load the localized string table
         if (node.TryGetNode("strings", out var stringsNode) && stringsNode is TomlTable stringsTableNode)
@@ -73,7 +65,6 @@ namespace Audune.Localization
         else
           throw new LocaleParserException("Could not find a \"strings\" table node");
         
-
         // Return the locale
         return locale;
       }

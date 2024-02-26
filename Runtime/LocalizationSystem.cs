@@ -9,6 +9,7 @@ namespace Audune.Localization
 {
   // Class that defines the system for localization
   [AddComponentMenu("Audune/Localization/Localization System")]
+  [DefaultExecutionOrder(-100)]
   public sealed class LocalizationSystem : MonoBehaviour
   {
     // Regex constants
@@ -18,7 +19,6 @@ namespace Audune.Localization
 
     // Internal state of the localization 
     private List<Locale> _definedLocales = new List<Locale>();
-
     private Locale _currentLocale = null;
     private Locale _lastLocale = null;
 
@@ -144,21 +144,23 @@ namespace Audune.Localization
     }
     #endregion
 
-
+    #region Localizing references
     // Return a string for the specified key in the current locale
     public string Localize(LocalizedString reference)
     {
       // TODO: Check reference for null value properly
       if (reference != null && _currentLocale != null && reference.TryResolve(_currentLocale, out var value))
       {
-        var message = currentLocale.formatter.Format(value, new Dictionary<string, object>(reference?.arguments));
+        var message = currentLocale.Format(value, new Dictionary<string, object>(reference?.arguments));
         //message = localizedRegex.Replace(message, EvaluateLocalizedMatch);
         //message = inputRegex.Replace(message, EvaluateInputMatch);
         return message;
       }
-
-      Debug.LogWarning($"[{gameObject.name}] Could not find string {reference} in locale {_currentLocale}");
-      return $"<{reference}>";
+      else
+      {
+        Debug.LogWarning($"[{gameObject.name}] Could not find string {reference} in locale {(_currentLocale != null ? _currentLocale.ToString() : "Null")}");
+        return $"<{reference}>";
+      }
     }
 
 
@@ -184,5 +186,6 @@ namespace Audune.Localization
       return string.Join("", action.GetCombinedBindingReferences(scheme.Value).Select(g => g.ToTextMeshProSpriteFirstOnly()));
     }
     */
+    #endregion
   }
 }
