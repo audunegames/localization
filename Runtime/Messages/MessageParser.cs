@@ -184,7 +184,7 @@ namespace Audune.Localization
       var name = ParseName(scanner);
       scanner.SkipWhile(Scanner.IsWhitespace);
 
-      if (scanner.Match('}'))
+      if (!scanner.Match(':'))
         return new MessageComponent.Function(name);
       scanner.SkipWhile(Scanner.IsWhitespace);
 

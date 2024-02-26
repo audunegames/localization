@@ -11,24 +11,21 @@ namespace Audune.Localization
   internal sealed class MessageFormatter : IMessageFormatter, MessageComponent.IVisitor<string, MessageEnvironment>
   {
     // Messsage formatter properties
-    public readonly IMessageFormatProvider formatProvider;
-    public readonly IPluralizer pluralizer;
-    public readonly IPluralizer ordinalPluralizer;
-    public readonly ILocalizedTable<string> localizationTable;
+    private readonly IMessageFormatProvider _formatProvider;
+    private readonly IPluralizer _pluralizer;
+    private readonly IPluralizer _ordinalPluralizer;
+    private readonly IMessageFunctionExecutor _functionExecutor;
+    private readonly ILocalizedTable<string> _localizationTable;
 
 
     // Constructor
-    public MessageFormatter(IMessageFormatProvider formatProvider, IPluralizer pluralizer, IPluralizer ordinalPluralizer, ILocalizedTable<string> localizationTable)
+    public MessageFormatter(IMessageFormatProvider formatProvider, IPluralizer pluralizer, IPluralizer ordinalPluralizer, IMessageFunctionExecutor functionExecutor, ILocalizedTable<string> localizationTable)
     {
-      this.formatProvider = formatProvider;
-      this.pluralizer = pluralizer;
-      this.ordinalPluralizer = ordinalPluralizer;
-      this.localizationTable = localizationTable;
-    }
-
-    // Constructor from a locale
-    public MessageFormatter(Locale locale) : this(locale, locale.pluralRules, locale.ordinalPluralRules, locale) 
-    {
+      _formatProvider = formatProvider;
+      _pluralizer = pluralizer;
+      _ordinalPluralizer = ordinalPluralizer;
+      _functionExecutor = functionExecutor;
+      _localizationTable = localizationTable;
     }
 
 
@@ -51,7 +48,7 @@ namespace Audune.Localization
     {
       var text = component.text;
       if (env.TryGetNumber(out var number))
-        text = text.Replace("#", formatProvider.FormatNumber(number.value));
+        text = text.Replace("#", _formatProvider.FormatNumber(number.value));
       return text;
     }
 
@@ -62,9 +59,9 @@ namespace Audune.Localization
         throw new MessageException($"Argument \"{component.name}\" is not defined");
 
       return value switch {
-        int intValue => formatProvider.FormatNumber(intValue),
-        float floatValue => formatProvider.FormatNumber(floatValue),
-        DateTime dateTimeValue => formatProvider.FormatDate(dateTimeValue),
+        int intValue => _formatProvider.FormatNumber(intValue),
+        float floatValue => _formatProvider.FormatNumber(floatValue),
+        DateTime dateTimeValue => _formatProvider.FormatDate(dateTimeValue),
         _ => value.ToString(),
       };
     }
@@ -76,8 +73,8 @@ namespace Audune.Localization
         throw new MessageException($"Argument \"{component.name}\" is not defined");
 
       return value switch {
-        int intValue => formatProvider.FormatNumber(intValue, component.style),
-        float floatValue => formatProvider.FormatNumber(floatValue, component.style),
+        int intValue => _formatProvider.FormatNumber(intValue, component.style),
+        float floatValue => _formatProvider.FormatNumber(floatValue, component.style),
         _ => throw new MessageException($"Argument \"{component.name}\" with type {value.GetType()} is unsupported by the number format component"),
       };
     }
@@ -89,8 +86,8 @@ namespace Audune.Localization
         throw new MessageException($"Argument \"{component.name}\" is not defined");
 
       return value switch {
-        DateTime dateTimeValue when component.type == DateFormatType.Date => formatProvider.FormatDate(dateTimeValue, component.style),
-        DateTime dateTimeValue when component.type == DateFormatType.Time => formatProvider.FormatTime(dateTimeValue, component.style),
+        DateTime dateTimeValue when component.type == DateFormatType.Date => _formatProvider.FormatDate(dateTimeValue, component.style),
+        DateTime dateTimeValue when component.type == DateFormatType.Time => _formatProvider.FormatTime(dateTimeValue, component.style),
         _ => throw new MessageException($"Argument \"{component.name}\" with type {value.GetType()} is unsupported by the date format component"),
       };
     }
@@ -109,8 +106,8 @@ namespace Audune.Localization
       };
 
       var keyword = component.type switch {
-        PluralFormatType.Plural => pluralizer.Pluralize(number),
-        PluralFormatType.Ordinal => ordinalPluralizer.Pluralize(number),
+        PluralFormatType.Plural => _pluralizer.Pluralize(number),
+        PluralFormatType.Ordinal => _ordinalPluralizer.Pluralize(number),
         _ => throw new MessageException($"Argument \"{component.name}\" has an invalid plural format type"),
       };
 
@@ -139,13 +136,16 @@ namespace Audune.Localization
     // Visit a function component
     string MessageComponent.IVisitor<string, MessageEnvironment>.VisitFunctionComponent(MessageComponent.Function component, MessageEnvironment env)
     {
-      return $"<Function {component.name} with argument {component.argument ?? "Null"}>";
+      if (_functionExecutor.TryExecuteFunction(component.name, component.argument, out var value))
+        return Format(new Message(value), env);
+      else
+        throw new MessageException($"Function \"{component.name}\" could not be found");
     }
 
     // Visit a localization key component
     string MessageComponent.IVisitor<string, MessageEnvironment>.VisitLocalizationKeyComponent(MessageComponent.LocalizationKey component, MessageEnvironment env)
     {
-      if (localizationTable.TryFind(component.key, out var value))
+      if (_localizationTable.TryFind(component.key, out var value))
         return Format(new Message(value), env);
       else
         return $"<{component.key}>";

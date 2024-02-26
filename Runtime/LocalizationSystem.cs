@@ -10,7 +10,7 @@ namespace Audune.Localization
   // Class that defines the system for localization
   [AddComponentMenu("Audune/Localization/Localization System")]
   [DefaultExecutionOrder(-100)]
-  public sealed class LocalizationSystem : MonoBehaviour
+  public sealed class LocalizationSystem : MonoBehaviour, IMessageFormatter, IMessageFunctionExecutor
   {
     // Regex constants
     private static readonly Regex localizedRegex = new Regex(@"\[\[((?:[^\\\]]|\\.)+)\]\]", RegexOptions.Compiled);
@@ -18,27 +18,37 @@ namespace Audune.Localization
 
 
     // Internal state of the localization 
-    private List<Locale> _definedLocales = new List<Locale>();
-    private Locale _currentLocale = null;
+    private Dictionary<string, Func<string, string>> _functions = new Dictionary<string, Func<string, string>>();
+
+    private List<Locale> _loadedLocales = new List<Locale>();
+    private Locale _selectedLocale = null;
+    private MessageFormatter _formatter = null;
+
     private Locale _lastLocale = null;
 
     // Localization system events
     public event Action<Locale> OnLocaleChanged;
 
 
-    // Return the defined locales in the localization system
-    public IEnumerable<Locale> definedLocales => _definedLocales;
+    // Return the loaded locales in the localization system
+    public IEnumerable<Locale> loadedLocales => _loadedLocales;
 
-    // Return and set the current locale
-    public Locale currentLocale {
-      get => _currentLocale;
-      set => _currentLocale = value;
+    // Return and set the selected locale in the localization system
+    public Locale selectedLocale {
+      get => _selectedLocale;
+      set {
+        _selectedLocale = value;
+        _formatter = _selectedLocale?.CreateFormatter(this);
+      }
     }
 
-    // Return and set the current culture
-    public CultureInfo currentCulture {
-      get => _currentLocale != null ? _currentLocale.culture : CultureInfo.InvariantCulture;
-      set => _currentLocale = _definedLocales.Where(locale => locale.code == value.TwoLetterISOLanguageName).FirstOrDefault();
+    // Return and set the selected culture
+    public CultureInfo selectedCulture {
+      get => _selectedLocale != null ? _selectedLocale.culture : CultureInfo.InvariantCulture;
+      set {
+        _selectedLocale = _loadedLocales.Where(locale => locale.code == value.Name).FirstOrDefault();
+        _formatter = _selectedLocale?.CreateFormatter(this);
+      }
     }
 
 
@@ -52,15 +62,15 @@ namespace Audune.Localization
     // Update is called once per frame
     private void Update()
     {
-      // Update the current locale
-      if (_currentLocale != _lastLocale)
+      // Update the selected locale
+      if (_selectedLocale != _lastLocale)
       {
         // Emit a locale changed event if the new locale is not null
-        if (_currentLocale != null)
-          OnLocaleChanged?.Invoke(_currentLocale);
+        if (_selectedLocale != null)
+          OnLocaleChanged?.Invoke(_selectedLocale);
 
         // Update the state
-        _lastLocale = _currentLocale;
+        _lastLocale = _selectedLocale;
       }
     }
 
@@ -69,17 +79,19 @@ namespace Audune.Localization
     public void Initialize()
     {
       // Load the locales
-      _definedLocales = LoadLocales().ToList();
+      _loadedLocales.Clear();
+      _loadedLocales.AddRange(LoadLocales());
 
       // Select th locale
-      if (!TrySelectLocale(_definedLocales, out _currentLocale))
+      if (!TrySelectLocale(_loadedLocales, out _selectedLocale))
         Debug.LogWarning($"[LocalizationSystem] Could not select a locale using any of the registered locale selectors");
+      _formatter = _selectedLocale?.CreateFormatter(this);
     }
 
     // Initialize the system if no locale has been selected
     public void InitializeIfNoLocaleSelected()
     {
-      if (_currentLocale == null)
+      if (_selectedLocale == null)
         Initialize();
     }
     #endregion
@@ -144,15 +156,51 @@ namespace Audune.Localization
     }
     #endregion
 
-    #region Localizing references
-    // Return a string for the specified key in the current locale
-    public string Localize(LocalizedString reference)
+    #region Message function management
+    // Register a function with the specified name
+    public void RegisterFunction(string name, Func<string, string> func)
+    {
+      _functions.Add(name, func);
+    }
+
+    // Unregister a function with the specified name
+    public void UnregisterFunction(string name)
+    {
+      _functions.Remove(name);
+    }
+
+    // Return if a function with the specified name exists and execute it with the specified argument
+    bool IMessageFunctionExecutor.TryExecuteFunction(string name, string argument, out string value)
+    {
+      var result = _functions.TryGetValue(name, out var func);
+      value = result ? func(argument) : null;
+      return result;
+    }
+    #endregion
+
+    #region Formatting and localizing references
+    // Format the specified message message using the current locale
+    public string Format(string message, IReadOnlyDictionary<string, object> arguments)
+    {
+      if (message == null)
+        return null;
+
+      if (_selectedLocale == null || _formatter == null)
+        throw new LocalizationException("No locale has ben selected");
+      else
+        return _formatter.Format(message, arguments);
+    }
+
+    // Format the message for the specified localized string reference using the current locale
+    public string Format(LocalizedString reference)
     {
       if (reference == null)
         throw new ArgumentNullException(nameof(reference));
 
-      if (_currentLocale != null && reference.TryResolve(_currentLocale, out var value))
-        return currentLocale.Format(value, reference.arguments);
+      if (_selectedLocale == null || _formatter == null)
+        throw new LocalizationException("No locale has ben selected");
+      else if (reference.TryResolve(_selectedLocale, out var value))
+        return Format(value, reference.arguments);
       else
         return $"<{reference}>";
     }

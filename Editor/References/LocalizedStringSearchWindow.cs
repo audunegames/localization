@@ -34,7 +34,7 @@ namespace Audune.Localization.Editor
     public override SearchTreeView<string> CreateTreeView()
     {
       Refresh();
-      return new LocalizedStringSearchTreeView(_localizationSystem.definedLocales);
+      return new LocalizedStringSearchTreeView(_localizationSystem.loadedLocales);
     }
 
     // Get the property value

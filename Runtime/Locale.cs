@@ -8,7 +8,7 @@ namespace Audune.Localization
 {
   // Class that defines a locale
   [CreateAssetMenu(menuName = "Audune/Localization/Locale", fileName = "Locale")]
-  public sealed class Locale : ScriptableObject, ILocalizedTable<string>, IMessageFormatter, IMessageFormatProvider
+  public sealed class Locale : ScriptableObject, ILocalizedTable<string>, IMessageFormatProvider
   {
     // Constans that define defaults for formats
     public const string defaultDecimalNumberFormat = "n";
@@ -74,6 +74,12 @@ namespace Audune.Localization
     public PluralRuleList ordinalPluralRules => PluralRuleDatabase.ordinalPlurals.TryGetRules(this, out var rules) ? rules : null;
 
 
+    // Reaturn a message formatter that uses this locale
+    internal MessageFormatter CreateFormatter(IMessageFunctionExecutor functionExecutor)
+    {
+      return new MessageFormatter(this, pluralRules, ordinalPluralRules, functionExecutor, this);
+    }
+
     // Return the string representation of the locale
     public override string ToString()
     {
@@ -99,14 +105,6 @@ namespace Audune.Localization
      
       Debug.LogWarning($"[LocalizationSystem] Could not find string \"{path}\" in locale {this}");
       return defaultValue;
-    }
-    #endregion
-
-    #region Message formatter implementation
-    // Format a message with the specified arguments
-    public string Format(string message, IReadOnlyDictionary<string, object> arguments)
-    {
-      return new MessageFormatter(this).Format(message, arguments);
     }
     #endregion
 
