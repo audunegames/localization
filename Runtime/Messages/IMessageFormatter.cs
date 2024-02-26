@@ -6,6 +6,6 @@ namespace Audune.Localization
   public interface IMessageFormatter
   {
     // Format a message with the specified arguments
-    public string Format(string message, IDictionary<string, object> arguments);
+    public string Format(string message, IReadOnlyDictionary<string, object> arguments);
   }
 }

@@ -14,19 +14,26 @@ namespace Audune.Localization
     public readonly IMessageFormatProvider formatProvider;
     public readonly IPluralizer pluralizer;
     public readonly IPluralizer ordinalPluralizer;
+    public readonly ILocalizedTable<string> localizationTable;
 
 
     // Constructor
-    public MessageFormatter(IMessageFormatProvider formatProvider, IPluralizer pluralizer, IPluralizer ordinalPluralizer)
+    public MessageFormatter(IMessageFormatProvider formatProvider, IPluralizer pluralizer, IPluralizer ordinalPluralizer, ILocalizedTable<string> localizationTable)
     {
       this.formatProvider = formatProvider;
       this.pluralizer = pluralizer;
       this.ordinalPluralizer = ordinalPluralizer;
+      this.localizationTable = localizationTable;
+    }
+
+    // Constructor from a locale
+    public MessageFormatter(Locale locale) : this(locale, locale.pluralRules, locale.ordinalPluralRules, locale) 
+    {
     }
 
 
     // Format a message with the specified arguments
-    public string Format(string message, IDictionary<string, object> arguments)
+    public string Format(string message, IReadOnlyDictionary<string, object> arguments)
     {
       return Format(new Message(message), new MessageEnvironment().WithArguments(arguments));
     }
@@ -138,7 +145,10 @@ namespace Audune.Localization
     // Visit a localization key component
     string MessageComponent.IVisitor<string, MessageEnvironment>.VisitLocalizationKeyComponent(MessageComponent.LocalizationKey component, MessageEnvironment env)
     {
-      return $"<LocalizationKey \"{component.key}\">";
+      if (localizationTable.TryFind(component.key, out var value))
+        return Format(new Message(value), env);
+      else
+        return $"<{component.key}>";
     }
     #endregion
   }

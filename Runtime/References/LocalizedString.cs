@@ -56,11 +56,9 @@ namespace Audune.Localization
     {
       if (!string.IsNullOrEmpty(_path))
         return table.TryFind(_path, out value);
-      else
-      {
-        value = _value;
-        return true;
-      }
+
+      value = _value;
+      return true;
     }
 
 

@@ -148,44 +148,14 @@ namespace Audune.Localization
     // Return a string for the specified key in the current locale
     public string Localize(LocalizedString reference)
     {
-      // TODO: Check reference for null value properly
-      if (reference != null && _currentLocale != null && reference.TryResolve(_currentLocale, out var value))
-      {
-        var message = currentLocale.Format(value, new Dictionary<string, object>(reference?.arguments));
-        //message = localizedRegex.Replace(message, EvaluateLocalizedMatch);
-        //message = inputRegex.Replace(message, EvaluateInputMatch);
-        return message;
-      }
+      if (reference == null)
+        throw new ArgumentNullException(nameof(reference));
+
+      if (_currentLocale != null && reference.TryResolve(_currentLocale, out var value))
+        return currentLocale.Format(value, reference.arguments);
       else
-      {
-        Debug.LogWarning($"[{gameObject.name}] Could not find string {reference} in locale {(_currentLocale != null ? _currentLocale.ToString() : "Null")}");
         return $"<{reference}>";
-      }
     }
-
-
-    /*
-    // Evaluate a localized match
-    private string EvaluateLocalizedMatch(Match match)
-    {
-      return Localize(new LocalizedString(match.Groups[1].Value));
-    }
-
-    // Evaluate an input match
-    private string EvaluateInputMatch(Match match)
-    {
-      var actionString = match.Groups[2].Value;
-      var schemeString = match.Groups[1].Success ? match.Groups[1].Value : Game.playerSystem.uiPlayerInput != null ? Game.playerSystem.uiPlayerInput.currentControlScheme : "Keyboard";
-
-      var action = Game.playerSystem.uiPlayerInput.actions.FindAction(actionString);
-      var scheme = Game.playerSystem.uiPlayerInput.actions.FindControlScheme(schemeString);
-
-      if (action == null || scheme == null)
-        return actionString + " (not found)";
-
-      return string.Join("", action.GetCombinedBindingReferences(scheme.Value).Select(g => g.ToTextMeshProSpriteFirstOnly()));
-    }
-    */
     #endregion
   }
 }

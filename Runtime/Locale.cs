@@ -85,21 +85,28 @@ namespace Audune.Localization
     // Return if an entry in the strings table with the specified path can be found and store the value of the entry
     public bool TryFind(string path, out string value)
     {
-      return _strings.TryFind(path, out value);
+      var result = _strings.TryFind(path, out value);
+      if (!result)
+        Debug.LogWarning($"[LocalizationSystem] Could not find string \"{path}\" in locale {this}");
+      return result;
     }
 
     // Return the value of the entry in the strings table with the specified path, or a default value if one cannot be found
     public string Find(string path, string defaultValue = default)
     {
-      return _strings.Find(path, defaultValue);
+      if (_strings.TryFind(path, out var value))
+        return value;
+     
+      Debug.LogWarning($"[LocalizationSystem] Could not find string \"{path}\" in locale {this}");
+      return defaultValue;
     }
     #endregion
 
     #region Message formatter implementation
     // Format a message with the specified arguments
-    public string Format(string message, IDictionary<string, object> arguments)
+    public string Format(string message, IReadOnlyDictionary<string, object> arguments)
     {
-      return new MessageFormatter(this, pluralRules, ordinalPluralRules).Format(message, arguments);
+      return new MessageFormatter(this).Format(message, arguments);
     }
     #endregion
 
