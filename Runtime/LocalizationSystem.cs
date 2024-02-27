@@ -205,7 +205,7 @@ namespace Audune.Localization
         return $"<{reference}>";
 
       // Format the message using the formatter of the locale
-      return Format(message, reference.arguments);        
+      return Format(reference.Format(message), reference.arguments);        
     }
     #endregion
   }

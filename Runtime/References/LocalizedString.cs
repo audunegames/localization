@@ -19,6 +19,7 @@ namespace Audune.Localization
 
     // Internal state of the localized string
     private SerializableDictionary<string, object> _arguments;
+    private Func<string, string> _formatter;
 
 
     // Return the path of the localized string
@@ -40,6 +41,7 @@ namespace Audune.Localization
       _path = null;
       _value = null;
       _arguments = new SerializableDictionary<string, object>();
+      _formatter = null;
     }
 
     // Private constructor that copies the values from another localized string
@@ -48,6 +50,7 @@ namespace Audune.Localization
       _path = localizedString._path;
       _value = localizedString._value;
       _arguments = new SerializableDictionary<string, object>(localizedString._arguments);
+      _formatter = localizedString._formatter;
     }
 
 
@@ -59,6 +62,12 @@ namespace Audune.Localization
 
       value = _value;
       return true;
+    }
+
+    // Return a formatted message
+    public string Format(string message)
+    {
+      return _formatter != null ? _formatter(message) : message;
     }
 
 
@@ -121,11 +130,19 @@ namespace Audune.Localization
     }
 
     // Return a new localized string without the specified arguments
-    public LocalizedString WithoutArguments(IEnumerable<string> arguments)
+    public LocalizedString WithoutArguments(IEnumerable<string> keys)
     {
       var newReference = new LocalizedString(this);
-      foreach (var key in arguments)
+      foreach (var key in keys)
         newReference._arguments.Remove(key);
+      return newReference;
+    }
+
+    // Return a new localized string with the specified formatter
+    public LocalizedString WithFormatter(Func<string, string> formatter)
+    {
+      var newReference = new LocalizedString(this);
+      newReference._formatter = formatter;
       return newReference;
     }
     #endregion
@@ -147,6 +164,20 @@ namespace Audune.Localization
     public override int GetHashCode()
     {
       return HashCode.Combine(_path, _value, _arguments);
+    }
+    #endregion
+
+    #region Creating localized strings
+    // Create a localized string from a path
+    public static LocalizedString FromPath(string path)
+    {
+      return new LocalizedString().WithPath(path);
+    }
+
+    // Create a localized string from a value
+    public static LocalizedString FromValue(string value)
+    {
+      return new LocalizedString().WithValue(value);
     }
     #endregion
 
