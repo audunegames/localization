@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
 
 namespace Audune.Localization
@@ -13,20 +12,14 @@ namespace Audune.Localization
   {
     // Messsage formatter properties
     private readonly IMessageFormatProvider _formatProvider;
-    private readonly IPluralizer _pluralizer;
-    private readonly IPluralizer _ordinalPluralizer;
     private readonly IMessageFunctionExecutor _functionExecutor;
-    private readonly ILocalizedTable<string> _localizationTable;
 
 
     // Constructor
-    public MessageFormatter(IMessageFormatProvider formatProvider, IPluralizer pluralizer, IPluralizer ordinalPluralizer, IMessageFunctionExecutor functionExecutor, ILocalizedTable<string> localizationTable)
+    public MessageFormatter(IMessageFormatProvider formatProvider, IMessageFunctionExecutor functionExecutor)
     {
       _formatProvider = formatProvider;
-      _pluralizer = pluralizer;
-      _ordinalPluralizer = ordinalPluralizer;
       _functionExecutor = functionExecutor;
-      _localizationTable = localizationTable;
     }
 
 
@@ -110,8 +103,8 @@ namespace Audune.Localization
       };
 
       var keyword = component.type switch {
-        PluralFormatType.Plural => _pluralizer.Pluralize(number),
-        PluralFormatType.Ordinal => _ordinalPluralizer.Pluralize(number),
+        PluralFormatType.Plural => _formatProvider.pluralRules.Pluralize(number),
+        PluralFormatType.Ordinal => _formatProvider.ordinalPluralRules.Pluralize(number),
         _ => throw new MessageException($"Argument \"{component.name}\" has an invalid plural format type"),
       };
 
@@ -149,7 +142,7 @@ namespace Audune.Localization
     // Visit a localization key component
     string MessageComponent.IVisitor<string, MessageEnvironment>.VisitLocalizationKeyComponent(MessageComponent.LocalizationKey component, MessageEnvironment env)
     {
-      if (_localizationTable.TryFind(component.key, out var value))
+      if (_formatProvider.localizedStringTable.TryFind(component.key, out var value))
         return Format(new Message(value), env);
       else
         return $"<{component.key}>";

@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using System.Text.RegularExpressions;
 using UnityEngine;
 
 namespace Audune.Localization
@@ -17,8 +16,6 @@ namespace Audune.Localization
 
     private List<Locale> _loadedLocales = new List<Locale>();
     private Locale _selectedLocale = null;
-    private MessageFormatter _formatter = null;
-
     private Locale _lastLocale = null;
 
     // Localization system events
@@ -33,7 +30,6 @@ namespace Audune.Localization
       get => _selectedLocale;
       set {
         _selectedLocale = value;
-        _formatter = _selectedLocale?.CreateFormatter(this);
       }
     }
 
@@ -42,7 +38,6 @@ namespace Audune.Localization
       get => _selectedLocale != null ? _selectedLocale.culture : CultureInfo.InvariantCulture;
       set {
         _selectedLocale = _loadedLocales.Where(locale => locale.code == value.Name).FirstOrDefault();
-        _formatter = _selectedLocale?.CreateFormatter(this);
       }
     }
 
@@ -75,6 +70,7 @@ namespace Audune.Localization
       }
     }
 
+
     #region System initialization
     // Initialize the system
     public void Initialize()
@@ -86,7 +82,6 @@ namespace Audune.Localization
       // Select th locale
       if (!TrySelectLocale(_loadedLocales, out _selectedLocale))
         Debug.LogWarning($"[LocalizationSystem] Could not select a locale using any of the registered locale selectors");
-      _formatter = _selectedLocale?.CreateFormatter(this);
     }
 
     // Initialize the system if no locale has been selected
@@ -183,13 +178,16 @@ namespace Audune.Localization
     // Format the specified message message using the current locale
     public string Format(string message, IReadOnlyDictionary<string, object> arguments)
     {
+      // Check if the arguments are not null
       if (message == null)
-        return null;
+        throw new ArgumentNullException(nameof(message));
 
-      if (_selectedLocale == null || _formatter == null)
+      // Check if a locale has been selected
+      if (_selectedLocale == null)
         throw new LocalizationException("No locale has ben selected");
-      else
-        return _formatter.Format(message, arguments);
+      
+      // Format the message using the formatter of the locale
+      return new MessageFormatter(_selectedLocale, this).Format(message, arguments);
     }
 
     // Format the message for the specified localized string reference using the current locale
@@ -198,12 +196,16 @@ namespace Audune.Localization
       if (reference == null)
         throw new ArgumentNullException(nameof(reference));
 
-      if (_selectedLocale == null || _formatter == null)
+      // Check if a locale has been selected
+      if (_selectedLocale == null)
         throw new LocalizationException("No locale has ben selected");
-      else if (reference.TryResolve(_selectedLocale, out var value))
-        return Format(value, reference.arguments);
-      else
+
+      // Check if the reference can be resolved
+      if (!reference.TryResolve(_selectedLocale, out var message))
         return $"<{reference}>";
+
+      // Format the message using the formatter of the locale
+      return Format(message, reference.arguments);        
     }
     #endregion
   }

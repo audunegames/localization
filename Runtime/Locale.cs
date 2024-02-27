@@ -67,18 +67,6 @@ namespace Audune.Localization
     // Return the culture of the locale
     public CultureInfo culture => CultureInfoExtensions.GetCultureInfoOrInvariant(_code);
 
-    // Return a plural rule list for plurals for the locale
-    public PluralRuleList pluralRules => PluralRuleDatabase.plurals.TryGetRules(this, out var rules) ? rules : null;
-
-    // Return a plural rule list for ordinal plurals for the locale
-    public PluralRuleList ordinalPluralRules => PluralRuleDatabase.ordinalPlurals.TryGetRules(this, out var rules) ? rules : null;
-
-
-    // Reaturn a message formatter that uses this locale
-    internal MessageFormatter CreateFormatter(IMessageFunctionExecutor functionExecutor)
-    {
-      return new MessageFormatter(this, pluralRules, ordinalPluralRules, functionExecutor, this);
-    }
 
     // Return the string representation of the locale
     public override string ToString()
@@ -109,6 +97,16 @@ namespace Audune.Localization
     #endregion
 
     #region Message format provider implementation
+    // Return a plural rule list for plurals for the locale
+    IPluralizer IMessageFormatProvider.pluralRules => PluralRuleDatabase.plurals.TryGetRules(this, out var rules) ? rules : null;
+
+    // Return a plural rule list for ordinal plurals for the locale
+    IPluralizer IMessageFormatProvider.ordinalPluralRules => PluralRuleDatabase.ordinalPlurals.TryGetRules(this, out var rules) ? rules : null;
+
+    // Return the localized string table of the formatter
+    ILocalizedTable<string> IMessageFormatProvider.localizedStringTable => this;
+
+
     // Return the number format for a number format style
     public string GetNumberFormat(NumberFormatStyle style)
     {
@@ -139,7 +137,6 @@ namespace Audune.Localization
         _ => throw new ArgumentException($"Date format style {style} is unsupported"),
       };
     }
-
 
     // Return the formatted representation of a number
     public string FormatNumber(NumberContext number, NumberFormatStyle style = NumberFormatStyle.Decimal)
