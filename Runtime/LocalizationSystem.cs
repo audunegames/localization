@@ -12,11 +12,6 @@ namespace Audune.Localization
   [DefaultExecutionOrder(-100)]
   public sealed class LocalizationSystem : MonoBehaviour, IMessageFormatter, IMessageFunctionExecutor
   {
-    // Regex constants
-    private static readonly Regex localizedRegex = new Regex(@"\[\[((?:[^\\\]]|\\.)+)\]\]", RegexOptions.Compiled);
-    private static readonly Regex inputRegex = new Regex(@"\[%(?:([^:]*):)?([a-zA-Z_][a-zA-Z0-9_\/]*)%]", RegexOptions.Compiled);
-
-
     // Internal state of the localization 
     private Dictionary<string, Func<string, string>> _functions = new Dictionary<string, Func<string, string>>();
 
@@ -55,6 +50,12 @@ namespace Audune.Localization
     // Start is called before the first frame update
     private void Start()
     {
+      // Add functions to format data from the Unity application
+      RegisterFunction("productName", arg => Application.productName);
+      RegisterFunction("companyName", arg => Application.companyName);
+      RegisterFunction("version", arg => Application.version);
+      RegisterFunction("unityVersion", arg => Application.unityVersion);
+
       // Initialize the system
       Initialize();
     }
