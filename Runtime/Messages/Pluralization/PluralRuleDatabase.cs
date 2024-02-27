@@ -90,7 +90,8 @@ namespace Audune.Localization
         foreach (XmlNode pluralRuleNode in pluralRulesNode)
         {
           // Get the keyword and rule
-          var keyword = ParsePluralKeyword(pluralRuleNode.Attributes["count"]?.Value ?? string.Empty);
+          if (!PluralKeywordExtensions.TryParseKeywordString(pluralRuleNode.Attributes["count"]?.Value ?? string.Empty, out var keyword))
+            throw new FormatException("Expected one of \"zero\", \"one\", \"two\", \"few\", \"many\", \"other\"");
           var ruleString = pluralRuleNode.InnerText;
 
           var samplesIndex = ruleString.IndexOf('@');
@@ -114,21 +115,6 @@ namespace Audune.Localization
     public static PluralRuleDatabase Parse(TextAsset textAsset)
     {
       return Parse(new StringReader(textAsset.text));
-    }
-
-
-    // Parse a plural keyword from a string
-    private static PluralKeyword ParsePluralKeyword(string input)
-    {
-      return input switch {
-        "zero" => PluralKeyword.Zero,
-        "one" => PluralKeyword.One,
-        "two" => PluralKeyword.Two,
-        "few" => PluralKeyword.Few,
-        "many" => PluralKeyword.Many,
-        "other" => PluralKeyword.Other,
-        _ => throw new ArgumentException($"Plural keyword \"{input}\" is unsupported", nameof(input)),
-      };
     }
     #endregion
   }

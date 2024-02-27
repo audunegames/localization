@@ -327,18 +327,9 @@ namespace Audune.Localization
     // Parse a plural keyword
     private static PluralKeyword ParsePluralKeyword(Scanner scanner)
     {
-      if (scanner.Match("zero"))
-        return PluralKeyword.Zero;
-      else if (scanner.Match("one"))
-        return PluralKeyword.One;
-      else if (scanner.Match("two"))
-        return PluralKeyword.Two;
-      else if (scanner.Match("few"))
-        return PluralKeyword.Few;
-      else if (scanner.Match("many"))
-        return PluralKeyword.Many;
-      else if (scanner.Match("other"))
-        return PluralKeyword.Other;
+      var keywordString = ParseKeyword(scanner);
+      if ((PluralKeywordExtensions.TryParseKeywordString(keywordString, out var keyword)))
+        return keyword;
       else
         throw new FormatException("Expected one of \"zero\", \"one\", \"two\", \"few\", \"many\", \"other\"");
     }

@@ -74,12 +74,6 @@ namespace Audune.Localization.Editor
         EditorGUILayout.PropertyField(_code);
         EditorGUILayout.PropertyField(_englishName);
         EditorGUILayout.PropertyField(_nativeName);
-        using (new EditorGUI.DisabledGroupScope(true)) 
-        {
-          var culture = target.culture;
-          var cultureString = !culture.Equals(CultureInfo.InvariantCulture) ? $"{culture.IetfLanguageTag} / {culture.DisplayName} / {culture.NativeName}" : "(invariant)";
-          EditorGUILayout.TextField(new GUIContent("Culture", "The culture associated with the locale"), cultureString);
-        }
 
         EditorGUILayout.Space();
 
@@ -93,6 +87,15 @@ namespace Audune.Localization.Editor
       if (_formattingFoldout)
       {
         Rect rect;
+
+        using (new EditorGUI.DisabledGroupScope(true))
+        {
+          var culture = target.culture;
+          var cultureString = !culture.Equals(CultureInfo.InvariantCulture) ? $"{culture.IetfLanguageTag} / {culture.DisplayName} / {culture.NativeName}" : "(invariant)";
+          EditorGUILayout.TextField(new GUIContent("Culture", "The culture associated with the locale"), cultureString);
+        }
+
+        EditorGUILayout.Space();
 
         rect = EditorGUI.PrefixLabel(EditorGUILayout.GetControlRect(true), new GUIContent("Decimal Number", _decimalNumberFormat.tooltip));
         EditorGUI.PropertyField(rect.AlignLeft(0.5f * (rect.width - EditorGUIUtility.standardVerticalSpacing)), _decimalNumberFormat, GUIContent.none);
