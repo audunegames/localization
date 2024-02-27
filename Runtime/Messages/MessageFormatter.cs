@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 
 namespace Audune.Localization
@@ -48,7 +49,7 @@ namespace Audune.Localization
     {
       var text = component.text;
       if (env.TryGetNumber(out var number))
-        text = text.Replace("#", _formatProvider.FormatNumber(number.value));
+        text = text.Replace("#", _formatProvider.FormatNumber(number));
       return text;
     }
 
@@ -59,8 +60,9 @@ namespace Audune.Localization
         throw new MessageException($"Argument \"{component.name}\" is not defined");
 
       return value switch {
-        int intValue => _formatProvider.FormatNumber(intValue),
-        float floatValue => _formatProvider.FormatNumber(floatValue),
+        NumberContext numberValue => _formatProvider.FormatNumber(numberValue),
+        int intValue => _formatProvider.FormatNumber(NumberContext.Of(intValue)),
+        float floatValue => _formatProvider.FormatNumber(NumberContext.Of(floatValue)),
         DateTime dateTimeValue => _formatProvider.FormatDate(dateTimeValue),
         _ => value.ToString(),
       };
@@ -73,8 +75,9 @@ namespace Audune.Localization
         throw new MessageException($"Argument \"{component.name}\" is not defined");
 
       return value switch {
-        int intValue => _formatProvider.FormatNumber(intValue, component.style),
-        float floatValue => _formatProvider.FormatNumber(floatValue, component.style),
+        NumberContext numberValue => _formatProvider.FormatNumber(numberValue),
+        int intValue => _formatProvider.FormatNumber(NumberContext.Of(intValue), component.style),
+        float floatValue => _formatProvider.FormatNumber(NumberContext.Of(floatValue), component.style),
         _ => throw new MessageException($"Argument \"{component.name}\" with type {value.GetType()} is unsupported by the number format component"),
       };
     }
@@ -99,6 +102,7 @@ namespace Audune.Localization
         throw new MessageException($"Argument \"{component.name}\" is not defined");
 
       var number = value switch {
+        NumberContext numberValue => numberValue,
         int intValue => NumberContext.Of(intValue),
         float floatValue => NumberContext.Of(floatValue),
         string stringValue => NumberContext.Of(stringValue),

@@ -141,16 +141,10 @@ namespace Audune.Localization
     }
 
 
-    // Return the formatted representation of a number as an integer
-    public string FormatNumber(int value, NumberFormatStyle style = NumberFormatStyle.Decimal)
+    // Return the formatted representation of a number
+    public string FormatNumber(NumberContext number, NumberFormatStyle style = NumberFormatStyle.Decimal)
     {
-      return value.ToString(GetNumberFormat(style), culture);
-    }
-
-    // Return the formatted representation of a number as a float
-    public string FormatNumber(float value, NumberFormatStyle style = NumberFormatStyle.Decimal)
-    {
-      return value.ToString(GetNumberFormat(style), culture);
+      return number.value.ToString(GetNumberFormat(style), culture);
     }
 
     // Return the formatted representation of a date
