@@ -15,7 +15,6 @@ namespace Audune.Localization.Editor
     private SerializedProperty _altCodes;
     private SerializedProperty _englishName;
     private SerializedProperty _nativeName;
-    private SerializedProperty _pluralRules;
     private SerializedProperty _decimalNumberFormat;
     private SerializedProperty _percentNumberFormat;
     private SerializedProperty _currencyNumberFormat;
@@ -26,7 +25,8 @@ namespace Audune.Localization.Editor
     private SerializedProperty _strings;
 
     // Helper objects of the editor
-    private DateTime _now;
+    private NumberContext _number;
+    private DateTime _date;
 
     // Foldout state of the editor
     private bool _settingsFoldout = true;
@@ -47,7 +47,6 @@ namespace Audune.Localization.Editor
       _altCodes = serializedObject.FindProperty("_altCodes");
       _englishName = serializedObject.FindProperty("_englishName");
       _nativeName = serializedObject.FindProperty("_nativeName");
-      _pluralRules = serializedObject.FindProperty("_pluralRules");
       _decimalNumberFormat = serializedObject.FindProperty("_decimalNumberFormat");
       _percentNumberFormat = serializedObject.FindProperty("_percentNumberFormat");
       _currencyNumberFormat = serializedObject.FindProperty("_currencyNumberFormat");
@@ -58,7 +57,8 @@ namespace Audune.Localization.Editor
       _strings = serializedObject.FindProperty("_strings");
 
       // Initialize the helper objects
-      _now = DateTime.Now;
+      _number = NumberContext.Of(1.23f);
+      _date = DateTime.Now;
     }
 
 
@@ -96,35 +96,31 @@ namespace Audune.Localization.Editor
 
         rect = EditorGUI.PrefixLabel(EditorGUILayout.GetControlRect(true), new GUIContent("Decimal Number", _decimalNumberFormat.tooltip));
         EditorGUI.PropertyField(rect.AlignLeft(0.5f * (rect.width - EditorGUIUtility.standardVerticalSpacing)), _decimalNumberFormat, GUIContent.none);
-        EditorGUI.HelpBox(rect.AlignRight(0.5f * (rect.width - EditorGUIUtility.standardVerticalSpacing)), target.FormatNumber(1.23f, NumberFormatStyle.Decimal), MessageType.None);
+        EditorGUI.HelpBox(rect.AlignRight(0.5f * (rect.width - EditorGUIUtility.standardVerticalSpacing)), target.FormatNumber(_number, NumberFormatStyle.Decimal), MessageType.None);
 
         rect = EditorGUI.PrefixLabel(EditorGUILayout.GetControlRect(true), new GUIContent("Percent Number", _percentNumberFormat.tooltip));
         EditorGUI.PropertyField(rect.AlignLeft(0.5f * (rect.width - EditorGUIUtility.standardVerticalSpacing)), _percentNumberFormat, GUIContent.none);
-        EditorGUI.HelpBox(rect.AlignRight(0.5f * (rect.width - EditorGUIUtility.standardVerticalSpacing)), target.FormatNumber(1.23f, NumberFormatStyle.Percent), MessageType.None);
+        EditorGUI.HelpBox(rect.AlignRight(0.5f * (rect.width - EditorGUIUtility.standardVerticalSpacing)), target.FormatNumber(_number, NumberFormatStyle.Percent), MessageType.None);
 
         rect = EditorGUI.PrefixLabel(EditorGUILayout.GetControlRect(true), new GUIContent("Currency Number", _currencyNumberFormat.tooltip));
         EditorGUI.PropertyField(rect.AlignLeft(0.5f * (rect.width - EditorGUIUtility.standardVerticalSpacing)), _currencyNumberFormat, GUIContent.none);
-        EditorGUI.HelpBox(rect.AlignRight(0.5f * (rect.width - EditorGUIUtility.standardVerticalSpacing)), target.FormatNumber(1.23f, NumberFormatStyle.Currency), MessageType.None);
+        EditorGUI.HelpBox(rect.AlignRight(0.5f * (rect.width - EditorGUIUtility.standardVerticalSpacing)), target.FormatNumber(_number, NumberFormatStyle.Currency), MessageType.None);
 
         rect = EditorGUI.PrefixLabel(EditorGUILayout.GetControlRect(true), new GUIContent("Short Date", _shortDateFormat.tooltip));
         EditorGUI.PropertyField(rect.AlignLeft(0.5f * (rect.width - EditorGUIUtility.standardVerticalSpacing)), _shortDateFormat, GUIContent.none);
-        EditorGUI.HelpBox(rect.AlignRight(0.5f * (rect.width - EditorGUIUtility.standardVerticalSpacing)), target.FormatDate(_now, DateFormatStyle.Short), MessageType.None);
+        EditorGUI.HelpBox(rect.AlignRight(0.5f * (rect.width - EditorGUIUtility.standardVerticalSpacing)), target.FormatDate(_date, DateFormatStyle.Short), MessageType.None);
 
         rect = EditorGUI.PrefixLabel(EditorGUILayout.GetControlRect(true), new GUIContent("Long Date", _longDateFormat.tooltip));
         EditorGUI.PropertyField(rect.AlignLeft(0.5f * (rect.width - EditorGUIUtility.standardVerticalSpacing)), _longDateFormat, GUIContent.none);
-        EditorGUI.HelpBox(rect.AlignRight(0.5f * (rect.width - EditorGUIUtility.standardVerticalSpacing)), target.FormatDate(_now, DateFormatStyle.Long), MessageType.None);
+        EditorGUI.HelpBox(rect.AlignRight(0.5f * (rect.width - EditorGUIUtility.standardVerticalSpacing)), target.FormatDate(_date, DateFormatStyle.Long), MessageType.None);
 
         rect = EditorGUI.PrefixLabel(EditorGUILayout.GetControlRect(true), new GUIContent("Short Time", _shortTimeFormat.tooltip));
         EditorGUI.PropertyField(rect.AlignLeft(0.5f * (rect.width - EditorGUIUtility.standardVerticalSpacing)), _shortTimeFormat, GUIContent.none);
-        EditorGUI.HelpBox(rect.AlignRight(0.5f * (rect.width - EditorGUIUtility.standardVerticalSpacing)), target.FormatTime(_now, DateFormatStyle.Short), MessageType.None);
+        EditorGUI.HelpBox(rect.AlignRight(0.5f * (rect.width - EditorGUIUtility.standardVerticalSpacing)), target.FormatTime(_date, DateFormatStyle.Short), MessageType.None);
 
         rect = EditorGUI.PrefixLabel(EditorGUILayout.GetControlRect(true), new GUIContent("Long Time", _longTimeFormat.tooltip));
         EditorGUI.PropertyField(rect.AlignLeft(0.5f * (rect.width - EditorGUIUtility.standardVerticalSpacing)), _longTimeFormat, GUIContent.none);
-        EditorGUI.HelpBox(rect.AlignRight(0.5f * (rect.width - EditorGUIUtility.standardVerticalSpacing)), target.FormatTime(_now, DateFormatStyle.Long), MessageType.None);
-
-        EditorGUILayout.Space();
-
-        EditorGUILayout.PropertyField(_pluralRules, new GUIContent("Pluralization Rules", _pluralRules.tooltip));
+        EditorGUI.HelpBox(rect.AlignRight(0.5f * (rect.width - EditorGUIUtility.standardVerticalSpacing)), target.FormatTime(_date, DateFormatStyle.Long), MessageType.None);
 
         EditorGUILayout.Space();
       }
