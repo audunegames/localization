@@ -1,7 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Globalization;
-using Unity.VisualScripting.YamlDotNet.Core.Tokens;
 
 namespace Audune.Localization
 {
