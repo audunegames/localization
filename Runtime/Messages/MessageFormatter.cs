@@ -134,7 +134,9 @@ namespace Audune.Localization
     // Visit a function component
     string MessageComponent.IVisitor<string, MessageEnvironment>.VisitFunctionComponent(MessageComponent.Function component, MessageEnvironment env)
     {
-      if (_functionExecutor.TryExecuteFunction(component.name, component.argument, out var value))
+      var argument = component.argument != null ? Format(component.argument, env) : null;
+
+      if (_functionExecutor.TryExecuteFunction(component.name, argument, out var value))
         return Format(new Message(value), env);
       else
         throw new MessageException($"Function \"{component.name}\" could not be found");

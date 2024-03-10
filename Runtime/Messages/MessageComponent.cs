@@ -258,11 +258,11 @@ namespace Audune.Localization
       public readonly string name;
 
       // The argument of the function
-      public readonly string argument;
+      public readonly Message argument;
 
 
       // Constructor
-      public Function(string name, string argument = null)
+      public Function(string name, Message argument = null)
       {
         this.name = name;
         this.argument = argument;

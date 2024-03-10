@@ -18,6 +18,7 @@ namespace Audune.Localization
     {
       Plural,
       Select,
+      Function,
     }
 
 
@@ -188,7 +189,10 @@ namespace Audune.Localization
         return new MessageComponent.Function(name);
       scanner.SkipWhile(Scanner.IsWhitespace);
 
-      var argument = ParseString(scanner, contexts);
+      contexts.Push(ContextType.Function);
+      var argument = new Message(ParseComponents(scanner, contexts));
+      contexts.Pop();
+
       return new MessageComponent.Function(name, argument);
     }
 
