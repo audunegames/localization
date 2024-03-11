@@ -51,6 +51,9 @@ namespace Audune.Localization
       RegisterFunction("version", arg => Application.version);
       RegisterFunction("unityVersion", arg => Application.unityVersion);
 
+      // Add helper functions
+      RegisterFunction("asset", arg => FormatAsset(arg));
+
       // Initialize the system
       Initialize();
     }
@@ -205,7 +208,16 @@ namespace Audune.Localization
         return $"<{reference}>";
 
       // Format the message using the formatter of the locale
-      return Format(reference.Format(message), reference.arguments);        
+      return Format(reference.Format(message), reference.arguments);
+    }
+
+    // Format the contents of the specified text asset resource
+    public string FormatAsset(string path, IReadOnlyDictionary<string, object> arguments = null)
+    {
+      arguments ??= new Dictionary<string, object>();
+
+      var textAsset = Resources.Load<TextAsset>(path);
+      return textAsset != null ? Format(textAsset.text, arguments) : string.Empty;
     }
     #endregion
   }
