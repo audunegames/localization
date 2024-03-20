@@ -34,6 +34,9 @@ namespace Audune.Localization
     // Return if the string is empty
     public bool isEmpty => string.IsNullOrEmpty(_path) && string.IsNullOrEmpty(_value);
 
+    // Return if the string is localized
+    public bool isLocalized => !string.IsNullOrEmpty(_path);
+
 
     // Private constructor
     private LocalizedString()
@@ -75,13 +78,19 @@ namespace Audune.Localization
     public override string ToString()
     {
       var builder = new StringBuilder();
-      if (!string.IsNullOrEmpty(_path))
+      if (isLocalized)
         builder.Append(_path);
       else
         builder.Append($"<Non-Localized Value: \"{_value}\">");
       if (_arguments.Count > 0)
         builder.Append($" with arguments {{{string.Join(", ", _arguments.Select(e => $"{e.Key} = {e.Value}"))}}}");
       return builder.ToString();
+    }
+
+    // Return the message representation of the localized string
+    public string ToMessageString()
+    {
+      return isLocalized ? $"{{={_path}}}" : _value;
     }
 
 
@@ -178,6 +187,27 @@ namespace Audune.Localization
     public static LocalizedString FromValue(string value)
     {
       return new LocalizedString().WithValue(value);
+    }
+    #endregion
+
+    #region Concatenation
+    // Return the concatenation of two localized strings
+    public static LocalizedString Concat(LocalizedString left, LocalizedString right)
+    {
+      return FromValue(left.ToMessageString() + right.ToMessageString());
+    }
+
+    // Return the join of multiple localized string
+    public static LocalizedString Join(LocalizedString separator, IEnumerable<LocalizedString> strings)
+    {
+      return FromValue(string.Join(separator.ToMessageString(), strings.Select(s => s.ToMessageString())));
+    }
+
+
+    // Return the concatenation of two localized strings
+    public static LocalizedString operator +(LocalizedString left, LocalizedString right)
+    {
+      return Concat(left, right);
     }
     #endregion
 
