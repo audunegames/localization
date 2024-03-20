@@ -1,7 +1,7 @@
 {
   "name": "com.audune.localization",
   "displayName": "Localization",
-  "version": "0.3.0",
+  "version": "1.0.0",
   "unity": "2022.3",
   "description": "Simple string localization system for Unity 2022 LTS or higher",
   "documentationUrl": "https://github.com/audunegames/localization",
