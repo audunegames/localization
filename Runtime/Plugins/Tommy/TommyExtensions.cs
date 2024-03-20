@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 
-namespace Tommy.Extensions
+namespace Audune.Localization.Plugins.Tommy.Extensions
 {
     /// <summary>
     ///     Class of various extension methods for Tommy
