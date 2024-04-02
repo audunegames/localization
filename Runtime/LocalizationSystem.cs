@@ -20,6 +20,8 @@ namespace Audune.Localization
 
     // Localization system events
     public event Action<Locale> OnLocaleChanged;
+    public event Action<LocalizedString> OnLocalizedStringMissing;
+    public event Action<string> OnAssetMissing;
 
 
     // Return the loaded locales in the localization system
@@ -220,8 +222,17 @@ namespace Audune.Localization
     {
       arguments ??= new Dictionary<string, object>();
 
+      // Check if the text asset can be loaded
       var textAsset = Resources.Load<TextAsset>(path);
-      return textAsset != null ? Format(textAsset.text, arguments) : string.Empty;
+      if (textAsset == null)
+      {
+        OnAssetMissing?.Invoke(path);
+        Debug.LogWarning($"[LocalizationSystem] Could not find asset \"{path}\"");
+        return $"<asset: {path}>";
+      }
+
+      // Format the text of the text asset using the formatter of the locale
+      return Format(textAsset.text, arguments);
     }
     #endregion
   }
