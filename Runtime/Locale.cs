@@ -8,7 +8,7 @@ namespace Audune.Localization
 {
   // Class that defines a locale
   [CreateAssetMenu(menuName = "Audune/Localization/Locale", fileName = "Locale")]
-  public sealed class Locale : ScriptableObject, ILocalizedTable<string>, IMessageFormatProvider
+  public sealed class Locale : ScriptableObject, IMessageFormatProvider
   {
     // Constans that define defaults for formats
     public const string defaultDecimalNumberFormat = "n";
@@ -75,27 +75,6 @@ namespace Audune.Localization
     }
 
 
-    #region Localized string table implementation
-    // Return if an entry in the strings table with the specified path can be found and store the value of the entry
-    public bool TryFind(string path, out string value)
-    {
-      var result = _strings.TryFind(path, out value);
-      if (!result)
-        Debug.LogWarning($"[LocalizationSystem] Could not find string \"{path}\" in locale {this}");
-      return result;
-    }
-
-    // Return the value of the entry in the strings table with the specified path, or a default value if one cannot be found
-    public string Find(string path, string defaultValue = default)
-    {
-      if (_strings.TryFind(path, out var value))
-        return value;
-     
-      Debug.LogWarning($"[LocalizationSystem] Could not find string \"{path}\" in locale {this}");
-      return defaultValue;
-    }
-    #endregion
-
     #region Message format provider implementation
     // Return a plural rule list for plurals for the locale
     IPluralizer IMessageFormatProvider.pluralRules => PluralRuleDatabase.plurals.TryGetRules(this, out var rules) ? rules : null;
@@ -104,7 +83,7 @@ namespace Audune.Localization
     IPluralizer IMessageFormatProvider.ordinalPluralRules => PluralRuleDatabase.ordinalPlurals.TryGetRules(this, out var rules) ? rules : null;
 
     // Return the localized string table of the formatter
-    ILocalizedTable<string> IMessageFormatProvider.localizedStringTable => this;
+    ILocalizedTable<string> IMessageFormatProvider.localizedStringTable => strings;
 
 
     // Return the number format for a number format style

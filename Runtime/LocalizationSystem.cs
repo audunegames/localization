@@ -204,8 +204,12 @@ namespace Audune.Localization
         throw new LocalizationException("No locale has ben selected");
 
       // Check if the reference can be resolved
-      if (!reference.TryResolve(_selectedLocale, out var message))
+      if (!reference.TryResolve(_selectedLocale.strings, out var message))
+      {
+        OnLocalizedStringMissing?.Invoke(reference);
+        Debug.LogWarning($"[LocalizationSystem] Could not find string \"{reference}\" in locale {_selectedLocale}");
         return $"<{reference}>";
+      }
 
       // Format the message using the formatter of the locale
       return Format(reference.Format(message), reference.arguments);
