@@ -31,6 +31,15 @@ namespace Audune.Localization
 
     #region Localized table implementation
     // Return if an entry in the table with the specified path can be found
+    public bool Contains(string path)
+    {
+      if (path == null)
+        return false;
+
+      return _entries.ContainsKey(path);
+    }
+
+    // Return if an entry in the table with the specified path can be found and store the value of the entry
     public bool TryFind(string path, out string value)
     {
       value = default;

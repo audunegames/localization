@@ -1,4 +1,4 @@
-using Audune.Utils.UnityEditor.Editor;
+﻿using Audune.Utils.UnityEditor.Editor;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -59,6 +59,9 @@ namespace Audune.Localization.Editor
       if (columnIndex == 0)
       {
         var label = string.IsNullOrEmpty(searchString) ? item.displayName : item.data;
+        if (_locales.ContainsMissingString(item.data))
+          label = $"<color=red>{label} ⚠</color>";
+
         if (string.IsNullOrEmpty(searchString))
           DefaultGUI.Label(columnRect.ContractLeft(GetContentIndent(item)), label, IsSelected(item.id), false);
         else
@@ -66,7 +69,8 @@ namespace Audune.Localization.Editor
       }
       else if (!string.IsNullOrEmpty(item.data))
       {
-        var label = _locales[columnIndex - 1].strings.TryFind(item.data, out var value) ? value.Replace("\n", " ") : "<Undefined>";
+        var label = _locales[columnIndex - 1].strings.TryFind(item.data, out var value) ? value.Replace("\n", " ") : "<color=red><Undefined></color>";
+
         if (string.IsNullOrEmpty(searchString))
           DefaultGUI.Label(columnRect, label, IsSelected(item.id), false);
         else
