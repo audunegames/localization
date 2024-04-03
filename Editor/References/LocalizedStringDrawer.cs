@@ -11,6 +11,10 @@ namespace Audune.Localization.Editor
     // Draw the property GUI
     public override void OnGUI(Rect rect, SerializedProperty property, GUIContent label)
     {
+      var localizationSystem = Object.FindObjectOfType<LocalizationSystem>();
+      if (localizationSystem != null)
+        localizationSystem.InitializeIfNoLocaleSelected();
+
       using var scope = new EditorGUI.PropertyScope(rect, label, property);
 
       var path = property.FindPropertyRelative("_path");
@@ -20,7 +24,15 @@ namespace Audune.Localization.Editor
 
       var pathRect = rect.AlignTop(EditorGUIUtility.singleLineHeight, EditorGUIUtility.standardVerticalSpacing, out rect);
       var pathDropdownLabel = new GUIContent(!string.IsNullOrEmpty(path.stringValue) ? path.stringValue : "<Non-Localized Value>");
-      EditorGUIExtensions.SearchDropdown<string, LocalizedStringSearchWindow>(pathRect, label, pathDropdownLabel, path);
+
+      var propertyColor = Color.white;
+      if (!isPathNull && localizationSystem.loadedLocales.ContainsUndefinedString(path.stringValue))
+        propertyColor = Color.Lerp(Color.red, Color.white, 0.75f);
+      else if (!isPathNull && localizationSystem.loadedLocales.ContainsMissingString(path.stringValue))
+        propertyColor = Color.Lerp(Color.yellow, Color.white, 0.75f);
+
+      using (new EditorGUIUtilityExtensions.ColorScope(propertyColor))
+        EditorGUIExtensions.SearchDropdown<string, LocalizedStringSearchWindow>(pathRect, label, pathDropdownLabel, path);
 
       if (isPathNull)
       {
