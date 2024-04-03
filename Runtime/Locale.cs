@@ -3,6 +3,11 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using UnityEngine;
+using System.Linq;
+
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 
 namespace Audune.Localization
 {
@@ -134,6 +139,18 @@ namespace Audune.Localization
     {
       return value.ToString(GetTimeFormat(style), culture);
     }
+    #endregion
+
+    #region Editor methods
+#if UNITY_EDITOR
+    // Return all locale assets in the asset database
+    public static IEnumerable<Locale> GetAllLocaleAssets(params string[] searchInFolders)
+    {
+      return AssetDatabase.FindAssets("t:Audune.Localization.Locale", searchInFolders)
+        .Select(guid => AssetDatabase.LoadAssetAtPath<Locale>(AssetDatabase.GUIDToAssetPath(guid)))
+        .OrderBy(locale => locale.code);
+    }
+#endif
     #endregion
   }
 }

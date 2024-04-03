@@ -1,5 +1,7 @@
 ﻿using Audune.Utils.Dictionary;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace Audune.Localization
@@ -11,6 +13,10 @@ namespace Audune.Localization
     // The list of dictionary entries
     [SerializeField, Tooltip("The entries in the table")]
     private SerializableDictionary<TKey, LocalizedString> _entries;
+
+
+    // Return the keys of the dictionary
+    public IReadOnlyList<TKey> keys => _entries.Keys.ToList();
 
 
     // Return the value for the specified key, or null if no such key exists
