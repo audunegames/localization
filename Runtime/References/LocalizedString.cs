@@ -122,12 +122,18 @@ namespace Audune.Localization
     }
 
     // Return a new localized string with the specified arguments
-    public LocalizedString WithArguments(IDictionary<string, object> arguments)
+    public LocalizedString WithArguments(IEnumerable<KeyValuePair<string, object>> arguments)
     {
       var newReference = new LocalizedString(this);
       foreach (var e in arguments)
         newReference._arguments[e.Key] = e.Value;
       return newReference;
+    }
+
+    // Return a new localized string with the specified arguments from the arguments interface
+    public LocalizedString WithArguments(ILocalizedArguments arguments)
+    {
+      return WithArguments(arguments.localizedArguments);
     }
 
     // Return a new localized string without the specified argument
@@ -145,6 +151,12 @@ namespace Audune.Localization
       foreach (var key in keys)
         newReference._arguments.Remove(key);
       return newReference;
+    }
+
+    // Return a new localized string without the specified arguments from the arguments interface
+    public LocalizedString WithoutArguments(ILocalizedArguments arguments)
+    {
+      return WithoutArguments(arguments.localizedArguments.Keys);
     }
 
     // Return a new localized string with the specified formatter
