@@ -19,33 +19,23 @@ namespace Audune.Localization.Editor
 
       var path = property.FindPropertyRelative("_path");
       var value = property.FindPropertyRelative("_value");
-
-      var isPathNull = string.IsNullOrEmpty(path.stringValue);
+      var isLocalized = !string.IsNullOrEmpty(path.stringValue);
 
       var pathRect = rect.AlignTop(EditorGUIUtility.singleLineHeight, EditorGUIUtility.standardVerticalSpacing, out rect);
-      var pathDropdownLabel = new GUIContent(!string.IsNullOrEmpty(path.stringValue) ? path.stringValue : "<Non-Localized Value>");
+      LocalizationEditorGUIExtensions.LocalizedStringSearchDropdown(pathRect, label, property);
 
-      var propertyColor = Color.white;
-      if (!isPathNull && localizationSystem.loadedLocales.ContainsUndefinedString(path.stringValue))
-        propertyColor = Color.Lerp(Color.red, Color.white, 0.75f);
-      else if (!isPathNull && localizationSystem.loadedLocales.ContainsMissingString(path.stringValue))
-        propertyColor = Color.Lerp(Color.yellow, Color.white, 0.75f);
-
-      using (new EditorGUIUtilityExtensions.ColorScope(propertyColor))
-        EditorGUIExtensions.SearchDropdown<string, LocalizedStringSearchWindow>(pathRect, label, pathDropdownLabel, path);
-
-      if (isPathNull)
+      if (!isLocalized)
       {
         var valueRect = rect.AlignTop(EditorGUIUtility.singleLineHeight, EditorGUIUtility.standardVerticalSpacing, out rect);
         if (label != GUIContent.none)
         {
           EditorGUI.indentLevel++;
-          EditorGUI.PropertyField(valueRect, value, new GUIContent($"Non-Localized Value", label.tooltip));
+          LocalizationEditorGUIExtensions.LocalizedStringValueField(valueRect, new GUIContent($"Non-Localized Value", label.tooltip), property);
           EditorGUI.indentLevel--;
         }
         else
         {
-          EditorGUI.PropertyField(valueRect, value, GUIContent.none);
+          LocalizationEditorGUIExtensions.LocalizedStringValueField(valueRect, GUIContent.none, property);
         }
       }
     }
