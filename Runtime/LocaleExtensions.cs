@@ -24,10 +24,16 @@ namespace Audune.Localization
       return locales.All(locale => locale.strings.Contains(path));
     }
 
+    // Return if a string reference with the specified path contains no values
+    public static bool ContainsUndefinedString(this IEnumerable<Locale> locales, string path)
+    {
+      return !locales.ContainsStringInAny(path);
+    }
+
     // Return if a string reference with the specified path contains missing values
     public static bool ContainsMissingString(this IEnumerable<Locale> locales, string path)
     {
-      return locales.ContainsStringInAny(path) && !locales.ContainsStringInAll(path);
+      return !locales.ContainsStringInAll(path);
     }
   }
 }

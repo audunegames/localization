@@ -7,7 +7,7 @@ namespace Audune.Localization.Editor
   // Class that defines a search window for selecting a localized string reference
   public class LocalizedStringSearchWindow : SearchWindow<string>
   {
-    // The reference to the localization system
+    // Reference to the localization system
     private LocalizationSystem _localizationSystem;
 
 

@@ -29,7 +29,7 @@ namespace Audune.Localization.Editor
     // Constructor
     public LocalizedStringSearchTreeView(IEnumerable<Locale> locales) : base(LocalesToKeys(locales), LocalizedReferenceOptions)
     {
-      _locales = locales.ToList();
+      _locales = new List<Locale>(locales ?? Enumerable.Empty<Locale>());
       _values = LocalesToKeys(_locales).ToDictionary(key => key, key => _locales.Select(locale => locale.strings.Find(key)).Where(value => value != null).ToList());
 
       multiColumnHeader = new MultiColumnHeader(new MultiColumnHeaderState(Enumerable
@@ -59,8 +59,8 @@ namespace Audune.Localization.Editor
       if (columnIndex == 0)
       {
         var label = string.IsNullOrEmpty(searchString) ? item.displayName : item.data;
-        if (_locales.ContainsMissingString(item.data))
-          label = $"<color=red>{label} ⚠</color>";
+        if (!string.IsNullOrEmpty(item.data) &&  _locales.ContainsMissingString(item.data))
+          label = $"⚠ {label}";
 
         if (string.IsNullOrEmpty(searchString))
           DefaultGUI.Label(columnRect.ContractLeft(GetContentIndent(item)), label, IsSelected(item.id), false);
