@@ -1,40 +1,14 @@
 ﻿using Audune.Utils.UnityEditor.Editor;
-using UnityEditor;
-using UnityEngine;
 
 namespace Audune.Localization.Editor
 {
   // Class that defines a search window for selecting a localized string reference
   public class LocalizedStringSearchWindow : SearchWindow<string>
   {
-    // Reference to the localization system
-    private LocalizationSystem _localizationSystem;
-
-
-    // Refresh the search window
-    public void Refresh()
-    {
-      _localizationSystem = FindObjectOfType<LocalizationSystem>();
-      if (_localizationSystem != null)
-        _localizationSystem.InitializeIfNoLocaleSelected();
-    }
-
-
-    // OnToolbarGUI is called when the toolbar is drawn
-    protected override void OnToolbarGUI()
-    {
-      if (GUILayout.Button("Refresh", EditorStyles.toolbarButton, GUILayout.Width(80)))
-        Refresh();
-
-      base.OnToolbarGUI();
-    }
-
-
     // Create the tree view
     public override SearchTreeView<string> CreateTreeView()
     {
-      Refresh();
-      return new LocalizedStringSearchTreeView(_localizationSystem.loadedLocales);
+      return new LocalizedStringSearchTreeView(Locale.GetAllLocaleAssets("Assets"));
     }
 
     // Get the property value

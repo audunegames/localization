@@ -11,10 +11,12 @@ namespace Audune.Localization.Editor
   // Class that defines a tree view for selecting a localized string reference
   public class LocalizedStringSearchTreeView : SearchTreeView<string>
   {
-    // Default options for the localized reference search tree view
-    public static readonly Options LocalizedReferenceOptions = new Options {
-      pathSelector = key => key.Replace('.', '/'),
+    // Default options for the tree view
+    private static readonly Options _options = new Options {
       displayNameSelector = key => key.Split('.')[^1],
+      iconSelector = key => EditorIcons.text,
+      groupIconSelector = (path, expanded) => expanded ? EditorIcons.folderOpened : EditorIcons.folder,
+      pathSelector = key => key.Split('.'),
       addDefaultItem = true,
       defaultItemData = null,
       defaultItemDisplayName = "<Non-Localized Value>",
@@ -27,18 +29,50 @@ namespace Audune.Localization.Editor
 
 
     // Constructor
-    public LocalizedStringSearchTreeView(IEnumerable<Locale> locales) : base(LocalesToKeys(locales), LocalizedReferenceOptions)
+    public LocalizedStringSearchTreeView(IEnumerable<Locale> locales) : base(LocalesToKeys(locales), _options)
     {
       _locales = new List<Locale>(locales ?? Enumerable.Empty<Locale>());
       _values = LocalesToKeys(_locales).ToDictionary(key => key, key => _locales.Select(locale => locale.strings.Find(key)).Where(value => value != null).ToList());
 
       multiColumnHeader = new MultiColumnHeader(new MultiColumnHeaderState(Enumerable
-        .Repeat(new MultiColumnHeaderState.Column() { headerContent = new GUIContent("Key"), width = 300, allowToggleVisibility = false }, 1)
+        .Repeat(new MultiColumnHeaderState.Column() { headerContent = new GUIContent("Key"), width = 275, canSort = false, allowToggleVisibility = false }, 1)
         .Concat(LocalesToColumms(locales))
         .ToArray()));
-      showAlternatingRowBackgrounds = true;
     }
 
+
+    // Draw a cell that represents a data item in the tree view
+    protected override void OnDataCellGUI(DataItem item, int columnIndex, Rect columnRect)
+    {
+      if (columnIndex == 0)
+      {
+        // Key column
+        if (!isSearching)
+          columnRect = columnRect.ContractLeft(GetContentIndent(item));
+
+        var hasMissingValues = !string.IsNullOrEmpty(item.data) && _locales.ContainsMissingString(item.data);
+        EditorGUI.LabelField(columnRect, HighlightSearchString(new GUIContent(isSearching ? item.data : item.displayName, hasMissingValues ? EditorIcons.errorMark : item.icon)), label);
+      }
+      else if (!string.IsNullOrEmpty(item.data))
+      {
+        // Locale column
+        EditorGUI.LabelField(columnRect, HighlightSearchString(_locales[columnIndex - 1].strings.TryFind(item.data, out var value) ? value.Replace("\n", " ") : "<color=red><Undefined></color>"), label);
+      }
+    }
+
+    // Draw a cell that represents a group item in the tree view
+    protected override void OnGroupCellGUI(GroupItem item, int columnIndex, Rect columnRect)
+    {
+      if (columnIndex == 0)
+      {
+        // Key column
+        if (!isSearching)
+        {
+          columnRect = columnRect.ContractLeft(GetContentIndent(item));
+          EditorGUI.LabelField(columnRect, item, boldLabel);
+        }
+      }
+    }
 
     // Return if an item matches the specified search query
     protected override bool Matches(string data, string search)
@@ -53,42 +87,7 @@ namespace Audune.Localization.Editor
     }
 
 
-    // Draw a cell that represents a data item in the tree view
-    protected override void OnDataCellGUI(DataItem item, int columnIndex, Rect columnRect)
-    {
-      if (columnIndex == 0)
-      {
-        var label = string.IsNullOrEmpty(searchString) ? item.displayName : item.data;
-        if (!string.IsNullOrEmpty(item.data) &&  _locales.ContainsMissingString(item.data))
-          label = $"⚠ {label}";
-
-        if (string.IsNullOrEmpty(searchString))
-          DefaultGUI.Label(columnRect.ContractLeft(GetContentIndent(item)), label, IsSelected(item.id), false);
-        else
-          DefaultGUI.Label(columnRect, HighlightSearchString(label), IsSelected(item.id), false);
-      }
-      else if (!string.IsNullOrEmpty(item.data))
-      {
-        var label = _locales[columnIndex - 1].strings.TryFind(item.data, out var value) ? value.Replace("\n", " ") : "<color=red><Undefined></color>";
-
-        if (string.IsNullOrEmpty(searchString))
-          DefaultGUI.Label(columnRect, label, IsSelected(item.id), false);
-        else
-          DefaultGUI.Label(columnRect, HighlightSearchString(label), IsSelected(item.id), false);
-      }        
-    }
-
-    // Draw a cell that represents a group item in the tree view
-    protected override void OnGroupCellGUI(GroupItem item, int columnIndex, Rect columnRect)
-    {
-      if (columnIndex == 0)
-      {
-        if (string.IsNullOrEmpty(searchString))
-          DefaultGUI.FoldoutLabel(columnRect.ContractLeft(GetContentIndent(item)), item.displayName, IsSelected(item.id), false);
-      }
-    }
-
-
+    #region Convert locales to keys and columns
     // Convert a list of locales to keys
     private static IEnumerable<string> LocalesToKeys(IEnumerable<Locale> locales)
     {
@@ -98,7 +97,8 @@ namespace Audune.Localization.Editor
     // Convert a list of locales to tree view columns
     private static IEnumerable<MultiColumnHeaderState.Column> LocalesToColumms(IEnumerable<Locale> locales)
     {
-      return locales?.Select(locale => new MultiColumnHeaderState.Column() { headerContent = new GUIContent(locale.nativeName), width = 150 }) ?? Enumerable.Empty<MultiColumnHeaderState.Column>();
+      return locales?.Select(locale => new MultiColumnHeaderState.Column() { headerContent = new GUIContent($"{locale.englishName} Value"), canSort = false, width = 150 }) ?? Enumerable.Empty<MultiColumnHeaderState.Column>();
     }
+    #endregion
   }
 }
