@@ -135,7 +135,7 @@ namespace Audune.Localization.Editor
     // Handler for when an item is double clicked
     protected override void OnDoubleClicked(DataItem item)
     {
-      LocalizedStringExplorerWindow.ShowWindow(searchString: item.data);
+      LocalizedStringExplorerWindow.ShowWindow(searchString: $"s:!{item.data}");
     }
 
     // Return a context menu for a data item
@@ -143,7 +143,7 @@ namespace Audune.Localization.Editor
     {
       var menu = new GenericMenu();
 
-      menu.AddItem(new GUIContent("Find References"), false, () => LocalizedStringExplorerWindow.ShowWindow(searchString: item.data));
+      menu.AddItem(new GUIContent("Find References"), false, () => LocalizedStringExplorerWindow.ShowWindow(searchString: $"s:!{item.data}"));
 
       menu.AddSeparator("");
 

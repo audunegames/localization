@@ -15,6 +15,6 @@
   },
   "dependencies": {
     "com.audune.utils.dictionary": "1.0.1",
-    "com.audune.utils.unityeditor": "1.0.6"
+    "com.audune.utils.unityeditor": "1.0.8"
   }
 }

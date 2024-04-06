@@ -1,4 +1,5 @@
 using Audune.Utils.UnityEditor.Editor;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEditor;
@@ -9,12 +10,15 @@ namespace Audune.Localization.Editor
   // Class that defines extensions for the EditorGUI class
   public static class LocalizationEditorGUIExtensions
   {
+    // The locales that have been found in the assets
     private static readonly IReadOnlyList<Locale> _locales = Locale.GetAllLocaleAssets().ToList();
 
 
     // Draw a search dropdown for the path of a localized string
-    public static void LocalizedStringSearchDropdown(Rect rect, GUIContent label, SerializedProperty property)
+    public static void LocalizedStringSearchDropdown(Rect rect, GUIContent label, SerializedProperty property, Func<string, string> pathFormatter = null)
     {
+      pathFormatter ??= path => path;
+
       using var scope = new EditorGUI.PropertyScope(rect, label, property);
 
       var path = property.FindPropertyRelative("_path");
@@ -23,10 +27,12 @@ namespace Audune.Localization.Editor
       var hasMissingValues = isLocalized && _locales.ContainsMissingString(path.stringValue);
 
       var color = hasUndefinedValues ? EditorIcons.errorColor : hasMissingValues ? EditorIcons.warningColor : Color.white;
-      var dropdownLabel = new GUIContent(isLocalized ? path.stringValue : "<Non-Localized Value>");
+      var dropdownLabel = new GUIContent(isLocalized ? pathFormatter(path.stringValue) : "<Non-Localized Value>");
 
+      EditorStyles.miniPullDown.richText = true;
       using (new EditorGUIUtilityExtensions.ColorScope(color))
         EditorGUIExtensions.SearchDropdown<string, LocalizedStringSearchWindow>(rect, label, dropdownLabel, path);
+      EditorStyles.miniPullDown.richText = false;
     }
 
     // Draw a text field for the value of a localized string
