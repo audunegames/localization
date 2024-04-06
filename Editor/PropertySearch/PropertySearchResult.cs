@@ -44,13 +44,21 @@ namespace Audune.Localization
     // Return the property value of the result
     public object propertyValue {
       get {
-        var propertyField = component.componentType.GetField(propertyName);
-        var targetObject = this.targetObject;
-        dynamic value = targetObject != null && propertyField != null ? propertyField.GetValue(targetObject) : null;
-        if (value != null && propertyDictionaryKeyIndex >= 0 && propertyDictionaryKeyIndex < value.keys.Count)
-          return value.Get(value.keys[propertyDictionaryKeyIndex]);
+        var targetSerializedProperty = this.targetSerializedProperty;
+        if (targetSerializedProperty != null)
+        {
+          return targetSerializedProperty.boxedValue;
+        }
         else
-          return value;
+        {
+          var propertyField = component.componentType.GetField(propertyName);
+          var targetObject = this.targetObject;
+          dynamic value = targetObject != null && propertyField != null ? propertyField.GetValue(targetObject) : null;
+          if (value != null && propertyDictionaryKeyIndex >= 0 && propertyDictionaryKeyIndex < value.keys.Count)
+            return value.Get(value.keys[propertyDictionaryKeyIndex]);
+          else
+            return value;
+        }
       }
     }
 

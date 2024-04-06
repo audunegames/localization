@@ -74,8 +74,7 @@ namespace Audune.Localization.Editor
       {
         // Create the data item
         var dataItem = CreateDataItem(id++, item);
-        var localizedString = item.propertyValue as LocalizedString;
-        var hasMissingValues = localizedString != null && localizedString.isLocalized && _locales.ContainsMissingString(localizedString.path);
+        var hasMissingValues = item.propertyValue is LocalizedString localizedString && localizedString.isLocalized && _locales.ContainsMissingString(localizedString.path);
         if (hasMissingValues)
           dataItem.icon = EditorIcons.errorMark;
 

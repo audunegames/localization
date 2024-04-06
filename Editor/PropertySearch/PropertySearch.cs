@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using UnityEditor;
@@ -110,6 +109,10 @@ namespace Audune.Localization.Editor
     // Search in the specified game object
     private static IEnumerable<PropertySearchResult> SearchInGameObject(EditorAsset asset, GameObject gameObject, GameObject rootGameObject)
     {
+      // Check if the game object is defined
+      if (gameObject == null)
+        yield break;
+
       // Iterate over the mono behaviours in the game object
       var monoBehaviours = gameObject.GetComponentsInChildren<MonoBehaviour>(true);
       foreach (var monoBehaviour in monoBehaviours)
@@ -128,10 +131,11 @@ namespace Audune.Localization.Editor
         yield break;
 
       // Iterate over the instance fields in the target object
-      foreach (var field in target.GetType().GetFields())
+      var serializedObject = new SerializedObject(target);
+      foreach (var field in target.GetType().GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic))
       {
         // Check if the field is serialized
-        if (!(field.IsPublic && field.GetCustomAttribute<NonSerializedAttribute>() == null) && field.GetCustomAttribute<SerializeField>() == null && field.GetCustomAttribute<SerializeReference>() == null)
+        if (serializedObject.FindProperty(field.Name) == null)
           continue;
 
         // Check if the field matches the search type
