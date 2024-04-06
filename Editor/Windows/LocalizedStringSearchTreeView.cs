@@ -56,7 +56,8 @@ namespace Audune.Localization.Editor
       else if (!string.IsNullOrEmpty(item.data))
       {
         // Locale column
-        EditorGUI.LabelField(columnRect, HighlightSearchString(_locales[columnIndex - 1].strings.TryFind(item.data, out var value) ? value.Replace("\n", " ") : "<color=red><Undefined></color>"), label);
+        var hasValue = _locales[columnIndex - 1].strings.TryFind(item.data, out var value);
+        EditorGUI.LabelField(columnRect, HighlightSearchString(hasValue ? value.Replace("\n", " ") : "<color=#bf5130>Undefined</color>"), label);
       }
     }
 

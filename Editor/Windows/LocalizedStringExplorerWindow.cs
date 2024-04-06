@@ -72,7 +72,7 @@ namespace Audune.Localization.Editor
     {
       // Rescan project button
       if (GUILayout.Button(new GUIContent("Rescan Project", EditorIcons.refresh, "Rescan the project for assets that contain localized strings"), EditorStyles.toolbarButton, GUILayout.ExpandWidth(false)))
-        Refresh(_treeView.searchString);
+        Refresh(searchString: _treeView.searchString, forceRebuild: true);
 
       GUILayout.FlexibleSpace();
 

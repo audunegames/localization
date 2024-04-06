@@ -163,7 +163,7 @@ namespace Audune.Localization.Editor
         }
         else
         {
-          EditorGUI.LabelField(columnRect, new GUIContent("Could not find target object", EditorIcons.errorMark), label);
+          EditorGUI.LabelField(columnRect, new GUIContent("<color=#bf5130>Scene is not loaded</color>", EditorIcons.errorMark), label);
         }
       }
       else if (columnIndex == 4)

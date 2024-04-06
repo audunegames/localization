@@ -1,5 +1,6 @@
 using Audune.Utils.UnityEditor.Editor;
-using Unity.VisualScripting.YamlDotNet.Core.Tokens;
+using System.Collections.Generic;
+using System.Linq;
 using UnityEditor;
 using UnityEngine;
 
@@ -8,6 +9,9 @@ namespace Audune.Localization.Editor
   // Class that defines extensions for the EditorGUI class
   public static class LocalizationEditorGUIExtensions
   {
+    private static readonly IReadOnlyList<Locale> _locales = Locale.GetAllLocaleAssets().ToList();
+
+
     // Draw a search dropdown for the path of a localized string
     public static void LocalizedStringSearchDropdown(Rect rect, GUIContent label, SerializedProperty property)
     {
@@ -15,24 +19,13 @@ namespace Audune.Localization.Editor
 
       var path = property.FindPropertyRelative("_path");
       var isLocalized = !string.IsNullOrEmpty(path.stringValue);
+      var hasUndefinedValues = isLocalized && _locales.ContainsUndefinedString(path.stringValue);
+      var hasMissingValues = isLocalized && _locales.ContainsMissingString(path.stringValue);
+
+      var color = hasUndefinedValues ? EditorIcons.errorColor : hasMissingValues ? EditorIcons.warningColor : Color.white;
       var dropdownLabel = new GUIContent(isLocalized ? path.stringValue : "<Non-Localized Value>");
 
-      var propertyColor = Color.white;
-      if (isLocalized)
-      {
-        var localizationSystem = Object.FindObjectOfType<LocalizationSystem>();
-        if (localizationSystem != null)
-        {
-          localizationSystem.InitializeIfNoLocaleSelected();
-
-          if (localizationSystem.loadedLocales.ContainsUndefinedString(path.stringValue))
-            propertyColor = Color.Lerp(Color.red, Color.white, 0.75f);
-          else if (localizationSystem.loadedLocales.ContainsMissingString(path.stringValue))
-            propertyColor = Color.Lerp(Color.yellow, Color.white, 0.75f);
-        }
-      }
-
-      using (new EditorGUIUtilityExtensions.ColorScope(propertyColor))
+      using (new EditorGUIUtilityExtensions.ColorScope(color))
         EditorGUIExtensions.SearchDropdown<string, LocalizedStringSearchWindow>(rect, label, dropdownLabel, path);
     }
 
