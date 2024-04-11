@@ -9,7 +9,7 @@ using UnityEngine;
 namespace Audune.Localization.Editor
 {
   // Class that defines a search for properties in the project
-  public static class PropertySearch
+  internal static class PropertySearch
   {
     // Search in the project
     public static IEnumerable<PropertySearchResult> SearchInProject(params string[] searchInFolders)

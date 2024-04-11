@@ -8,7 +8,7 @@ using UnityEngine.SceneManagement;
 namespace Audune.Localization.Editor
 {
   // Class that defines an asset in the editor
-  public sealed class EditorAsset
+  internal sealed class EditorAsset
   {
     // Type of the asset
     public readonly EditorAssetType type;

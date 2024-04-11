@@ -6,7 +6,7 @@ using UnityEngine;
 namespace Audune.Localization.Editor
 {
   // Enum that defines the type of an asset in the editor
-  public enum EditorAssetType
+  internal enum EditorAssetType
   {
     Prefab,
     PrefabModel,
@@ -17,7 +17,7 @@ namespace Audune.Localization.Editor
 
 
   // Class that defines extension methods for asset types
-  public static class EditorAssetTypeExtensions
+  internal static class EditorAssetTypeExtensions
   {
     // Return if the asset type is a prefab
     public static bool IsPrefab(this EditorAssetType type)

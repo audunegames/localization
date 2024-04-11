@@ -5,7 +5,7 @@ using UnityEngine;
 namespace Audune.Localization
 {
   // Class that defines a result in a property search
-  public sealed class PropertySearchResult
+  internal sealed class PropertySearchResult
   {
     // Asset of the result
     public EditorAsset asset;

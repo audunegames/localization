@@ -1,4 +1,3 @@
-using Audune.Utils.UnityEditor.Editor;
 using System;
 using System.Text;
 using UnityEditor;
@@ -7,7 +6,7 @@ using UnityEngine;
 namespace Audune.Localization.Editor
 {
   // Class that defines a component in the editor
-  public sealed class EditorComponent
+  internal sealed class EditorComponent
   {
     // Component variables
     public readonly EditorAsset asset;
