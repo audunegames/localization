@@ -1,5 +1,5 @@
-using Audune.Utils.UnityEditor;
-using Audune.Utils.UnityEditor.Editor;
+using Audune.Utils.Types;
+using Audune.Utils.Types.Editor;
 using System;
 using System.Linq;
 using UnityEditor.AssetImporters;

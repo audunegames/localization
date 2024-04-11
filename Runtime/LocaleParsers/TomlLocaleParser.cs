@@ -1,7 +1,7 @@
 using Audune.Localization.Plugins.Tommy;
 using Audune.Localization.Plugins.Tommy.Extensions;
 using Audune.Utils.Dictionary;
-using Audune.Utils.UnityEditor;
+using Audune.Utils.Types;
 using System;
 using System.Collections.Generic;
 using System.IO;

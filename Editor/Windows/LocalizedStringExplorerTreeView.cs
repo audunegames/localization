@@ -11,7 +11,7 @@ using UnityEngine;
 namespace Audune.Localization.Editor
 {
   // Class that defines a tree view for a localized string explorer editor window
-  public class LocalizedStringExplorerTreeView : ItemsTreeView<PropertySearchResult>
+  public class LocalizedStringExplorerTreeView : ItemsTreeView<SerializedPropertySearchResult>
   {
     // Enum that defines search flags
     [Flags]
@@ -64,7 +64,7 @@ namespace Audune.Localization.Editor
 
 
     // Constructor
-    public LocalizedStringExplorerTreeView(IEnumerable<PropertySearchResult> items, IEnumerable<Locale> locales) : base(items, _options)
+    public LocalizedStringExplorerTreeView(IEnumerable<SerializedPropertySearchResult> items, IEnumerable<Locale> locales) : base(items, _options)
     {
       _locales = new List<Locale>(locales ?? Enumerable.Empty<Locale>());
 
@@ -289,7 +289,7 @@ namespace Audune.Localization.Editor
 
     #region Search methods
     // Return if the data of an item matches the specified search query
-    protected override bool Matches(PropertySearchResult data, string search)
+    protected override bool Matches(SerializedPropertySearchResult data, string search)
     {
       bool Matches(string text)
       {

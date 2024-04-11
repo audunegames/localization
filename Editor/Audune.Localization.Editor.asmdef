@@ -3,7 +3,8 @@
     "rootNamespace": "Audune.Localization.Editor",
     "references": [
         "GUID:5bf27bd8feae55648bfc632dd99aaa4d",
-        "GUID:f3b778087ccf25c439d1623fdfb9cde9",
+        "GUID:241edfc528a436d4d8ad77e50bc4b164",
+        "GUID:99872d1abb4e50f41b0c10dfc418a795",
         "GUID:c0115945b6450f544a19881529b3a032",
         "GUID:425c741b35523ab4ea76b19fb0f4d987",
         "GUID:8d3eaed832bf78046bfb9b4fc4d6d44e",

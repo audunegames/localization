@@ -1,4 +1,5 @@
-using Audune.Utils.UnityEditor;
+using Audune.Utils.Types;
+using Audune.Utils.Types.Editor;
 using Audune.Utils.UnityEditor.Editor;
 using System.Linq;
 using UnityEditor;

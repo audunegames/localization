@@ -45,7 +45,7 @@ namespace Audune.Localization.Editor
     {
       if (forceRebuild || _treeView == null)
       {
-        var properties = PropertySearch.SearchInProject("Assets").OrderBy(r => r.asset.assetDirectoryName);
+        var properties = SerializedPropertySearch.SearchInProject(p => p.type == typeof(LocalizedString).Name, "Assets").OrderBy(r => r.asset.assetDirectoryName);
         _treeView = new LocalizedStringExplorerTreeView(properties, Locale.GetAllLocaleAssets());
       }
     }
