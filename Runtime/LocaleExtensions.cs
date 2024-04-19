@@ -1,3 +1,4 @@
+using Audune.Utils.Dictionary;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,6 +15,18 @@ namespace Audune.Localization
         return Enumerable.Empty<string>();
 
       return locales.SelectMany(locale => locale.strings.keys).Distinct(StringComparer.FromComparison(comparisonType));
+    }
+
+    // Return all values for the specified path in all specified locales
+    public static IReadOnlyDictionary<Locale, string> GetValues(this IEnumerable<Locale> locales, string path)
+    {
+      if (locales == null)
+        return new Dictionary<Locale, string>();
+
+      return locales
+        .Select(locale => new KeyValuePair<Locale, string>(locale, locale.strings.Find(path, null)))
+        .Where(e => e.Value != null)
+        .ToDictionary();
     }
 
     // Return if a string reference with the specified path can be found in any of the specified locales

@@ -7,8 +7,8 @@ using UnityEngine;
 
 namespace Audune.Localization.Editor
 {
-  // Class that defines a tree view for the locale explorer window
-  public class LocaleExplorerTreeView : ItemTreeView<string>
+  // Class that defines a tree view for selecting a localized string reference
+  public class LocalizedStringSelectorTreeView : ItemSelectorTreeView<string>
   {
     // Default keys
     private const string _pathKey = "path";
@@ -16,12 +16,13 @@ namespace Audune.Localization.Editor
 
     private static readonly string[] _keys = new[] { _pathKey, _valueKey };
 
+
     // Used locales in the tree view
     private readonly IReadOnlyList<Locale> _locales;
 
 
     // Constructor
-    public LocaleExplorerTreeView(TreeViewState treeViewState, IEnumerable<Locale> locales) : base(treeViewState)
+    public LocalizedStringSelectorTreeView(TreeViewState treeViewState, IEnumerable<Locale> locales) : base(treeViewState)
     {
       // Set the used locales
       _locales = locales.ToList();
@@ -61,6 +62,18 @@ namespace Audune.Localization.Editor
       return hasMissingValues ? EditorIcons.errorMark : EditorIcons.text;
     }
 
+    // Return the data for the default item
+    protected override string SelectDefaultData()
+    {
+      return null;
+    }
+
+    // Return the display name for the default item
+    protected override string SelectDefaultDisplayName()
+    {
+      return "<Non-Localized Value>";
+    }
+
 
     // Draw the key column GUI
     private void OnKeyColumnGUI(Rect rect, DataItem item)
@@ -77,32 +90,6 @@ namespace Audune.Localization.Editor
 
       // Draw a label for the value
       EditorGUI.LabelField(rect, hasValue ? HighlightSearchString(value.Replace("\n", " "), searchString, _keys, _valueKey) : "<color=#bf5130>Undefined</color>", ItemTreeViewStyles.label);
-    }
-
-    // Handler for when an item is double clicked
-    protected override void OnDoubleClicked(DataItem item)
-    {
-      // Navigate to the references of the item
-      NavigateToReferences(item.data);
-    }
-
-    // Fill a context menu for the specified data item
-    protected override void FillDataItemContextMenu(DataItem item, GenericMenu menu)
-    {
-      // Items to navigate to the references of the item
-      menu.AddItem(new GUIContent("Find References"), false, () => NavigateToReferences(item.data));
-
-      // Fill the base menu items
-      menu.AddSeparator("");
-      base.FillDataItemContextMenu(item, menu);
-    }
-
-
-    // Navigate to the references of the specified localized string
-    private void NavigateToReferences(string data)
-    {
-      // Open the localized string explorer window
-      LocalizedStringExplorerWindow.Open<LocalizedStringExplorerWindow>(searchString: $"value: ={data}");
     }
   }
 }

@@ -31,7 +31,7 @@ namespace Audune.Localization.Editor
 
       EditorStyles.miniPullDown.richText = true;
       using (new EditorGUIUtilityExtensions.ColorScope(color))
-        EditorGUIExtensions.SearchDropdown<string, LocalizedStringSearchWindow>(rect, label, dropdownLabel, path);
+        EditorGUIExtensions.ItemSelectorDropdown<string, LocalizedStringSelectorTreeView, LocalizedStringSelectorWindow>(rect, label, dropdownLabel, path);
       EditorStyles.miniPullDown.richText = false;
     }
 
