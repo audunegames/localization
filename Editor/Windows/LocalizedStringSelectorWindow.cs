@@ -15,7 +15,7 @@ namespace Audune.Localization.Editor
     // Get the property value
     public override string GetPropertyValue()
     {
-      return serializedProperty?.stringValue ?? default;
+      return serializedProperty?.stringValue ?? null;
     }
 
     // Set the property value
