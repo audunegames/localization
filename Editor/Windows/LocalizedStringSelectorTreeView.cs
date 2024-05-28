@@ -21,6 +21,10 @@ namespace Audune.Localization.Editor
     private readonly IReadOnlyList<Locale> _locales;
 
 
+    // Return if a default item should be added
+    protected override bool _addDefaultItem => true;
+
+
     // Constructor
     public LocalizedStringSelectorTreeView(TreeViewState treeViewState, IEnumerable<Locale> locales) : base(treeViewState)
     {
@@ -85,6 +89,10 @@ namespace Audune.Localization.Editor
     // Draw the value column GUI
     private void OnValueColumnGUI(Rect rect, DataItem item, Locale locale)
     {
+      // Check if the item has any data
+      if (item.data == null)
+        return;
+
       // Check if the data has a value
       var hasValue = locale.strings.TryFind(item.data, out var value);
 
