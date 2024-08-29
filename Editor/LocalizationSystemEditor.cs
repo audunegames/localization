@@ -42,9 +42,9 @@ namespace Audune.Localization.Editor
       _localeLoadersFoldout = EditorGUILayout.BeginFoldoutHeaderGroup(_localeLoadersFoldout, "Registered Locale Loaders");
       if (_localeLoadersFoldout)
       {
-        var localeLoaders = target.GetLocaleLoaders().ToList();
+        var localeLoaders = target.loaders.ToList();
         if (localeLoaders.Count > 0)
-          EditorGUILayout.HelpBox(string.Join("\n", localeLoaders.Select(l => $"• {l.GetType().ToDisplayString(TypeDisplayOptions.DontShowNamespace)} [Priority {l.priority}, {ObjectNames.NicifyVariableName(l.executionMode.ToString())}]")), MessageType.None);
+          EditorGUILayout.HelpBox(string.Join("\n", localeLoaders.Select(l => $"ï¿½ {l.GetType().ToDisplayString(TypeDisplayOptions.DontShowNamespace)} [Priority {l.priority}, {ObjectNames.NicifyVariableName(l.executionMode.ToString())}]")), MessageType.None);
         else
           EditorGUILayout.HelpBox("None", MessageType.None);
 
@@ -55,9 +55,9 @@ namespace Audune.Localization.Editor
       _localeSelectorsFoldout = EditorGUILayout.BeginFoldoutHeaderGroup(_localeSelectorsFoldout, "Registered Locale Selectors");
       if (_localeSelectorsFoldout)
       {
-        var localeSelectors = target.GetLocaleSelectors().ToList();
+        var localeSelectors = target.selectors.ToList();
         if (localeSelectors.Count > 0)
-          EditorGUILayout.HelpBox(string.Join("\n", localeSelectors.Select(s => $"• {s.GetType().ToDisplayString(TypeDisplayOptions.DontShowNamespace)} [Priority {s.priority}, {ObjectNames.NicifyVariableName(s.executionMode.ToString())}]")), MessageType.None);
+          EditorGUILayout.HelpBox(string.Join("\n", localeSelectors.Select(s => $"ï¿½ {s.GetType().ToDisplayString(TypeDisplayOptions.DontShowNamespace)} [Priority {s.priority}, {ObjectNames.NicifyVariableName(s.executionMode.ToString())}]")), MessageType.None);
         else
           EditorGUILayout.HelpBox("None", MessageType.None);
 

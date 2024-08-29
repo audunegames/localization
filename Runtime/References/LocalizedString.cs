@@ -44,7 +44,7 @@ namespace Audune.Localization
       _path = null;
       _value = null;
       _arguments = new SerializableDictionary<string, object>();
-      _formatter = null;
+      _formatter = s => s;
     }
 
     // Private constructor that copies the values from another localized string
@@ -61,16 +61,14 @@ namespace Audune.Localization
     public bool TryResolve(ILocalizedTable<string> table, out string value)
     {
       if (!string.IsNullOrEmpty(_path))
-        return table.TryFind(_path, out value);
+      {
+        var success = table.TryFind(_path, out value);
+        value = success ? (_formatter?.Invoke(value) ?? value) : value;
+        return success;
+      }
 
-      value = _value;
+      value = _formatter?.Invoke(_value) ?? _value;
       return true;
-    }
-
-    // Return a formatted message
-    public string Format(string message)
-    {
-      return _formatter != null ? _formatter(message) : message;
     }
 
 

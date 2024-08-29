@@ -82,10 +82,10 @@ namespace Audune.Localization
 
     #region Message format provider implementation
     // Return a plural rule list for plurals for the locale
-    IPluralizer IMessageFormatProvider.pluralRules => PluralRuleDatabase.plurals.TryGetRules(this, out var rules) ? rules : null;
+    public IPluralizer pluralRules => PluralRuleDatabase.plurals.TryGetRules(this, out var rules) ? rules : null;
 
     // Return a plural rule list for ordinal plurals for the locale
-    IPluralizer IMessageFormatProvider.ordinalPluralRules => PluralRuleDatabase.ordinalPlurals.TryGetRules(this, out var rules) ? rules : null;
+    public IPluralizer ordinalPluralRules => PluralRuleDatabase.ordinalPlurals.TryGetRules(this, out var rules) ? rules : null;
 
     // Return the localized string table of the formatter
     ILocalizedTable<string> IMessageFormatProvider.localizedStringTable => strings;

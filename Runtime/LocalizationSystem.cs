@@ -9,53 +9,73 @@ namespace Audune.Localization
   // Class that defines the system for localization
   [AddComponentMenu("Audune/Localization/Localization System")]
   [DefaultExecutionOrder(-100)]
-  public sealed class LocalizationSystem : MonoBehaviour, IMessageFormatter, IMessageFunctionExecutor
+  public sealed class LocalizationSystem : MonoBehaviour, ILocalizationSystem
   {
-    // Internal state of the localization 
-    private Dictionary<string, Func<string, string>> _functions = new Dictionary<string, Func<string, string>>();
+    // Static instance of the localization system
+    private static ILocalizationSystem _current;
 
+    // Return the static instance of the localization system
+    public static ILocalizationSystem current => _current;
+
+
+    // Internal state of the localization system
     private List<Locale> _loadedLocales = new List<Locale>();
     private Locale _selectedLocale = null;
     private Locale _lastLocale = null;
+    
+    private Dictionary<string, Func<string, string>> _functions = new Dictionary<string, Func<string, string>>();
 
     // Localization system events
-    public event Action<Locale> OnLocaleChanged;
-    public event Action<LocalizedString> OnLocalizedStringMissing;
-    public event Action<string> OnAssetMissing;
+    public event Action<Locale> onLocaleChanged;
 
 
-    // Return the loaded locales in the localization system
-    public IEnumerable<Locale> loadedLocales => _loadedLocales;
+    // Return all registered locale loaders
+    public IEnumerable<LocaleLoader> loaders => GetComponents<LocaleLoader>().OrderBy(l => l.priority);
+    
+    // Return all enabled registered locale loaders
+    public IEnumerable<LocaleLoader> enabledLoaders =>  loaders.Where(l => l.executionMode.ShouldExecute());
 
-    // Return and set the selected locale in the localization system
+    // Return all registered locale selectors
+    public IEnumerable<LocaleSelector> selectors => GetComponents<LocaleSelector>().OrderBy(s => s.priority);
+
+    // Return all enabled registered locale selectors
+    public IEnumerable<LocaleSelector> enabledSelectors => selectors.Where(l => l.executionMode.ShouldExecute());
+
+    // Return the loaded locales
+    public IReadOnlyList<Locale> loadedLocales => _loadedLocales;
+
+    // Return and set the selected locale
     public Locale selectedLocale {
       get => _selectedLocale;
-      set {
-        _selectedLocale = value;
-      }
+      set => _selectedLocale = value;
     }
 
     // Return and set the selected culture
     public CultureInfo selectedCulture {
       get => _selectedLocale != null ? _selectedLocale.culture : CultureInfo.InvariantCulture;
-      set {
-        _selectedLocale = _loadedLocales.Where(locale => locale.code == value.Name).FirstOrDefault();
-      }
+      set => _selectedLocale = _loadedLocales.Where(locale => locale.code == value.Name).FirstOrDefault();
     }
 
 
-    // Start is called before the first frame update
-    private void Start()
+    // Awake is called when the script instance is being loaded
+    private void Awake()
     {
+      // Set the static instance
+      _current = this;
+
+      // Add functions to format assets
+      RegisterFunction("asset", arg => ((ILocalizationSystem)this).FormatAsset(arg));
+
       // Add functions to format data from the Unity application
       RegisterFunction("productName", arg => Application.productName);
       RegisterFunction("companyName", arg => Application.companyName);
       RegisterFunction("version", arg => Application.version);
       RegisterFunction("unityVersion", arg => Application.unityVersion);
+    }
 
-      // Add helper functions
-      RegisterFunction("asset", arg => FormatAsset(arg, null));
-
+    // Start is called before the first frame update
+    private void Start()
+    {
       // Initialize the system
       Initialize();
     }
@@ -68,7 +88,7 @@ namespace Audune.Localization
       {
         // Emit a locale changed event if the new locale is not null
         if (_selectedLocale != null)
-          OnLocaleChanged?.Invoke(_selectedLocale);
+          onLocaleChanged?.Invoke(_selectedLocale);
 
         // Update the state
         _lastLocale = _selectedLocale;
@@ -81,12 +101,11 @@ namespace Audune.Localization
     public void Initialize()
     {
       // Load the locales
-      _loadedLocales.Clear();
-      _loadedLocales.AddRange(LoadLocales());
+      LoadLocales();
 
       // Select th locale
-      if (!TrySelectLocale(_loadedLocales, out _selectedLocale))
-        Debug.LogWarning($"[LocalizationSystem] Could not select a locale using any of the registered locale selectors");
+      if (!TrySelectLocale())
+        Debug.LogWarning($"[{gameObject.name}] Could not select a locale using any of the registered locale selectors");
     }
 
     // Initialize the system if no locale has been selected
@@ -97,67 +116,43 @@ namespace Audune.Localization
     }
     #endregion
 
-    #region Locale loader management
-    // Return all registered locale loaders
-    public IEnumerable<LocaleLoader> GetLocaleLoaders()
-    {
-      return GetComponents<LocaleLoader>().OrderBy(l => l.priority);
-    }
-
-    // Return all enabled registered locale loaders
-    public IEnumerable<LocaleLoader> GetEnabledLocaleLoaders()
-    {
-      return GetLocaleLoaders().Where(l => l.executionMode.ShouldExecute());
-    }
-
+    #region Loading and selecting locales
     // Load the locales using the registered loaders
-    public IEnumerable<Locale> LoadLocales()
+    public void LoadLocales()
     {
-      foreach (var localeLoader in GetEnabledLocaleLoaders())
+      _loadedLocales.Clear();
+
+      foreach (var loader in enabledLoaders)
       {
-        var locales = localeLoader.LoadLocales().Where(locale => locale != null).ToList();
+        var locales = loader.LoadLocales().Where(locale => locale != null).ToList();
         foreach (var locale in locales)
-          yield return locale;
+          _loadedLocales.Add(locale);
 
         if (Application.isPlaying)
-          Debug.Log($"[LocalizationSystem] Loaded {locales.Count} locales using {localeLoader.GetType()}{(locales.Count > 0 ? $": {string.Join(", ", locales)}" : "")}");
+          Debug.Log($"[{gameObject.name}] Loaded {locales.Count} locales using {loader.GetType()}{(locales.Count > 0 ? $": {string.Join(", ", locales)}" : "")}");
       }
-    }
-    #endregion
-
-    #region Locale selector management
-    // Return all registered locale selectors
-    public IEnumerable<LocaleSelector> GetLocaleSelectors()
-    {
-      return GetComponents<LocaleSelector>().OrderBy(s => s.priority);
-    }
-
-    // Return all enabled registered locale selectors
-    public IEnumerable<LocaleSelector> GetEnabledLocaleSelectors()
-    {
-      return GetLocaleSelectors().Where(l => l.executionMode.ShouldExecute());
     }
 
     // Return if a locale can be selected using the registered selectors and store the selected locale
-    public bool TrySelectLocale(IReadOnlyList<Locale> locales, out Locale locale)
+    public bool TrySelectLocale()
     {
-      foreach (var localeSelector in GetEnabledLocaleSelectors())
+      foreach (var selectors in enabledSelectors)
       {
-        if (localeSelector.TrySelectLocale(locales, out locale))
+        if (selectors.TrySelectLocale(_loadedLocales, out var locale))
         {
           if (Application.isPlaying)
-            Debug.Log($"[LocalizationSystem] Selected locale {locale} using {localeSelector.GetType()}");
+            Debug.Log($"[{gameObject.name}] Selected locale {locale} using {selectors.GetType()}");
 
+          _selectedLocale = locale;
           return true;
         }
       }
 
-      locale = null;
       return false;
     }
     #endregion
 
-    #region Message function management
+    #region Managing message functions
     // Register a function with the specified name
     public void RegisterFunction(string name, Func<string, string> func)
     {
@@ -171,7 +166,7 @@ namespace Audune.Localization
     }
 
     // Return if a function with the specified name exists and execute it with the specified argument
-    bool IMessageFunctionExecutor.TryExecuteFunction(string name, string argument, out string value)
+    public bool TryExecuteFunction(string name, string argument, out string value)
     {
       var result = _functions.TryGetValue(name, out var func);
       value = result ? func(argument) : null;
@@ -180,83 +175,13 @@ namespace Audune.Localization
     #endregion
 
     #region Formatting and localizing references
-    // Format the specified message message using the specified locale
-    public string Format(string message, IReadOnlyDictionary<string, object> arguments, Locale locale)
+    // Format a message with the specified arguments using the specified locale
+    public string Format(Locale locale, string message, IReadOnlyDictionary<string, object> arguments = null)
     {
-      // Check if the arguments are not null
       if (message == null)
         throw new ArgumentNullException(nameof(message));
       
-      // Format the message using the formatter of the locale
-      return new MessageFormatter(locale, this).Format(message, arguments);
-    }
-
-    // Format the specified message message using the current locale
-    public string Format(string message, IReadOnlyDictionary<string, object> arguments)
-    {
-      // Check if a locale has been selected
-      if (_selectedLocale == null)
-        throw new LocalizationException("No locale has ben selected");
-
-      // Format the message
-      return Format(message, arguments, _selectedLocale);
-    }
-
-    // Format the message for the specified localized string reference using the specified locale
-    public string Format(LocalizedString reference, Locale locale)
-    {
-      // Check if the arguments are not null
-      if (reference == null)
-        throw new ArgumentNullException(nameof(reference));
-
-      // Check if the reference can be resolved
-      if (!reference.TryResolve(locale.strings, out var message))
-      {
-        OnLocalizedStringMissing?.Invoke(reference);
-        Debug.LogWarning($"[LocalizationSystem] Could not find string \"{reference}\" in locale {locale}");
-        return $"<{reference}>";
-      }
-
-      // Format the message using the formatter of the locale
-      return Format(reference.Format(message), reference.arguments, locale);
-    }
-
-    // Format the message for the specified localized string reference using the current locale
-    public string Format(LocalizedString reference)
-    {
-      // Check if a locale has been selected
-      if (_selectedLocale == null)
-        throw new LocalizationException("No locale has ben selected");
-
-      // Format the message
-      return Format(reference, _selectedLocale);
-    }
-
-    // Format the contents of the specified text asset resource using the specified locale
-    public string FormatAsset(string path, IReadOnlyDictionary<string, object> arguments, Locale locale)
-    {
-      // Check if the text asset can be loaded
-      var textAsset = Resources.Load<TextAsset>(path);
-      if (textAsset == null)
-      {
-        OnAssetMissing?.Invoke(path);
-        Debug.LogWarning($"[LocalizationSystem] Could not find asset \"{path}\"");
-        return $"<asset: {path}>";
-      }
-
-      // Format the text of the text asset using the formatter of the locale
-      return Format(textAsset.text, arguments, locale);
-    }
-
-    // Format the contents of the specified text asset resource using the current locale
-    public string FormatAsset(string path, IReadOnlyDictionary<string, object> arguments)
-    {
-      // Check if a locale has been selected
-      if (_selectedLocale == null)
-        throw new LocalizationException("No locale has ben selected");
-
-      // Format the text asset
-      return FormatAsset(path, arguments, _selectedLocale);
+      return new MessageFormatter(locale, this).Format(message, arguments ?? new Dictionary<string, object>());
     }
     #endregion
   }

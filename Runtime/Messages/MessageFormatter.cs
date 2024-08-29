@@ -24,9 +24,9 @@ namespace Audune.Localization
 
 
     // Format a message with the specified arguments
-    public string Format(string message, IReadOnlyDictionary<string, object> arguments)
+    public string Format(string message, IReadOnlyDictionary<string, object> arguments = null)
     {
-      return Format(new Message(message), new MessageEnvironment().WithArguments(arguments));
+      return Format(new Message(message), new MessageEnvironment().WithArguments(arguments ?? new Dictionary<string, object>()));
     }
 
     // Format a message with the specified environment
@@ -148,7 +148,7 @@ namespace Audune.Localization
       if (_formatProvider.localizedStringTable.TryFind(component.key, out var value))
         return Format(new Message(value), env);
       else
-        return $"<{component.key}>";
+        throw new MessageException($"String reference \"{component.key}\" could not be found");
     }
     #endregion
   }
