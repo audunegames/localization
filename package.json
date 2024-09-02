@@ -1,11 +1,11 @@
 {
   "name": "com.audune.localization",
   "displayName": "Localization",
-  "version": "1.2.2",
+  "version": "2.0.0",
   "unity": "2022.3",
   "description": "Simple string localization system for Unity 2022 LTS or higher",
   "documentationUrl": "https://github.com/audunegames/localization",
-  "changelogUrl": "https://github.com/audunegames/localization/commits/v1.2.2",
+  "changelogUrl": "https://github.com/audunegames/localization/commits/v2.0.0",
   "licensesUrl": "https://www.gnu.org/licenses/gpl-3.0.html",
   "license": "GPL-3.0-or-later",
   "author": {
@@ -16,6 +16,6 @@
   "dependencies": {
     "com.audune.utils.types": "1.0.0",
     "com.audune.utils.dictionary": "1.0.1",
-    "com.audune.utils.unityeditor": "2.0.2"
+    "com.audune.utils.unityeditor": "2.0.5"
   }
 }
