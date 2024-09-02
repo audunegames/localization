@@ -30,6 +30,12 @@ namespace Audune.Localization
       value = localizedString;
       return success;
     }
+
+    // Return the value for the specified key, or null if no such key exists
+    public ILocalizedString GetValue(TKey key, ILocalizedString defaultValue = null)
+    {
+      return TryGetValue(key, out var value) ? value : defaultValue;
+    }
     #endregion
   }
 }

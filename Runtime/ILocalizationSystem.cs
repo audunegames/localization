@@ -30,6 +30,10 @@ namespace Audune.Localization
     public CultureInfo selectedCulture { get; set; }
 
 
+    // Event that is triggered when the locale of the system has changed
+    public event Action<Locale> onLocaleChanged;
+
+
     #region Loading and selecting locales
     // Load the locales using the registered loaders
     public void LoadLocales();

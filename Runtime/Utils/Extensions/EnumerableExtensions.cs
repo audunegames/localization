@@ -20,7 +20,7 @@ namespace Audune.Localization
         yield return value;
       };
 
-      return enumerable.SelectMany(InterleaveFunction);
+      return separator != null ? enumerable.SelectMany(InterleaveFunction) : enumerable;
     }
   }
 }

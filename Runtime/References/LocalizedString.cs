@@ -96,6 +96,12 @@ namespace Audune.Localization
       return newString;
     }
 
+    // Return a new localized string with the arguments from the specified provider
+    public ILocalizedString WithArguments(ILocalizedStringArgumentsProvider arguments)
+    {
+      return WithArguments(arguments.arguments);
+    }
+
     // Return a new localized string without the specified argument
     public ILocalizedString WithoutArgument(string key)
     {
@@ -111,6 +117,12 @@ namespace Audune.Localization
       foreach (var key in keys)
         newString._arguments.Remove(key);
       return newString;
+    }
+
+    // Return a new localized string without the arguments from the specified provider
+    public ILocalizedString WithoutArguments(ILocalizedStringArgumentsProvider arguments)
+    {
+      return WithoutArguments(arguments.arguments.Keys);
     }
     #endregion
 
