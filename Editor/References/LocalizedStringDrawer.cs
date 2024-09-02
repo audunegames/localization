@@ -19,19 +19,19 @@ namespace Audune.Localization.Editor
 
       var path = property.FindPropertyRelative("_path");
       var value = property.FindPropertyRelative("_value");
+
       var isLocalized = !string.IsNullOrEmpty(path.stringValue);
 
-      var pathRect = rect.AlignTop(EditorGUIUtility.singleLineHeight, EditorGUIUtility.standardVerticalSpacing, out rect);
+      var pathRect = rect.AlignTop(EditorGUI.GetPropertyHeight(path), EditorGUIUtility.standardVerticalSpacing, out rect);
       LocalizationEditorGUIExtensions.LocalizedStringSearchDropdown(pathRect, label, property);
 
       if (!isLocalized)
       {
-        var valueRect = rect.AlignTop(EditorGUIUtility.singleLineHeight, EditorGUIUtility.standardVerticalSpacing, out rect);
+        var valueRect = rect.AlignTop(EditorGUI.GetPropertyHeight(value), EditorGUIUtility.standardVerticalSpacing, out rect);
         if (label != GUIContent.none)
         {
-          EditorGUI.indentLevel++;
-          LocalizationEditorGUIExtensions.LocalizedStringValueField(valueRect, new GUIContent($"Non-Localized Value", label.tooltip), property);
-          EditorGUI.indentLevel--;
+          using (new EditorGUI.IndentLevelScope())
+            LocalizationEditorGUIExtensions.LocalizedStringValueField(valueRect, new GUIContent($"Non-Localized Value", label.tooltip), property);
         }
         else
         {
@@ -46,10 +46,10 @@ namespace Audune.Localization.Editor
       var path = property.FindPropertyRelative("_path");
       var value = property.FindPropertyRelative("_value");
 
-      var isPathNull = string.IsNullOrEmpty(path.stringValue);
+      var isLocalized = string.IsNullOrEmpty(path.stringValue);
 
       var height = EditorGUI.GetPropertyHeight(path);
-      if (isPathNull)
+      if (isLocalized)
         height += EditorGUIUtility.standardVerticalSpacing + EditorGUI.GetPropertyHeight(value);
       return height;
     }
