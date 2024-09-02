@@ -64,18 +64,43 @@ namespace Audune.Localization
     }
     #endregion
 
-
     #region Creating localized strings
+    // Create an empty localized string
+    public static ILocalizedString Empty()
+    {
+      return new LocalizedString(null, null);
+    }
+
     // Create a localized string from a path
     public static ILocalizedString Path(string path)
     {
+      if (path == null)
+        return null;
+
       return new LocalizedString(path, null);
     }
 
     // Create a localized string from a value
     public static ILocalizedString Value(string value)
     {
+      if (value == null)
+        return null;
+
       return new LocalizedString(null, value);
+    }
+
+
+    // Create a localized string from a function message
+    public static ILocalizedString Function(string name, string argument = null)
+    {
+      var message = $"{{${name}{(!string.IsNullOrEmpty(argument) ? $": {argument}" : "")}}}";
+      return Value(message);
+    }
+
+    // Create a localized string from an asset function message
+    public static ILocalizedString Asset(string path)
+    {
+      return Function("asset", path);
     }
     #endregion
 
@@ -95,10 +120,16 @@ namespace Audune.Localization
       return new JoinedLocalizedString(actualStrings, actualArguments);
     }
 
+    // Return a new localized string that joins the specified localized strings separated by the specified separator string
+    public static ILocalizedString Join(string separator, IEnumerable<ILocalizedString> strings)
+    {
+      return Join(Value(separator), strings);
+    }
+
     // Return a new localized string that concatenates the specified localized strings
     public static ILocalizedString Concat(IEnumerable<ILocalizedString> strings)
     {
-      return Join(null, strings);
+      return Join((ILocalizedString)null, strings);
     }
 
     // Return a new localized string that concatenates the specified localized strings
@@ -108,16 +139,22 @@ namespace Audune.Localization
     }
 
 
-    // Join an enumerable of localized strings using the * operator
-    public static ILocalizedString operator *(IEnumerable<ILocalizedString> strings, ILocalizedString separator)
-    {
-      return Join(separator, strings);
-    }
-
     // Concatenate two localized strings using the + operator
     public static ILocalizedString operator +(ILocalizedString left, ILocalizedString right)
     {
       return Concat(left, right);
+    }
+
+    // Concatenate a localized string and a strings using the + operator
+    public static ILocalizedString operator +(string left, ILocalizedString right)
+    {
+      return Concat(Value(left), right);
+    }
+
+    // Concatenate a string and a localized strings using the + operator
+    public static ILocalizedString operator +(ILocalizedString left, string right)
+    {
+      return Concat(left, Value(right));
     }
     #endregion
   }
