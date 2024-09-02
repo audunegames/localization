@@ -90,7 +90,7 @@ namespace Audune.Localization
     }
 
     // Format a localized string using the selected locale
-    public string Format(LocalizedString reference)
+    public string Format(ILocalizedString reference)
     {
       if (selectedLocale == null)
         throw new LocalizationException("No locale has ben selected");
