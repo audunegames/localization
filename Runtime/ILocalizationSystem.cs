@@ -6,7 +6,7 @@ using UnityEngine;
 namespace Audune.Localization
 {
   // Interface that defines a localization system
-  public interface ILocalizationSystem : IMessageFormatter, IMessageFunctionExecutor
+  public interface ILocalizationSystem : IMessageFunctionExecutor
   {
     // Return all registered locale loaders
     public IEnumerable<LocaleLoader> loaders { get; }
@@ -50,8 +50,20 @@ namespace Audune.Localization
     // Format a message with the specified arguments using the specified locale
     public string Format(Locale locale, string message, IReadOnlyDictionary<string, object> arguments = null);
 
+    // Format a localized string using the specified locale
+    public string Format(Locale locale, ILocalizedString reference)
+    {
+      if (reference == null)
+        throw new ArgumentNullException(nameof(reference));
+
+      if (!reference.TryResolve(locale.strings, out var message))
+        throw new LocalizationException($"String \"{reference}\" could not be found in locale {locale}");
+
+      return Format(message, reference.arguments);
+    }
+
     // Format the contents of a text asset with the specified arguments using the specified locale
-    public string FormatAsset(Locale locale, string path, IReadOnlyDictionary<string, object> arguments)
+    public string FormatAsset(Locale locale, string path, IReadOnlyDictionary<string, object> arguments = null)
     {
       if (path == null)
         throw new ArgumentNullException(nameof(path));
@@ -65,7 +77,7 @@ namespace Audune.Localization
 
 
     // Format the specified message using the selected locale
-    string IMessageFormatter.Format(string message, IReadOnlyDictionary<string, object> arguments)
+    public string Format(string message, IReadOnlyDictionary<string, object> arguments = null)
     {
       if (selectedLocale == null)
         throw new LocalizationException("No locale has ben selected");
@@ -73,38 +85,22 @@ namespace Audune.Localization
       return Format(selectedLocale, message, arguments);
     }
 
-    // Format the contents of a text asset with the specified arguments using the selected locale
-    string IMessageFormatter.FormatAsset(string path, IReadOnlyDictionary<string, object> arguments)
-    {
-      if (selectedLocale == null)
-        throw new LocalizationException("No locale has ben selected");
-
-      return FormatAsset(selectedLocale, path, arguments);
-    }
-    #endregion
-
-    #region Formatting references
-    
-
-    // Format a localized reference using the specified locale
-    public string Format(Locale locale, LocalizedString reference)
-    {
-      if (reference == null)
-        throw new ArgumentNullException(nameof(reference));
-
-      if (!reference.TryResolve(locale.strings, out var message))
-        throw new LocalizationException($"String reference \"{reference}\" could not be found in locale {locale}");
-
-      return Format(message, reference.arguments);
-    }
-
-    // Format a localized reference using the selected locale
+    // Format a localized string using the selected locale
     public string Format(LocalizedString reference)
     {
       if (selectedLocale == null)
         throw new LocalizationException("No locale has ben selected");
 
       return Format(selectedLocale, reference);
+    }
+
+    // Format the contents of a text asset with the specified arguments using the selected locale
+    public string FormatAsset(string path, IReadOnlyDictionary<string, object> arguments = null)
+    {
+      if (selectedLocale == null)
+        throw new LocalizationException("No locale has ben selected");
+
+      return FormatAsset(selectedLocale, path, arguments);
     }
     #endregion
   }

@@ -9,17 +9,17 @@ namespace Audune.Localization
 {
   // Class that defines a localized string reference
   [Serializable]
-  public class LocalizedString : ILocalizedReference<string>, IEquatable<LocalizedString>
+  public class LocalizedString : ILocalizedString, IEquatable<LocalizedString>
   {
     // Localized string properties
-    [SerializeField, Tooltip("The path of the reference, in case the reference is a localized reference")]
+    [SerializeField, Tooltip("The path of the string, in case the string is localized")]
     private string _path;
-    [SerializeField, Tooltip("The value of the reference, in case the reference is a non-localized reference")]
+    [SerializeField, Tooltip("The value of the string, in case the string is non-localized")]
     private string _value;
 
     // Internal state of the localized string
+    [SerializeField, Tooltip("The arguments of the string")]
     private SerializableDictionary<string, object> _arguments;
-    private Func<string, string> _formatter;
 
 
     // Return the path of the localized string
@@ -28,47 +28,13 @@ namespace Audune.Localization
     // Return the value of the localized string
     public string value => _value;
 
-    // Return the arguments of the localized string
-    public IReadOnlyDictionary<string, object> arguments => _arguments;
-
-    // Return if the string is empty
-    public bool isEmpty => string.IsNullOrEmpty(_path) && string.IsNullOrEmpty(_value);
-
-    // Return if the string is localized
-    public bool isLocalized => !string.IsNullOrEmpty(_path);
-
 
     // Private constructor
-    private LocalizedString()
+    internal LocalizedString(string path, string value, IEnumerable<KeyValuePair<string, object>> arguments = null)
     {
       _path = null;
       _value = null;
-      _arguments = new SerializableDictionary<string, object>();
-      _formatter = s => s;
-    }
-
-    // Private constructor that copies the values from another localized string
-    private LocalizedString(LocalizedString localizedString)
-    {
-      _path = localizedString._path;
-      _value = localizedString._value;
-      _arguments = new SerializableDictionary<string, object>(localizedString._arguments);
-      _formatter = localizedString._formatter;
-    }
-
-
-    // Return if the reference can be resolved
-    public bool TryResolve(ILocalizedTable<string> table, out string value)
-    {
-      if (!string.IsNullOrEmpty(_path))
-      {
-        var success = table.TryFind(_path, out value);
-        value = success ? (_formatter?.Invoke(value) ?? value) : value;
-        return success;
-      }
-
-      value = _formatter?.Invoke(_value) ?? _value;
-      return true;
+      _arguments = arguments != null ? new SerializableDictionary<string, object>(arguments.ToDictionary()) : new SerializableDictionary<string, object>();
     }
 
 
@@ -92,77 +58,59 @@ namespace Audune.Localization
     }
 
 
-    #region Field management
-    // Return a new localized string with the specified path
-    public LocalizedString WithPath(string path)
-    {
-      var newReference = new LocalizedString(this);
-      newReference._path = path;
-      newReference._value = null;
-      return newReference;
-    }
+    #region Localized string implementation
+    // Return the arguments of the localized string
+    public IReadOnlyDictionary<string, object> arguments => _arguments;
 
-    // Return a new localized string with the specified value
-    public LocalizedString WithValue(string value)
+    // Return if the localized string is not empty
+    public bool isPresent => !string.IsNullOrEmpty(_path) || !string.IsNullOrEmpty(_value);
+
+    // Return if the localized string is localized
+    public bool isLocalized => !string.IsNullOrEmpty(_path);
+
+
+    // Return if the localized string can be resolved and store the value
+    public bool TryResolve(ILocalizedStringTable table, out string value)
     {
-      var newReference = new LocalizedString(this);
-      newReference._path = null;
-      newReference._value = value;
-      return newReference;
+      if (!string.IsNullOrEmpty(_path))
+        return table.TryFind(_path, out value);
+
+      value = _value;
+      return true;
     }
 
     // Return a new localized string with the specified argument
-    public LocalizedString WithArgument(string key, object value)
+    public ILocalizedString WithArgument(string key, object value)
     {
-      var newReference = new LocalizedString(this);
-      newReference._arguments[key] = value;
-      return newReference;
+      var newString = new LocalizedString(_path, _value, _arguments);
+      newString._arguments[key] = value;
+      return newString;
     }
 
     // Return a new localized string with the specified arguments
-    public LocalizedString WithArguments(IEnumerable<KeyValuePair<string, object>> arguments)
+    public ILocalizedString WithArguments(IEnumerable<KeyValuePair<string, object>> arguments)
     {
-      var newReference = new LocalizedString(this);
+      var newString = new LocalizedString(_path, _value, _arguments);
       foreach (var e in arguments)
-        newReference._arguments[e.Key] = e.Value;
-      return newReference;
-    }
-
-    // Return a new localized string with the specified arguments from the arguments interface
-    public LocalizedString WithArguments(ILocalizedArguments arguments)
-    {
-      return WithArguments(arguments.localizedArguments);
+        newString._arguments[e.Key] = e.Value;
+      return newString;
     }
 
     // Return a new localized string without the specified argument
-    public LocalizedString WithoutArgument(string key)
+    public ILocalizedString WithoutArgument(string key)
     {
-      var newReference = new LocalizedString(this);
-      newReference._arguments.Remove(key);
-      return newReference;
+      var newString = new LocalizedString(_path, _value, _arguments);
+      newString._arguments.Remove(key);
+      return newString;
     }
 
     // Return a new localized string without the specified arguments
-    public LocalizedString WithoutArguments(IEnumerable<string> keys)
+    public ILocalizedString WithoutArguments(IEnumerable<string> keys)
     {
-      var newReference = new LocalizedString(this);
+      var newString = new LocalizedString(_path, _value, _arguments);
       foreach (var key in keys)
-        newReference._arguments.Remove(key);
-      return newReference;
-    }
-
-    // Return a new localized string without the specified arguments from the arguments interface
-    public LocalizedString WithoutArguments(ILocalizedArguments arguments)
-    {
-      return WithoutArguments(arguments.localizedArguments.Keys);
-    }
-
-    // Return a new localized string with the specified formatter
-    public LocalizedString WithFormatter(Func<string, string> formatter)
-    {
-      var newReference = new LocalizedString(this);
-      newReference._formatter = formatter;
-      return newReference;
+        newString._arguments.Remove(key);
+      return newString;
     }
     #endregion
 
@@ -184,62 +132,26 @@ namespace Audune.Localization
     {
       return HashCode.Combine(_path, _value, _arguments);
     }
-    #endregion
 
-    #region Creating localized strings
-    // Create a localized string from a path
-    public static LocalizedString FromPath(string path)
-    {
-      return new LocalizedString().WithPath(path);
-    }
-
-    // Create a localized string from a value
-    public static LocalizedString FromValue(string value)
-    {
-      return new LocalizedString().WithValue(value);
-    }
-    #endregion
-
-    #region Concatenation
-    // Return the concatenation of two localized strings
-    public static LocalizedString Concat(LocalizedString left, LocalizedString right)
-    {
-      return FromValue(left.ToMessageString() + right.ToMessageString());
-    }
-
-    // Return the join of multiple localized string
-    public static LocalizedString Join(LocalizedString separator, IEnumerable<LocalizedString> strings)
-    {
-      return FromValue(string.Join(separator.ToMessageString(), strings.Select(s => s.ToMessageString())));
-    }
-
-
-    // Return the concatenation of two localized strings
-    public static LocalizedString operator +(LocalizedString left, LocalizedString right)
-    {
-      return Concat(left, right);
-    }
-    #endregion
-
-    #region Equality operators
-    // Return if the localized string equals another localized string
+    
+    // Return if the localized string equals another localized string with the == operator
     public static bool operator ==(LocalizedString left, LocalizedString right)
     {
       return EqualityComparer<LocalizedString>.Default.Equals(left, right);
     }
 
-    // Return if the localized string does not equal another localized string
+    // Return if the localized string does not equal another localized string with the != operator
     public static bool operator !=(LocalizedString left, LocalizedString right)
     {
       return !(left == right);
     }
     #endregion
 
-    #region Implicit operators
-    // Convert a value to a non-localized string
+    #region Creating localized strings
+    // Create a localized string with a value using the implicit string operator
     public static implicit operator LocalizedString(string value)
     {
-      return new LocalizedString().WithValue(value);
+      return new LocalizedString(null, value);
     }
     #endregion
   }

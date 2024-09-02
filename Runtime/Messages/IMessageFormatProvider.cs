@@ -12,7 +12,7 @@ namespace Audune.Localization
     public IPluralizer ordinalPluralRules { get; }
 
     // Return the localized string table of the formatter
-    public ILocalizedTable<string> localizedStringTable { get; }
+    public ILocalizedStringTable localizedStringTable { get; }
 
 
     // Return the number format for a number format style

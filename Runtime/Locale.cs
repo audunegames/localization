@@ -67,7 +67,7 @@ namespace Audune.Localization
     public IReadOnlyDictionary<string, string> altCodes => _altCodes;
 
     // Return the strings table of the locale
-    public LocalizedStringTable strings => _strings;
+    public ILocalizedStringTable strings => _strings;
 
     // Return the culture of the locale
     public CultureInfo culture => CultureInfoExtensions.GetCultureInfoOrInvariant(_code);
@@ -88,7 +88,7 @@ namespace Audune.Localization
     public IPluralizer ordinalPluralRules => PluralRuleDatabase.ordinalPlurals.TryGetRules(this, out var rules) ? rules : null;
 
     // Return the localized string table of the formatter
-    ILocalizedTable<string> IMessageFormatProvider.localizedStringTable => strings;
+    ILocalizedStringTable IMessageFormatProvider.localizedStringTable => strings;
 
 
     // Return the number format for a number format style

@@ -8,27 +8,28 @@ namespace Audune.Localization
 {
   // Class that defines a dictionary of keys mapped to localized string references
   [Serializable]
-  public sealed class LocalizedStringDictionary<TKey>
+  public sealed class LocalizedStringDictionary<TKey> : ILocalizedStringDictionary<TKey>
   {
     // The list of dictionary entries
     [SerializeField, Tooltip("The entries in the table")]
     private SerializableDictionary<TKey, LocalizedString> _entries;
 
-
+  
+    #region Localized string dictionary implementation
     // Return the keys of the dictionary
     public IReadOnlyList<TKey> keys => _entries.Keys.ToList();
+    
+    // Return the number of items in the dictionary
+    public int count => _entries.Count;
 
-
-    // Return the value for the specified key, or null if no such key exists
-    public LocalizedString Get(TKey key, LocalizedString defaultValue = null)
-    {
-      return _entries.TryGetValue(key, out var value) ? value : defaultValue;
-    }
 
     // Return if a value exists in the dictionary for the specified key
-    public bool TryGet(TKey key, out LocalizedString value)
+    public bool TryGetValue(TKey key, out ILocalizedString value)
     {
-      return _entries.TryGetValue(key, out value);
+      var success = _entries.TryGetValue(key, out var localizedString);
+      value = localizedString;
+      return success;
     }
+    #endregion
   }
 }
