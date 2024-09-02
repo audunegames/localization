@@ -57,18 +57,22 @@ namespace Audune.Localization
     // Format a localized string using the specified locale
     public string Format(Locale locale, ILocalizedString reference)
     {
+      if (locale == null)
+        throw new ArgumentNullException(nameof(locale));
       if (reference == null)
         throw new ArgumentNullException(nameof(reference));
 
       if (!reference.TryResolve(locale.strings, out var message))
         throw new LocalizationException($"String \"{reference}\" could not be found in locale {locale}");
 
-      return Format(message, reference.arguments);
+      return Format(locale, message, reference.arguments);
     }
 
     // Format the contents of a text asset with the specified arguments using the specified locale
     public string FormatAsset(Locale locale, string path, IReadOnlyDictionary<string, object> arguments = null)
     {
+      if (locale == null)
+        throw new ArgumentNullException(nameof(locale));
       if (path == null)
         throw new ArgumentNullException(nameof(path));
         

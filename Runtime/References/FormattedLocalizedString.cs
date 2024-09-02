@@ -18,6 +18,13 @@ namespace Audune.Localization
     }
 
 
+    // Return the string representation of the localized string
+    public override string ToString()
+    {
+      return _source.ToString();
+    }
+
+
     #region Localized string implementation
     // Return the arguments of the localized string
     public IReadOnlyDictionary<string, object> arguments => _source.arguments;

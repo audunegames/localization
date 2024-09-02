@@ -1,8 +1,6 @@
 using Audune.Utils.Dictionary;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using UnityEngine;
 
 namespace Audune.Localization
@@ -18,8 +16,7 @@ namespace Audune.Localization
     private string _value;
 
     // Internal state of the localized string
-    [SerializeField, Tooltip("The arguments of the string")]
-    private SerializableDictionary<string, object> _arguments;
+    private Dictionary<string, object> _arguments;
 
 
     // Return the path of the localized string
@@ -32,27 +29,14 @@ namespace Audune.Localization
     // Private constructor
     internal LocalizedString(string path, string value, IEnumerable<KeyValuePair<string, object>> arguments = null)
     {
-      _path = null;
-      _value = null;
-      _arguments = arguments != null ? new SerializableDictionary<string, object>(arguments.ToDictionary()) : new SerializableDictionary<string, object>();
+      _path = path;
+      _value = value;
+      _arguments = arguments != null ? new Dictionary<string, object>(arguments) : new Dictionary<string, object>();
     }
 
 
     // Return the string representation of the localized string
     public override string ToString()
-    {
-      var builder = new StringBuilder();
-      if (isLocalized)
-        builder.Append(_path);
-      else
-        builder.Append($"<Non-Localized Value: \"{_value}\">");
-      if (_arguments.Count > 0)
-        builder.Append($" with arguments {{{string.Join(", ", _arguments.Select(e => $"{e.Key} = {e.Value}"))}}}");
-      return builder.ToString();
-    }
-
-    // Return the message representation of the localized string
-    public string ToMessageString()
     {
       return isLocalized ? $"{{={_path}}}" : _value;
     }
@@ -75,7 +59,7 @@ namespace Audune.Localization
       if (!string.IsNullOrEmpty(_path))
         return table.TryFind(_path, out value);
 
-      value = _value;
+      value = !string.IsNullOrEmpty(_value) ? _value : string.Empty;
       return true;
     }
 
@@ -136,7 +120,7 @@ namespace Audune.Localization
     // Return if the localized string equals another localized string
     public bool Equals(LocalizedString other)
     {
-      return other is not null && _path == other._path && _value == other._value && EqualityComparer<SerializableDictionary<string, object>>.Default.Equals(_arguments, other._arguments);
+      return other is not null && _path == other._path && _value == other._value && EqualityComparer<Dictionary<string, object>>.Default.Equals(_arguments, other._arguments);
     }
 
     // Return the hash code of the localized string
@@ -156,14 +140,6 @@ namespace Audune.Localization
     public static bool operator !=(LocalizedString left, LocalizedString right)
     {
       return !(left == right);
-    }
-    #endregion
-
-    #region Creating localized strings
-    // Create a localized string with a value using the implicit string operator
-    public static implicit operator LocalizedString(string value)
-    {
-      return new LocalizedString(null, value);
     }
     #endregion
   }

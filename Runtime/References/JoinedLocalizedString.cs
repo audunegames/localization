@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 
 namespace Audune.Localization
 {
@@ -19,6 +20,13 @@ namespace Audune.Localization
     }
 
 
+    // Return the string representation of the localized string
+    public override string ToString()
+    {
+      return string.Join("", _strings);
+    }
+
+
     #region Localized string implementation
     // Return the arguments of the localized string
     public IReadOnlyDictionary<string, object> arguments => _arguments;
@@ -33,7 +41,19 @@ namespace Audune.Localization
     // Return if the localized string can be resolved and store the value
     public bool TryResolve(ILocalizedStringTable table, out string value)
     {
-      throw new System.NotImplementedException();
+      value = null;
+
+      var builder = new StringBuilder();
+      foreach (var item in _strings.Where(s => s != null))
+      {
+        if (item.TryResolve(table, out var itemValue))
+          builder.Append(itemValue);
+        else
+          return false;
+      }
+
+      value = builder.ToString();
+      return true;
     }
 
     // Return a new localized string with the specified argument

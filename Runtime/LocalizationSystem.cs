@@ -178,6 +178,8 @@ namespace Audune.Localization
     // Format a message with the specified arguments using the specified locale
     public string Format(Locale locale, string message, IReadOnlyDictionary<string, object> arguments = null)
     {
+      if (locale == null)
+        throw new ArgumentNullException(nameof(locale));
       if (message == null)
         throw new ArgumentNullException(nameof(message));
       

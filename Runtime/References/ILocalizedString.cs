@@ -111,7 +111,7 @@ namespace Audune.Localization
       var actualStrings = strings.Interleave(separator);
 
       var actualArguments = new Dictionary<string, object>();
-      foreach (var e in strings.SelectMany(s => s.arguments))
+      foreach (var e in strings.SelectMany(s => s?.arguments ?? Enumerable.Empty<KeyValuePair<string, object>>()))
       {
         if (!actualArguments.ContainsKey(e.Key))
           actualArguments[e.Key] = e.Value;
@@ -135,7 +135,7 @@ namespace Audune.Localization
     // Return a new localized string that concatenates the specified localized strings
     public static ILocalizedString Concat(params ILocalizedString[] strings)
     {
-      return Concat(strings);
+      return Concat((IEnumerable<ILocalizedString>)strings);
     }
 
 
