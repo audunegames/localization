@@ -13,7 +13,7 @@ namespace Audune.Localization
 {
   // Class that defines a locale
   [CreateAssetMenu(menuName = "Audune/Localization/Locale", fileName = "Locale")]
-  public sealed class Locale : ScriptableObject, IMessageFormatProvider
+  public sealed class Locale : ScriptableObject, ILocale
   {
     // Constans that define defaults for formats
     public const string defaultDecimalNumberFormat = "n";

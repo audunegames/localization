@@ -22,6 +22,6 @@ namespace Audune.Localization
 
 
     // Load locales according to this loader
-    public abstract IEnumerable<Locale> LoadLocales();
+    public abstract IEnumerable<ILocale> LoadLocales();
   }
 }

@@ -14,7 +14,7 @@ namespace Audune.Localization
 
 
     // Load locales according to this loader
-    public override IEnumerable<Locale> LoadLocales()
+    public override IEnumerable<ILocale> LoadLocales()
     {
       // Return the locales in the list
       return _locales.Where(l => l != null);

@@ -19,14 +19,11 @@ namespace Audune.Localization
 
 
     // Internal state of the localization system
-    private List<Locale> _loadedLocales = new List<Locale>();
-    private Locale _selectedLocale = null;
-    private Locale _lastLocale = null;
+    private List<ILocale> _loadedLocales = new List<ILocale>();
+    private ILocale _selectedLocale = null;
+    private ILocale _lastLocale = null;
     
     private Dictionary<string, MessageFunction> _functions = new Dictionary<string, MessageFunction>();
-
-    // Localization system events
-    public event Action<Locale> onLocaleChanged;
 
 
     // Return all registered locale loaders
@@ -42,10 +39,10 @@ namespace Audune.Localization
     public IEnumerable<LocaleSelector> enabledSelectors => selectors.Where(l => l.executionMode.ShouldExecute());
 
     // Return the loaded locales
-    public IReadOnlyList<Locale> loadedLocales => _loadedLocales;
+    public IReadOnlyList<ILocale> loadedLocales => _loadedLocales;
 
     // Return and set the selected locale
-    public Locale selectedLocale {
+    public ILocale selectedLocale {
       get => _selectedLocale;
       set => _selectedLocale = value;
     }
@@ -55,6 +52,10 @@ namespace Audune.Localization
       get => _selectedLocale != null ? _selectedLocale.culture : CultureInfo.InvariantCulture;
       set => _selectedLocale = _loadedLocales.Where(locale => locale.code == value.Name).FirstOrDefault();
     }
+
+
+    // Event that is triggered when the selected locale is changed
+    public event Action<ILocale> onSelectedLocaleChanged;
 
 
     // Awake is called when the script instance is being loaded
@@ -88,7 +89,7 @@ namespace Audune.Localization
       {
         // Emit a locale changed event if the new locale is not null
         if (_selectedLocale != null)
-          onLocaleChanged?.Invoke(_selectedLocale);
+          onSelectedLocaleChanged?.Invoke(_selectedLocale);
 
         // Update the state
         _lastLocale = _selectedLocale;

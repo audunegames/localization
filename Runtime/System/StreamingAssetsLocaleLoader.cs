@@ -21,9 +21,9 @@ namespace Audune.Localization
 
 
     // Load locales according to this loader
-    public override IEnumerable<Locale> LoadLocales()
+    public override IEnumerable<ILocale> LoadLocales()
     {
-      var locales = new List<Locale>();
+      var locales = new List<ILocale>();
 
       // Create the parser
       var parser = Activator.CreateInstance(_localeFileFormat) as LocaleParser;

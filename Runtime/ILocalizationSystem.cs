@@ -22,17 +22,17 @@ namespace Audune.Localization
     public IEnumerable<LocaleSelector> enabledSelectors { get; }
 
     // Return the loaded locales
-    public IReadOnlyList<Locale> loadedLocales { get; }
+    public IReadOnlyList<ILocale> loadedLocales { get; }
 
     // Return and set the selected locale
-    public Locale selectedLocale { get; set; }
+    public ILocale selectedLocale { get; set; }
 
     // Return and set the selected culture
     public CultureInfo selectedCulture { get; set; }
 
 
-    // Event that is triggered when the locale of the system has changed
-    public event Action<Locale> onLocaleChanged;
+    // Event that is triggered when the selected locale is changed
+    public event Action<ILocale> onSelectedLocaleChanged;
 
 
     #region Loading and selecting locales
