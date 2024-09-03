@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 
 namespace Audune.Localization
 {
@@ -21,6 +22,23 @@ namespace Audune.Localization
       };
 
       return separator != null ? enumerable.SelectMany(InterleaveFunction) : enumerable;
+    }
+
+    // Concatenate an enumerable of items mapped to a string using the specified selector
+    public static string Concatenate<TValue>(this IEnumerable<TValue> enumerable, Func<TValue, string> stringSelector = null)
+    {
+      if (enumerable == null)
+        throw new ArgumentNullException(nameof(enumerable));
+
+      stringSelector ??= v => v.ToString();
+
+      return enumerable.Aggregate(new StringBuilder(), (b, v) => b.Append(stringSelector(v)), b => b.ToString());
+    }
+
+    // Concatenate an enumerable of strings
+    public static string Concatenate(this IEnumerable<string> enumerable)
+    {
+      return enumerable.Concatenate(s => s);
     }
   }
 }

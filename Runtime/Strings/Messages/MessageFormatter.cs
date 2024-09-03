@@ -57,7 +57,7 @@ namespace Audune.Localization
         int intValue => _formatProvider.FormatNumber(NumberContext.Of(intValue)),
         float floatValue => _formatProvider.FormatNumber(NumberContext.Of(floatValue)),
         DateTime dateTimeValue => _formatProvider.FormatDate(dateTimeValue),
-        LocalizedString localizedStringValue => localizedStringValue.TryResolve(_formatProvider.localizedStringTable, out var message) ? Format(new Message(message), env) : $"<{localizedStringValue}>",
+        ILocalizedString localizedStringValue => localizedStringValue.Resolve(_formatProvider).Invoke(Format),
         _ => value.ToString(),
       };
     }

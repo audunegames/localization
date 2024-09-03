@@ -1,6 +1,7 @@
 using Audune.Utils.Dictionary;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace Audune.Localization
@@ -53,14 +54,26 @@ namespace Audune.Localization
     public bool isLocalized => !string.IsNullOrEmpty(_path);
 
 
-    // Return if the localized string can be resolved and store the value
-    public bool TryResolve(ILocalizedStringTable table, out string value)
+    // Resolve the localized string
+    LocalizedStringResolver ILocalizedString.Resolve(IMessageFormatProvider formatProvider, IReadOnlyDictionary<string, object> extraArguments)
     {
+      var actualArguments = extraArguments != null ? _arguments.Merge(extraArguments, g => g.First()) : _arguments;
+      
       if (!string.IsNullOrEmpty(_path))
-        return table.TryFind(_path, out value);
-
-      value = !string.IsNullOrEmpty(_value) ? _value : string.Empty;
-      return true;
+      {
+        if (formatProvider.localizedStringTable.TryFind(_path, out var message))
+          return formatter => formatter(message, actualArguments);
+        else
+          throw new LocalizationException($"String {_path} could not be found");
+      }
+      else if (!string.IsNullOrEmpty(_value))
+      {
+        return formatter => formatter(_value, actualArguments);
+      }
+      else
+      {
+        return formatter => string.Empty;
+      }
     }
 
     // Return a new localized string with the specified argument

@@ -182,14 +182,14 @@ namespace Audune.Localization
 
     #region Formatting and localizing references
     // Format a message with the specified arguments using the specified locale
-    public string Format(Locale locale, string message, IReadOnlyDictionary<string, object> arguments = null)
+    public string Format(IMessageFormatProvider formatProvider, string message, IReadOnlyDictionary<string, object> arguments = null)
     {
-      if (locale == null)
-        throw new ArgumentNullException(nameof(locale));
+      if (formatProvider == null)
+        throw new ArgumentNullException(nameof(formatProvider));
       if (message == null)
         throw new ArgumentNullException(nameof(message));
       
-      return new MessageFormatter(locale, this).Format(message, arguments ?? new Dictionary<string, object>());
+      return new MessageFormatter(formatProvider, this).Format(message, arguments ?? new Dictionary<string, object>());
     }
     #endregion
   }

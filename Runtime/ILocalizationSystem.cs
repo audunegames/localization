@@ -1,12 +1,13 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Text;
 using UnityEngine;
 
 namespace Audune.Localization
 {
   // Interface that defines a localization system
-  public interface ILocalizationSystem : IMessageFunctionExecutor
+  public interface ILocalizationSystem : IMessageFunctionExecutor, ILocalizedStringFormatter
   {
     // Return all registered locale loaders
     public IEnumerable<LocaleLoader> loaders { get; }
@@ -43,39 +44,6 @@ namespace Audune.Localization
     #endregion
 
     #region Formatting messages
-    // Format a message with the specified arguments using the specified locale
-    public string Format(Locale locale, string message, IReadOnlyDictionary<string, object> arguments = null);
-
-    // Format a localized string using the specified locale
-    public string Format(Locale locale, ILocalizedString reference)
-    {
-      if (locale == null)
-        throw new ArgumentNullException(nameof(locale));
-      if (reference == null)
-        throw new ArgumentNullException(nameof(reference));
-
-      if (!reference.TryResolve(locale.strings, out var message))
-        throw new LocalizationException($"String \"{reference}\" could not be found in locale {locale}");
-
-      return Format(locale, message, reference.arguments);
-    }
-
-    // Format the contents of a text asset with the specified arguments using the specified locale
-    public string FormatAsset(Locale locale, string path, IReadOnlyDictionary<string, object> arguments = null)
-    {
-      if (locale == null)
-        throw new ArgumentNullException(nameof(locale));
-      if (path == null)
-        throw new ArgumentNullException(nameof(path));
-        
-      var textAsset = Resources.Load<TextAsset>(path);
-      if (textAsset == null)
-        throw new LocalizationException("Could not find a text asset at \"{path}\"");
-
-      return Format(locale, textAsset.text, arguments);
-    }
-
-
     // Format the specified message using the selected locale
     public string Format(string message, IReadOnlyDictionary<string, object> arguments = null)
     {
@@ -101,6 +69,15 @@ namespace Audune.Localization
         throw new LocalizationException("No locale has ben selected");
 
       return FormatAsset(selectedLocale, path, arguments);
+    }
+
+    // Format the contents of a file with the specified arguments using the selected locale
+    public string FormatFile(string path, Encoding encoding, IReadOnlyDictionary<string, object> arguments = null)
+    {
+      if (selectedLocale == null)
+        throw new LocalizationException("No locale has ben selected");
+
+      return FormatFile(selectedLocale, path, encoding, arguments);
     }
     #endregion
   }

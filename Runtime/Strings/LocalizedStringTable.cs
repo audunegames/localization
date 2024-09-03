@@ -50,13 +50,13 @@ namespace Audune.Localization
     }
 
     // Return the value of the entry in the table with the specified path, or a default value if one cannot be found
-    public string Find(string path, string defaultValue = default)
+    public string Find(string path, string defaultValue)
     {
       return TryFind(path, out var value) ? value : defaultValue;
     }
 
     // Return the value of the entry in the table with the specified path, or a default value if one cannot be found using the specified string comparison type
-    public string Find(string path, string defaultValue = default, StringComparison comparisonType = StringComparison.Ordinal)
+    public string Find(string path, string defaultValue, StringComparison comparisonType)
     {
       return TryFind(path, out var value, comparisonType) ? value : defaultValue;
     }

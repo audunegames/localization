@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -19,8 +20,8 @@ namespace Audune.Localization
     public bool isLocalized { get;}
 
 
-    // Return if the localized string can be resolved and store the value
-    public bool TryResolve(ILocalizedStringTable table, out string value);
+    // Resolve the localized string
+    public LocalizedStringResolver Resolve(IMessageFormatProvider formatProvider, IReadOnlyDictionary<string, object> extraArguments = null);
 
 
     #region Managing arguments
@@ -56,11 +57,11 @@ namespace Audune.Localization
     }
     #endregion
 
-    #region Managing formatting
-    // Return a new localized string with the value formatted with the specified function
-    public ILocalizedString Format(LocalizedStringFormatter formatter)
+    #region Managing mapping values
+    // Return a new localized string with the value mapped with the specified function
+    public ILocalizedString Select(Func<string, string> selector)
     {
-      return new FormattedLocalizedString(this, formatter);
+      return new SelectorLocalizedString(this, selector);
     }
     #endregion
 
@@ -89,7 +90,6 @@ namespace Audune.Localization
       return new LocalizedString(null, value);
     }
 
-
     // Create a localized string from a function message
     public static ILocalizedString Function(string name, string argument = null)
     {
@@ -108,16 +108,7 @@ namespace Audune.Localization
     // Return a new localized string that joins the specified localized strings separated by the specified separator
     public static ILocalizedString Join(ILocalizedString separator, IEnumerable<ILocalizedString> strings)
     {
-      var actualStrings = strings.Interleave(separator);
-
-      var actualArguments = new Dictionary<string, object>();
-      foreach (var e in strings.SelectMany(s => s?.arguments ?? Enumerable.Empty<KeyValuePair<string, object>>()))
-      {
-        if (!actualArguments.ContainsKey(e.Key))
-          actualArguments[e.Key] = e.Value;
-      }
-
-      return new JoinedLocalizedString(actualStrings, actualArguments);
+      return new JoinedLocalizedString(strings.Interleave(separator));
     }
 
     // Return a new localized string that joins the specified localized strings separated by the specified separator string
