@@ -5,7 +5,7 @@
   "unity": "2022.3",
   "description": "Simple string localization system for Unity 2022 LTS or higher",
   "documentationUrl": "https://github.com/audunegames/localization",
-  "changelogUrl": "https://github.com/audunegames/localization/commits/v2.0.2",
+  "changelogUrl": "https://github.com/audunegames/localization/tree/master/CHANGELOG.md",
   "licensesUrl": "https://www.gnu.org/licenses/gpl-3.0.html",
   "license": "GPL-3.0-or-later",
   "author": {
