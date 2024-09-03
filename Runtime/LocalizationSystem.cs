@@ -23,7 +23,7 @@ namespace Audune.Localization
     private Locale _selectedLocale = null;
     private Locale _lastLocale = null;
     
-    private Dictionary<string, Func<string, string>> _functions = new Dictionary<string, Func<string, string>>();
+    private Dictionary<string, MessageFunction> _functions = new Dictionary<string, MessageFunction>();
 
     // Localization system events
     public event Action<Locale> onLocaleChanged;
@@ -154,7 +154,7 @@ namespace Audune.Localization
 
     #region Managing message functions
     // Register a function with the specified name
-    public void RegisterFunction(string name, Func<string, string> func)
+    public void RegisterFunction(string name, MessageFunction func)
     {
       _functions.Add(name, func);
     }
@@ -165,10 +165,16 @@ namespace Audune.Localization
       _functions.Remove(name);
     }
 
+    // Return if a function with the specified name exists and store the function
+    public bool TryGetFunction(string name, out MessageFunction func)
+    {
+      return _functions.TryGetValue(name, out func);
+    }
+
     // Return if a function with the specified name exists and execute it with the specified argument
     public bool TryExecuteFunction(string name, string argument, out string value)
     {
-      var result = _functions.TryGetValue(name, out var func);
+      var result = TryGetFunction(name, out var func);
       value = result ? func(argument) : null;
       return result;
     }

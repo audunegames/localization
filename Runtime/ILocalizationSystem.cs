@@ -41,14 +41,6 @@ namespace Audune.Localization
     // Return if a locale can be selected using the registered selectors and store the selected locale
     public bool TrySelectLocale();
     #endregion
-    
-    #region Managing message functions
-    // Register a function with the specified name
-    public void RegisterFunction(string name, Func<string, string> func);
-
-    // Unregister a function with the specified name
-    public void UnregisterFunction(string name);
-    #endregion
 
     #region Formatting messages
     // Format a message with the specified arguments using the specified locale
