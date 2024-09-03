@@ -5,14 +5,14 @@ namespace Audune.Localization
   // Interface that defines a format provider for a message formatter
   public interface IMessageFormatProvider
   {
+    // Return the localized string table of the formatter
+    public ILocalizedStringTable localizedStringTable { get; }
+
     // Return the plural rules of the formatter
     public IPluralizer pluralRules { get; }
 
     // Return the ordinal plural rules of the formatter
     public IPluralizer ordinalPluralRules { get; }
-
-    // Return the localized string table of the formatter
-    public ILocalizedStringTable localizedStringTable { get; }
 
 
     // Return the number format for a number format style
