@@ -5,6 +5,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.0.0] - 2024-09-04
+
+### Added
+
+- Interface that defines the functionality of a locale.
+
+### Fixed
+
+- Composed localized strings have their own instances of arguments now, so joined strings don't use the same arguments for all items.
+
 ## [2.0.2] - 2024-09-02
 
 **Note: this release is not suitable to use in a production environment. Please use a higher version instead.**
