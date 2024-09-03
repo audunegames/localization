@@ -57,7 +57,7 @@ namespace Audune.Localization
     // Resolve the localized string
     LocalizedStringResolver ILocalizedString.Resolve(IMessageFormatProvider formatProvider, IReadOnlyDictionary<string, object> extraArguments)
     {
-      var actualArguments = extraArguments != null ? _arguments.Merge(extraArguments, g => g.First()) : _arguments;
+      var actualArguments = _arguments != null ? (extraArguments != null ? _arguments.Merge(extraArguments, g => g.First()) : _arguments) : new Dictionary<string, object>();
       
       if (!string.IsNullOrEmpty(_path))
       {
