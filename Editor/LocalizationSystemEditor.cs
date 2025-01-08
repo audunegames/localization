@@ -44,7 +44,7 @@ namespace Audune.Localization.Editor
       {
         var localeLoaders = target.loaders.ToList();
         if (localeLoaders.Count > 0)
-          EditorGUILayout.HelpBox(string.Join("\n", localeLoaders.Select(l => $"� {l.GetType().ToDisplayString(TypeDisplayOptions.DontShowNamespace)} [Priority {l.priority}, {ObjectNames.NicifyVariableName(l.executionMode.ToString())}]")), MessageType.None);
+          EditorGUILayout.HelpBox(string.Join("\n", localeLoaders.Select(l => $"• {l.GetType().ToDisplayString(TypeDisplayOptions.DontShowNamespace)} [Priority {l.priority}, {ObjectNames.NicifyVariableName(l.executionMode.ToString())}]")), MessageType.None);
         else
           EditorGUILayout.HelpBox("None", MessageType.None);
 
@@ -57,7 +57,7 @@ namespace Audune.Localization.Editor
       {
         var localeSelectors = target.selectors.ToList();
         if (localeSelectors.Count > 0)
-          EditorGUILayout.HelpBox(string.Join("\n", localeSelectors.Select(s => $"� {s.GetType().ToDisplayString(TypeDisplayOptions.DontShowNamespace)} [Priority {s.priority}, {ObjectNames.NicifyVariableName(s.executionMode.ToString())}]")), MessageType.None);
+          EditorGUILayout.HelpBox(string.Join("\n", localeSelectors.Select(s => $"• {s.GetType().ToDisplayString(TypeDisplayOptions.DontShowNamespace)} [Priority {s.priority}, {ObjectNames.NicifyVariableName(s.executionMode.ToString())}]")), MessageType.None);
         else
           EditorGUILayout.HelpBox("None", MessageType.None);
 

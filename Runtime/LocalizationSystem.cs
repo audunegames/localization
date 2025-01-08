@@ -62,7 +62,10 @@ namespace Audune.Localization
     private void Awake()
     {
       // Set the static instance
-      _current = this;
+      if (_current == null)
+        _current = this;
+      else
+        Destroy(gameObject);
 
       // Add functions to format assets
       RegisterFunction("asset", arg => ((ILocalizationSystem)this).FormatAsset(arg));
@@ -72,6 +75,14 @@ namespace Audune.Localization
       RegisterFunction("companyName", arg => Application.companyName);
       RegisterFunction("version", arg => Application.version);
       RegisterFunction("unityVersion", arg => Application.unityVersion);
+    }
+
+    // OnDestroy is called when the component will be destroyed
+    private void OnDestroy()
+    {
+      // Reset the static instancce
+      if ((object)_current == this)
+        _current = null;
     }
 
     // Start is called before the first frame update
