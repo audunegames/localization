@@ -5,7 +5,9 @@ using System.Text;
 
 namespace Audune.Localization
 {
-  // Class that defines a parser for plural rules
+  /// <summary>
+  /// Class that defines a parser for plural rules.
+  /// </summary>
   internal static class PluralRuleParser
   {
     // Enum that defines an operator for a relational condition

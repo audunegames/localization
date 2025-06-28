@@ -1,6 +1,8 @@
 namespace Audune.Localization
 {
-  // Class that defines a predicate in a plural rule
+  /// <summary>
+  /// Class that defines a predicate in a plural rule.
+  /// </summary>
   public sealed class PluralRule
   {
     // Enum that defines the opcode of a predicate

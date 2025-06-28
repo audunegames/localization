@@ -2,7 +2,9 @@ using System.Collections.Generic;
 
 namespace Audune.Localization
 {
-  // Class that defines an environment for a message formatter
+  /// <summary>
+  /// Class that defines an environment for a message formatter.
+  /// </summary>
   internal sealed class MessageEnvironment
   {
     // Internal state of the environment

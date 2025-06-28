@@ -2,8 +2,10 @@ using System.Collections.Generic;
 
 namespace Audune.Localization
 {
-  // Class that defines a message compatible with ICU MessageFormat
-  // See https://unicode-org.github.io/icu/userguide/format_parse/messages/ for more information
+  /// <summary>
+  /// Class that defines a message compatible with ICU MessageFormat.
+  /// See https://unicode-org.github.io/icu/userguide/format_parse/messages/ for more information
+  /// </summary>
   internal sealed class Message
   {
     // List of components of the message

@@ -8,7 +8,9 @@ using UnityEngine;
 
 namespace Audune.Localization
 {
-  // Class that defines a database of plural rules for a set of locales
+  /// <summary>
+  /// Class that defines a database of plural rules for a set of locales.
+  /// </summary>
   public sealed class PluralRuleDatabase : IEnumerable<KeyValuePair<string, PluralRuleList>>
   {
     // Static instances of existing plural rule databases

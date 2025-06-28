@@ -3,7 +3,9 @@ using System.Collections.Generic;
 
 namespace Audune.Localization
 {
-  // Class that defines a selector for a plural format message component
+  /// <summary>
+  /// Class that defines a selector for a plural format message component.
+  /// </summary>
   internal abstract class PluralSelector : IComparable<PluralSelector>
   {
     // Return if the selector matches the specified number or keyword

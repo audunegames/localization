@@ -4,7 +4,9 @@ using System.Linq;
 
 namespace Audune.Localization
 {
-  // Class that defines a component of a message
+  /// <summary>
+  /// Class that defines a component of a message.
+  /// </summary>
   internal abstract class MessageComponent
   {
     // Interface that defines a visitor for message components

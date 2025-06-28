@@ -4,7 +4,9 @@ using System.Linq;
 
 namespace Audune.Localization
 {
-  // Class that defines a list of plural rules
+  /// <summary>
+  /// Class that defines a list of plural rules.
+  /// </summary>
   public sealed class PluralRuleList : IEnumerable<PluralRule>, IPluralizer
   {
     // Internal state of the plural rule list

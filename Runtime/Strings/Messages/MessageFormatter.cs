@@ -7,7 +7,9 @@ namespace Audune.Localization
   using PluralFormatType = MessageComponent.PluralFormat.Type;
 
 
-  // Class that formats a message
+  /// <summary>
+  /// Class that formats a message.
+  /// </summary>
   internal sealed class MessageFormatter : IMessageFormatter, MessageComponent.IVisitor<string, MessageEnvironment>
   {
     // Messsage formatter properties

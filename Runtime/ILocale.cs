@@ -3,25 +3,40 @@ using System.Globalization;
 
 namespace Audune.Localization
 {
-  // Interface that defines a locale
+  /// <summary>
+  /// Interface that defines a locale.
+  /// </summary>
   public interface ILocale : IMessageFormatProvider
   {
-    // Return the code of the locale
+    /// <summary>
+    /// Return the code of the locale.
+    /// </summary>
     public string code { get; }
 
-    // Return the English name of the locale
+    /// <summary>
+    /// Return the English name of the locale.
+    /// </summary>
     public string englishName { get; }
 
-    // Return the native name of the locale
+    /// <summary>
+    /// Return the native name of the locale.
+    /// </summary>
     public string nativeName { get; }
 
-    // Return the alternative codes of the locale
+    /// <summary>
+    /// Return the alternative codes of the locale.
+    /// </summary>
     public IReadOnlyDictionary<string, string> altCodes { get; }
 
-    // Return the strings table of the locale
+    /// <summary>
+    /// Return the strings table of the locale.
+    /// </summary>
     public ILocalizedStringTable strings { get; }
 
-    // Return the culture of the locale
-    public CultureInfo culture => CultureInfoExtensions.GetCultureInfoOrInvariant(code);
+    /// <summary>
+    /// Return the culture of the locale.
+    /// </summary>
+    /// <seealso href="https://learn.microsoft.com/en-us/dotnet/api/system.globalization.cultureinfo?view=net-9.0"/> 
+    public CultureInfo culture { get; }
   }
 }

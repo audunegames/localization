@@ -4,7 +4,9 @@ using System.Text;
 
 namespace Audune.Localization
 {
-  // Class that defines a scanner that iterates over a string
+  /// <summary>
+  /// Class that defines a scanner that iterates over a string.
+  /// </summary>
   internal sealed class Scanner
   {
     // The input of the scanner

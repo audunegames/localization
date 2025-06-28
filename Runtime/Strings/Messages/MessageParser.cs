@@ -10,7 +10,9 @@ namespace Audune.Localization
   using PluralFormatType = MessageComponent.PluralFormat.Type;
 
 
-  // Class that defines a parser for a message
+  /// <summary>
+  /// Class that defines a parser for a message.
+  /// </summary>
   internal static class MessageParser
   {
     // Enum that defines the type of a nested context in the parser

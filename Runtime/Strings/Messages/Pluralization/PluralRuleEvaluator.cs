@@ -1,11 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using UnityEngine;
 
 namespace Audune.Localization
 {
-  // Class that defines an evaluator for a plural rule
+  /// <summary>
+  /// Class that defines an evaluator for a plural rule.
+  /// </summary>
   internal class PluralRuleEvaluator
   {
     // Internal state of the evaluator
