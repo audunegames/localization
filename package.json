@@ -7,7 +7,7 @@
   "documentationUrl": "https://github.com/audunegames/localization",
   "changelogUrl": "https://github.com/audunegames/localization/tree/master/CHANGELOG.md",
   "licensesUrl": "https://www.gnu.org/licenses/lgpl-3.0.html",
-  "license": "GPL-3.0-or-later",
+  "license": "LGPL-3.0-or-later",
   "author": {
     "name": "Audune Games",
     "email": "support@audune.com",
