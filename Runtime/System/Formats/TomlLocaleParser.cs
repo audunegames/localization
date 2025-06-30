@@ -10,11 +10,17 @@ using UnityEngine;
 
 namespace Audune.Localization
 {
-  // Class that parses a locale file in TOML format
+  /// <summary>
+  /// Class that parses a locale file from the TOML format.
+  /// </summary>
   [TypeDisplayName("TOML")]
   public class TomlLocaleParser : LocaleParser
   {
-    // Parse a locale from a reader
+    /// <summary>
+    /// Parse a locale from a text reader.
+    /// </summary>
+    /// <param name="textReader">The text reader to parse the locale from.</param>
+    /// <returns>The parsed locale.</returns>
     public override Locale Parse(TextReader reader)
     {
       try
@@ -76,7 +82,9 @@ namespace Audune.Localization
     }
 
 
-    // Recurse over the leaf nodes of a node
+    /// <summary>
+    /// Recurse over the leaf nodes of a node.
+    /// </summary>
     private IEnumerable<KeyValuePair<string, TValue>> RecurseLeafNodes<TNode, TValue>(TomlNode node, Func<TNode, TValue> valueSelector) where TNode : TomlNode
     {
       foreach (var key in node.Keys)
@@ -94,7 +102,9 @@ namespace Audune.Localization
       }
     }
 
-    // Recurse over the leaf string nodes of a node
+    /// <summary>
+    /// Recurse over the leaf string nodes of a node.
+    /// </summary>
     private IEnumerable<KeyValuePair<string, TValue>> RecurseLeafStringNodes<TValue>(TomlNode node, Func<string, TValue> valueSelector)
     {
       return RecurseLeafNodes<TomlString, TValue>(node, n => valueSelector(n.Value));
