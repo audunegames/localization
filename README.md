@@ -6,7 +6,7 @@
 ## Features
 
 * A localization system component that is configured solely with components on a GameObject. Add locale loaders and selectors to the system to control the ways locales are loaded and selectors. Acces the functonality of the system through scripting.
-* Create locales with scriptable objects, or import them from TOML files. Custom parsers for importing locales can also be defined.
+* Create locales with scriptable objects, or import them from TOML or [PO files](https://www.gnu.org/software/gettext/manual/html_node/PO-Files.html). Custom parsers for importing locales can also be defined.
 * Format strings in a locale using the [ICU message format](https://lokalise.com/blog/complete-guide-to-icu-message-format/). Messages have support for `number`, `date`, `plural`, `selectordinal`, and `select` formats. Plural rules for all locales defined by the [CLDR](https://www.unicode.org/cldr/charts/44/supplemental/language_plural_rules.html#cs) are included in the package and automatically applied.
 * Reference strings from the table of locales in your code or in the inspector to localize them on demand. Add arguments to a reference or format the result via scripting.
 * Define custom locale loaders to define sources where the system loads locales from. A locale loader that loads locales from assets, as well as a loader that loads additional locale sat runtime from the StreamingAssets folder, are included.
@@ -18,7 +18,7 @@
 
 This package depends on the following packages:
 
-* [Serializable Types](https://openupm.com/packages/com.audune.utils.types/), version **1.0.3** or higher.
+* [Serializable Types](https://openupm.com/packages/com.audune.utils.types/), version **1.0.4** or higher.
 * [Serializable Dictionary](https://openupm.com/packages/com.audune.utils.dictionary/), version **1.0.5** or higher.
 * [UnityEditor Utilities](https://openupm.com/packages/com.audune.utils.unityeditor/), version **2.0.7** or higher.
 
