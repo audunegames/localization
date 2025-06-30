@@ -11,9 +11,9 @@ using UnityEngine;
 namespace Audune.Localization
 {
   /// <summary>
-  /// Class that parses a locale file from the TOML format.
+  /// Class that parses a locale file in the TOML format.
   /// </summary>
-  [TypeDisplayName("TOML")]
+  [TypeDisplayName("TOML (.toml)")]
   public class TomlLocaleParser : LocaleParser
   {
     /// <summary>

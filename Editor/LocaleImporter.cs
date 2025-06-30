@@ -8,7 +8,7 @@ using UnityEngine;
 namespace Audune.Localization.Editor
 {
   // Class that defines a scripted importer for localized strings
-  [ScriptedImporter(202203002, new[] { "locale" }, new[] { "toml" })]
+  [ScriptedImporter(202203002, new[] { "locale" }, new[] { "toml", "po" })]
   public class LocaleImporter : ScriptedImporter
   {
     // Locale importer settings

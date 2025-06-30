@@ -35,7 +35,7 @@ namespace Audune.Localization
     public int count => _entries.Count;
 
     /// <summary>
-    /// Return the value of the entry in the dictionary for the specified key
+    /// Return the value of the entry in the dictionary for the specified key.
     /// </summary>
     /// <param name="key">The key to get the value for.</param>
     /// <returns>The value for the specified key, or null if the key does not exist.</param>
