@@ -4,7 +4,9 @@ using UnityEngine;
 
 namespace Audune.Localization
 {
-  // Class that defines a locale loader that loads the specified locales
+  /// <summary>
+  /// Class that defines a locale loader that loads the specified locales.
+  /// </summary>
   [AddComponentMenu("Audune/Localization/Locale Loaders/Persistent Locale Loader")]
   public sealed class PersistentLocaleLoader : LocaleLoader
   {
@@ -13,7 +15,10 @@ namespace Audune.Localization
     private List<Locale> _locales;
 
 
-    // Load locales according to this loader
+    /// <summary>
+    /// Load locales according to this loader.
+    /// </summary>
+    /// <returns>An enumerable of loaded locales.</returns>
     public override IEnumerable<ILocale> LoadLocales()
     {
       // Return the locales in the list

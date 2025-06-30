@@ -3,7 +3,9 @@ using UnityEngine;
 
 namespace Audune.Localization
 {
-  // Base class that defines a locale loader
+  /// <summary>
+  /// Base class that defines a locale loader.
+  /// </summary>
   [RequireComponent(typeof(LocalizationSystem))]
   public abstract class LocaleLoader : MonoBehaviour
   {
@@ -14,14 +16,21 @@ namespace Audune.Localization
     private ExecutionMode _executionMode = ExecutionMode.Always;
 
 
-    // Return the priority of the loader
+    /// <summary>
+    /// Return the priority of the loader.
+    /// </summary>
     public int priority => _priority;
 
-    // Return the execution mode of the loader
+    /// <summary>
+    /// Return the execution mode of the loader.
+    /// </summary>
     public ExecutionMode executionMode => _executionMode;
 
 
-    // Load locales according to this loader
+    /// <summary>
+    /// Load locales according to this loader.
+    /// </summary>
+    /// <returns>An enumerable of loaded locales.</returns>
     public abstract IEnumerable<ILocale> LoadLocales();
   }
 }

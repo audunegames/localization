@@ -3,7 +3,9 @@ using UnityEngine;
 
 namespace Audune.Localization
 {
-  // Base class that defines a locale selector
+  /// <summary>
+  /// Base class that defines a locale selector.
+  /// </summary>
   [RequireComponent(typeof(LocalizationSystem))]
   public abstract class LocaleSelector : MonoBehaviour
   {
@@ -14,14 +16,23 @@ namespace Audune.Localization
     private ExecutionMode _executionMode = ExecutionMode.Always;
 
 
-    // Return the priority of the selector
+    /// <summary>
+    /// Return the priority of the selector.
+    /// </summary>
     public int priority => _priority;
 
-    // Return the execution mode of the selector
+    /// <summary>
+    /// Return the execution mode of the selector.
+    /// </summary>
     public ExecutionMode executionMode => _executionMode;
 
 
-    // Return if a locale could be selected according to this selector and store the selected locale
+    /// <summary>
+    /// Return if a locale could be selected according to this selector and store the selected locale.
+    /// </summary>
+    /// <param name="locales">The list of locales to select a locale from.</param>
+    /// <param name="locale">The locale in which the selected locale will be stored if a locale could be selected.</param>
+    /// <returns>Whether a locale could be selected.</returns>
     public abstract bool TrySelectLocale(IReadOnlyList<ILocale> locales, out ILocale locale);
   }
 }

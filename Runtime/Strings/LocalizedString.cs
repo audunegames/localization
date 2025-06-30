@@ -6,7 +6,9 @@ using UnityEngine;
 
 namespace Audune.Localization
 {
-  // Class that defines a localized string reference
+  /// <summary>
+  /// Class that defines a localized string reference.
+  /// </summary>
   [Serializable]
   public class LocalizedString : ILocalizedString, IEquatable<LocalizedString>
   {
@@ -44,17 +46,28 @@ namespace Audune.Localization
 
 
     #region Localized string implementation
-    // Return the arguments of the localized string
+    /// <summary>
+    /// Return the arguments of the localized string.
+    /// </summary>
     public IReadOnlyDictionary<string, object> arguments => _arguments;
 
-    // Return if the localized string is not empty
+    /// <summary>
+    /// Return if the localized string is not empty.
+    /// </summary>
     public bool isPresent => !string.IsNullOrEmpty(_path) || !string.IsNullOrEmpty(_value);
 
-    // Return if the localized string is localized
+    /// <summary>
+    /// Return if the localized string is localized.
+    /// </summary>
     public bool isLocalized => !string.IsNullOrEmpty(_path);
 
 
-    // Resolve the localized string
+    /// <summary>
+    /// Resolve the localized string.
+    /// </summary>
+    /// <param name="formatProvider">The format provider to use.</param>
+    /// <param name="extraArguments">The extra arguments to add.</param>
+    /// <returns>The resolver to resolve the localized string with.</returns>
     LocalizedStringResolver ILocalizedString.Resolve(IMessageFormatProvider formatProvider, IReadOnlyDictionary<string, object> extraArguments)
     {
       var actualArguments = _arguments != null ? (extraArguments != null ? _arguments.Merge(extraArguments, g => g.First()) : _arguments) : new Dictionary<string, object>();
@@ -76,7 +89,12 @@ namespace Audune.Localization
       }
     }
 
-    // Return a new localized string with the specified argument
+    /// <summary>
+    /// Return a new localized string with the specified argument.
+    /// </summary>
+    /// <param name="key">The key to add.</param>
+    /// <param name="value">The value to add for the specified key.</param>
+    /// <returns>A localized string with the added argument.</returns>
     public ILocalizedString WithArgument(string key, object value)
     {
       var newString = new LocalizedString(_path, _value, _arguments);
@@ -84,7 +102,23 @@ namespace Audune.Localization
       return newString;
     }
 
-    // Return a new localized string with the specified arguments
+    /// <summary>
+    /// Return a new localized string without the specified argument
+    /// </summary>
+    /// <param name="key">The key to remove.</param>
+    /// <returns>A localized string with the removed argument.</returns>
+    public ILocalizedString WithoutArgument(string key)
+    {
+      var newString = new LocalizedString(_path, _value, _arguments);
+      newString._arguments.Remove(key);
+      return newString;
+    }
+
+    /// <summary>
+    /// Return a new localized string with the arguments from the specified enumerable.
+    /// </summary>
+    /// <param name="arguments">The enumerable of arguments to add.</param>
+    /// <returns>A localized string with the added arguments.</returns>
     public ILocalizedString WithArguments(IEnumerable<KeyValuePair<string, object>> arguments)
     {
       var newString = new LocalizedString(_path, _value, _arguments);
@@ -93,21 +127,11 @@ namespace Audune.Localization
       return newString;
     }
 
-    // Return a new localized string with the arguments from the specified provider
-    public ILocalizedString WithArguments(ILocalizedStringArgumentsProvider arguments)
-    {
-      return WithArguments(arguments.arguments);
-    }
-
-    // Return a new localized string without the specified argument
-    public ILocalizedString WithoutArgument(string key)
-    {
-      var newString = new LocalizedString(_path, _value, _arguments);
-      newString._arguments.Remove(key);
-      return newString;
-    }
-
-    // Return a new localized string without the specified arguments
+    /// <summary>
+    /// Return a new localized string without the arguments from the specified enumerable.
+    /// </summary>
+    /// <param name="keys">The enumerable of keys to remove.</param>
+    /// <returns>A localized string with the added arguments.</returns>
     public ILocalizedString WithoutArguments(IEnumerable<string> keys)
     {
       var newString = new LocalizedString(_path, _value, _arguments);
@@ -116,7 +140,21 @@ namespace Audune.Localization
       return newString;
     }
 
-    // Return a new localized string without the arguments from the specified provider
+    /// <summary>
+    /// Return a new localized string with the arguments from the specified provider.
+    /// </summary>
+    /// <param name="arguments">The arguments provides whose arguments to add.</param>
+    /// <returns>A localized string with the added arguments.</returns>
+    public ILocalizedString WithArguments(ILocalizedStringArgumentsProvider arguments)
+    {
+      return WithArguments(arguments.arguments);
+    }
+
+    /// <summary>
+    /// Return a new localized string without the arguments from the specified provider.
+    /// </summary>
+    /// <param name="arguments">The arguments provides whose arguments to remove.</param>
+    /// <returns>A localized string with the added arguments.</returns>
     public ILocalizedString WithoutArguments(ILocalizedStringArgumentsProvider arguments)
     {
       return WithoutArguments(arguments.arguments.Keys);

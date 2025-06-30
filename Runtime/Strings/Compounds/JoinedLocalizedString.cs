@@ -45,8 +45,13 @@ namespace Audune.Localization
       var resolvers = _references.Select(reference => reference.Resolve(formatProvider, actualArguments));
       return formatter => resolvers.Select(resolver => resolver(formatter)).Concatenate();
     }
-
-    // Return a new localized string with the specified argument
+    
+    /// <summary>
+    /// Return a new localized string with the specified argument.
+    /// </summary>
+    /// <param name="key">The key to add.</param>
+    /// <param name="value">The value to add for the specified key.</param>
+    /// <returns>A localized string with the added argument.</returns>
     ILocalizedString ILocalizedString.WithArgument(string key, object value)
     {
       var newString = new JoinedLocalizedString(_references, _arguments);
@@ -54,7 +59,11 @@ namespace Audune.Localization
       return newString;
     }
 
-    // Return a new localized string without the specified argument
+    /// <summary>
+    /// Return a new localized string without the specified argument
+    /// </summary>
+    /// <param name="key">The key to remove.</param>
+    /// <returns>A localized string with the removed argument.</returns>
     ILocalizedString ILocalizedString.WithoutArgument(string key)
     {
       var newString = new JoinedLocalizedString(_references, _arguments);
@@ -62,7 +71,11 @@ namespace Audune.Localization
       return newString;
     }
     
-    // Return a new localized string with the arguments from the specified enumerable
+    /// <summary>
+    /// Return a new localized string with the arguments from the specified enumerable.
+    /// </summary>
+    /// <param name="arguments">The enumerable of arguments to add.</param>
+    /// <returns>A localized string with the added arguments.</returns>
     ILocalizedString ILocalizedString.WithArguments(IEnumerable<KeyValuePair<string, object>> arguments)
     {
       var newString = new JoinedLocalizedString(_references, _arguments);
@@ -71,7 +84,11 @@ namespace Audune.Localization
       return newString;
     }
 
-    // Return a new localized string without the arguments from the specified enumerable
+    /// <summary>
+    /// Return a new localized string without the arguments from the specified enumerable.
+    /// </summary>
+    /// <param name="keys">The enumerable of keys to remove.</param>
+    /// <returns>A localized string with the added arguments.</returns>
     ILocalizedString ILocalizedString.WithoutArguments(IEnumerable<string> keys)
     {
       var newString = new JoinedLocalizedString(_references, _arguments);

@@ -7,7 +7,9 @@ using UnityEngine;
 
 namespace Audune.Localization
 {
-  // Class that defines a locale loader that returns the specified locale
+  /// <summary>
+  /// Class that defines a locale loader that returns the specified locale.
+  /// </summary>
   [AddComponentMenu("Audune/Localization/Locale Loaders/Streaming Assets Locale Loader")]
   public sealed class StreamingAssetsLocaleLoader : LocaleLoader
   {
@@ -20,7 +22,10 @@ namespace Audune.Localization
     private SerializableType _localeFileFormat = typeof(LocaleParser).GetChildTypes().FirstOrDefault();
 
 
-    // Load locales according to this loader
+    /// <summary>
+    /// Load locales according to this loader.
+    /// </summary>
+    /// <returns>An enumerable of loaded locales.</returns>
     public override IEnumerable<ILocale> LoadLocales()
     {
       var locales = new List<ILocale>();

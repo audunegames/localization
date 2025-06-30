@@ -6,7 +6,9 @@ using UnityEngine;
 
 namespace Audune.Localization
 {
-  // Class that defines the system for localization
+  /// <summary>
+  /// Class that defines a localization system.
+  /// </summary>
   [AddComponentMenu("Audune/Localization/Localization System")]
   [DefaultExecutionOrder(-100)]
   public sealed class LocalizationSystem : MonoBehaviour, ILocalizationSystem
@@ -14,7 +16,9 @@ namespace Audune.Localization
     // Static instance of the localization system
     private static ILocalizationSystem _current;
 
-    // Return the static instance of the localization system
+    /// <summary>
+    /// Return the static instance of the localization system.
+    /// </summary>
     public static ILocalizationSystem current => _current;
 
 
@@ -26,35 +30,51 @@ namespace Audune.Localization
     private Dictionary<string, MessageFunction> _functions = new Dictionary<string, MessageFunction>();
 
 
-    // Return all registered locale loaders
+    /// <summary>
+    /// Return all registered locale loaders.
+    /// </summary>
     public IEnumerable<LocaleLoader> loaders => GetComponents<LocaleLoader>().OrderBy(l => l.priority);
     
-    // Return all enabled registered locale loaders
+    /// <summary>
+    /// Return all enabled registered locale loaders.
+    /// </summary>
     public IEnumerable<LocaleLoader> enabledLoaders =>  loaders.Where(l => l.executionMode.ShouldExecute());
 
-    // Return all registered locale selectors
+    /// <summary>
+    /// Return all registered locale selectors.
+    /// </summary>
     public IEnumerable<LocaleSelector> selectors => GetComponents<LocaleSelector>().OrderBy(s => s.priority);
 
-    // Return all enabled registered locale selectors
+    /// <summary>
+    /// Return all enabled registered locale selectors.
+    /// </summary>
     public IEnumerable<LocaleSelector> enabledSelectors => selectors.Where(l => l.executionMode.ShouldExecute());
 
-    // Return the loaded locales
+    /// <summary>
+    /// Return the loaded locales.
+    /// </summary>
     public IReadOnlyList<ILocale> loadedLocales => _loadedLocales;
 
-    // Return and set the selected locale
+    /// <summary>
+    /// Return and set the selected locale.
+    /// </summary>
     public ILocale selectedLocale {
       get => _selectedLocale;
       set => _selectedLocale = value;
     }
 
-    // Return and set the selected culture
+    /// <summary>
+    /// Return and set the selected culture.
+    /// </summary>
     public CultureInfo selectedCulture {
       get => _selectedLocale != null ? _selectedLocale.culture : CultureInfo.InvariantCulture;
       set => _selectedLocale = _loadedLocales.Where(locale => locale.code == value.Name).FirstOrDefault();
     }
 
 
-    // Event that is triggered when the selected locale is changed
+    /// <summary>
+    /// Event that is triggered when the selected locale is changed.
+    /// </summary>
     public event Action<ILocale> onSelectedLocaleChanged;
 
 
@@ -109,7 +129,9 @@ namespace Audune.Localization
 
 
     #region System initialization
-    // Initialize the system
+    /// <summary>
+    /// Initialize the system.
+    /// </summary>
     public void Initialize()
     {
       // Load the locales
@@ -120,7 +142,9 @@ namespace Audune.Localization
         Debug.LogWarning($"[{gameObject.name}] Could not select a locale using any of the registered locale selectors");
     }
 
-    // Initialize the system if no locale has been selected
+    /// <summary>
+    /// Initialize the system if no locale has been selected.
+    /// </summary>
     public void InitializeIfNoLocaleSelected()
     {
       if (_selectedLocale == null)
@@ -129,7 +153,9 @@ namespace Audune.Localization
     #endregion
 
     #region Loading and selecting locales
-    // Load the locales using the registered loaders
+    /// <summary>
+    /// Load the locales using the registered loaders.
+    /// </summary>
     public void LoadLocales()
     {
       _loadedLocales.Clear();
@@ -145,7 +171,10 @@ namespace Audune.Localization
       }
     }
 
-    // Return if a locale can be selected using the registered selectors and store the selected locale
+    /// <summary>
+    /// Return if a locale can be selected using the registered selectors and store the selected locale.
+    /// </summary>
+    /// <returns>Whether a locale could be selected using the registered selectors.</returns>
     public bool TrySelectLocale()
     {
       foreach (var selectors in enabledSelectors)
@@ -165,25 +194,43 @@ namespace Audune.Localization
     #endregion
 
     #region Managing message functions
-    // Register a function with the specified name
+    /// <summary>
+    /// Register a function with the specified name.
+    /// </summary>
+    /// <param name="name">The name of the function to register.</param>
+    /// <param name="func">The function to register under the specified name</param>
     public void RegisterFunction(string name, MessageFunction func)
     {
       _functions.Add(name, func);
     }
 
-    // Unregister a function with the specified name
+    /// <summary>
+    /// Unregister a function with the specified name.
+    /// </summary>
+    /// <param name="name">The name of the function to unregister.</param>
     public void UnregisterFunction(string name)
     {
       _functions.Remove(name);
     }
 
-    // Return if a function with the specified name exists and store the function
+    /// <summary>
+    /// Return if a function with the specified name exists and store the function.
+    /// </summary>
+    /// <param name="name">The name of the function to get.</param>
+    /// <param name="func">The function corresponding to the specified name.</param>
+    /// <returns>If a function with the specified name exists.</returns>
     public bool TryGetFunction(string name, out MessageFunction func)
     {
       return _functions.TryGetValue(name, out func);
     }
 
-    // Return if a function with the specified name exists and execute it with the specified argument
+    /// <summary>
+    /// Return if a function with the specified name exists and execute it with the specified argument.
+    /// </summary>
+    /// <param name="name">The name of the function to execute.</param>
+    /// <param name="argument">The argument to supply to the function.</param>
+    /// <param name="value">The result of executing the function corresponding to the specified name with the specified argument.</param>
+    /// <returns>If a function with the specified name exists.</returns>
     public bool TryExecuteFunction(string name, string argument, out string value)
     {
       var result = TryGetFunction(name, out var func);
@@ -193,7 +240,13 @@ namespace Audune.Localization
     #endregion
 
     #region Formatting and localizing references
-    // Format a message with the specified arguments using the specified locale
+    /// <summary>
+    /// Format a message with the specified arguments using the specified format provider.
+    /// </summary>
+    /// <param name="formatProvider">The format provider to format the message with.</param>
+    /// <param name="message">The message to format using the format provider.</param>
+    /// <param name="arguments">The arguments to format inside of the message.</param>
+    /// <returns>The formatted message, using the specified format provider.</returns>
     public string Format(IMessageFormatProvider formatProvider, string message, IReadOnlyDictionary<string, object> arguments = null)
     {
       if (formatProvider == null)

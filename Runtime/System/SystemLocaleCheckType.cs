@@ -2,7 +2,9 @@ using System;
 
 namespace Audune.Localization
 {
-  // Enum that defines the checks to execute to select a locale in a system locale selector
+  /// <summary>
+  /// Enum that defines the checks to execute to select a locale in a system locale selector.
+  /// </summary>
   [Flags]
   public enum SystemLocaleCheckType
   {

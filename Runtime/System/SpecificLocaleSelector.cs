@@ -3,7 +3,9 @@ using UnityEngine;
 
 namespace Audune.Localization
 {
-  // Class that defines a locale selector that returns the specified locale
+  /// <summary>
+  /// Class that defines a locale selector that returns the specified locale.
+  /// </summary>
   [AddComponentMenu("Audune/Localization/Locale Selectors/Specific Locale Selector")]
   public sealed class SpecificLocaleSelector : LocaleSelector
   {
@@ -12,7 +14,9 @@ namespace Audune.Localization
     private Locale _locale;
 
 
-    // Return if a locale could be selected according to this selector and store the selected locale
+    /// <summary>
+    /// Return if a locale could be selected according to this selector and store the selected locale
+    /// </summary>
     public override bool TrySelectLocale(IReadOnlyList<ILocale> locales, out ILocale locale)
     {
       locale = _locale;

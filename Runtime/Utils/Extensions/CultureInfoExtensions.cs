@@ -3,10 +3,16 @@ using System;
 
 namespace Audune.Localization
 {
-  // Class that defines extensions for the CultureInfo class
+  /// <summary>
+  /// Class that defines extensions for the CultureInfo class.
+  /// </summary>
   internal static class CultureInfoExtensions
   {
-    // Return the culture info from the specified name, or the invariant culture if failed
+    /// <summary>
+    /// Return the culture info with the specified name, or the invariant culture if the name does not exist.
+    /// </summary>
+    /// <param name="name">The name of the culture to find.</param>
+    /// <returns>The culture info with the specified name, or the invariant culture if the name does not exist.</returns>
     public static CultureInfo GetCultureInfoOrInvariant(string name)
     {
       try

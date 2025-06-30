@@ -61,7 +61,7 @@ namespace Audune.Localization
     /// <summary>
     /// Return if a locale can be selected using the registered selectors and store the selected locale.
     /// </summary>
-    /// <returns>If a locale could be selected using the registered selectors.</returns>
+    /// <returns>Whether a locale could be selected using the registered selectors.</returns>
     public bool TrySelectLocale();
     #endregion
 

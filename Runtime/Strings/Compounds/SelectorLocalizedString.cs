@@ -44,25 +44,42 @@ namespace Audune.Localization
       return formatter => _selector(resolver(formatter));
     }
 
-    // Return a new localized string with the specified argument
+    /// <summary>
+    /// Return a new localized string with the specified argument.
+    /// </summary>
+    /// <param name="key">The key to add.</param>
+    /// <param name="value">The value to add for the specified key.</param>
+    /// <returns>A localized string with the added argument.</returns>
     ILocalizedString ILocalizedString.WithArgument(string key, object value)
     {
       return new SelectorLocalizedString(_reference.WithArgument(key, value), _selector);
     }
 
-    // Return a new localized string without the specified argument
+    /// <summary>
+    /// Return a new localized string without the specified argument
+    /// </summary>
+    /// <param name="key">The key to remove.</param>
+    /// <returns>A localized string with the removed argument.</returns>
     ILocalizedString ILocalizedString.WithoutArgument(string key)
     {
       return new SelectorLocalizedString(_reference.WithoutArgument(key), _selector);
     }
     
-    // Return a new localized string with the arguments from the specified enumerable
+    /// <summary>
+    /// Return a new localized string with the arguments from the specified enumerable.
+    /// </summary>
+    /// <param name="arguments">The enumerable of arguments to add.</param>
+    /// <returns>A localized string with the added arguments.</returns>
     ILocalizedString ILocalizedString.WithArguments(IEnumerable<KeyValuePair<string, object>> arguments)
     {
       return new SelectorLocalizedString(_reference.WithArguments(arguments), _selector);
     }
 
-    // Return a new localized string without the arguments from the specified enumerable
+    /// <summary>
+    /// Return a new localized string without the arguments from the specified enumerable.
+    /// </summary>
+    /// <param name="keys">The enumerable of keys to remove.</param>
+    /// <returns>A localized string with the added arguments.</returns>
     ILocalizedString ILocalizedString.WithoutArguments(IEnumerable<string> keys)
     {
       return new SelectorLocalizedString(_reference.WithoutArguments(keys), _selector);

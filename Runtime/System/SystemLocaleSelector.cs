@@ -5,7 +5,9 @@ using UnityEngine;
 
 namespace Audune.Localization
 {
-  // Class that defines a locale selector that uses the system language
+  /// <summary>
+  /// Class that defines a locale selector that uses the system language.
+  /// </summary>
   [AddComponentMenu("Audune/Localization/Locale Selectors/System Locale Selector")]
   public sealed class SystemLocaleSelector : LocaleSelector
   {
@@ -14,7 +16,12 @@ namespace Audune.Localization
     private SystemLocaleCheckType _checkTypes = SystemLocaleCheckType.CultureInfo | SystemLocaleCheckType.UnitySystemLanguage;
 
 
-    // Return if a locale could be selected according to this selector and store the selected locale
+    /// <summary>
+    /// Return if a locale could be selected according to this selector and store the selected locale.
+    /// </summary>
+    /// <param name="locales">The list of locales to select a locale from.</param>
+    /// <param name="locale">The locale in which the selected locale will be stored if a locale could be selected.</param>
+    /// <returns>Whether a locale could be selected.</returns>
     public override bool TrySelectLocale(IReadOnlyList<ILocale> locales, out ILocale locale)
     {
       locale = null;
@@ -45,7 +52,11 @@ namespace Audune.Localization
     }
 
 
-    // Return the language code for a system language
+    /// <summary>
+    /// Return the language code for a system language.
+    /// </summary>
+    /// <param name="language">The language to return the language code for.</param>
+    /// <returns>The language code for the specified language.</returns>
     public static string GetSystemLanguageCode(SystemLanguage language)
     {
       return language switch {
