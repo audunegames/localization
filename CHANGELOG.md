@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Locales can now be defines in Portable Object (.po) files. The `msgid` field schould be the ID of the localized string.
+- Locales can now be defined in Portable Object (.po) files. The `msgid` field schould be the ID of the localized string.
 - Writing Portable Object (.po) files from existing locales, including template files with empty localized strings.
 - More extensive functionality for `LocalizedStringDictionary` and `ILocalizedtringTable`.
 - Documentation comments for most public facing classes.
