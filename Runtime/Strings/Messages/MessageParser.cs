@@ -334,7 +334,7 @@ namespace Audune.Localization
     private static PluralKeyword ParsePluralKeyword(Scanner scanner)
     {
       var keywordString = ParseKeyword(scanner);
-      if ((PluralKeywordExtensions.TryParseKeywordString(keywordString, out var keyword)))
+      if (PluralKeywordExtensions.TryParseKeywordString(keywordString, out var keyword))
         return keyword;
       else
         throw new FormatException("Expected one of \"zero\", \"one\", \"two\", \"few\", \"many\", \"other\"");
