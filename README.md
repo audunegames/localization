@@ -18,9 +18,9 @@
 
 This package depends on the following packages:
 
-* [Serializable Types](https://openupm.com/packages/com.audune.utils.types/), version **1.0.7** or higher.
-* [Serializable Dictionary](https://openupm.com/packages/com.audune.utils.dictionary/), version **1.0.6** or higher.
-* [UnityEditor Utilities](https://openupm.com/packages/com.audune.utils.unityeditor/), version **2.0.8** or higher.
+* [Serializable Types](https://openupm.com/packages/com.audune.utils.types/), version **1.0.8** or higher.
+* [Serializable Dictionary](https://openupm.com/packages/com.audune.utils.dictionary/), version **1.0.7** or higher.
+* [UnityEditor Utilities](https://openupm.com/packages/com.audune.utils.unityeditor/), version **2.0.9** or higher.
 
 If you're installing the required packages from the [OpenUPM registry](https://openupm.com/), make sure to add a scoped registry with the URL `https://package.openupm.com` and the required scopes before installing the packages.
 
