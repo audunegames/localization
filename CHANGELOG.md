@@ -5,6 +5,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.1.3] - 2026-11-16
+
+### Changed
+
+- Bumped Unity IMGUI Editor Utilities package to 2.0.10.
+- Changed namespaces of editor-only classes to `Audune.Localization.Editor`.
+
+### Fixed
+
+- Fixed compilation errors on Unity 6000.2 or higher, where the non-generic `TreeView`, `TreeViewItem` and `TreeViewState` classes are obsolete, by using their generic `<int>` counterparts.
+
 ## [3.1.2] - 2026-06-03
 
 ### Fixed
