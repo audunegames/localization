@@ -1,6 +1,6 @@
 using UnityEditor;
 
-namespace Audune.Localization
+namespace Audune.Localization.Editor
 {
   // Class that defines an editor for a command line locale loader
   [CustomEditor(typeof(CommandLineLocaleSelector))]

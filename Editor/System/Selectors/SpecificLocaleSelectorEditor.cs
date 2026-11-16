@@ -1,6 +1,6 @@
 using UnityEditor;
 
-namespace Audune.Localization
+namespace Audune.Localization.Editor
 {
   // Class that defines an editor for a specific locale selector
   [CustomEditor(typeof(SpecificLocaleSelector))]

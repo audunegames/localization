@@ -2,7 +2,7 @@ using System.IO;
 using UnityEditor;
 using UnityEngine;
 
-namespace Audune.Localization
+namespace Audune.Localization.Editor
 {
   // Class that defines menu items for Portable Object files
   public static class PortableObjectMenuItems

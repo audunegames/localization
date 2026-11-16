@@ -3,7 +3,7 @@ using UnityEditor;
 using UnityEditorInternal;
 using UnityEngine;
 
-namespace Audune.Localization
+namespace Audune.Localization.Editor
 {
   // Class that defines an editor for a persistent locale loader
   [CustomEditor(typeof(PersistentLocaleLoader))]
