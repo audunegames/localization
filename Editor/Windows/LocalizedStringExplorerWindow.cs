@@ -1,6 +1,10 @@
 using UnityEditor;
 using UnityEditor.IMGUI.Controls;
 
+#if UNITY_6000_2_OR_NEWER
+using TreeViewState = UnityEditor.IMGUI.Controls.TreeViewState<int>;
+#endif
+
 namespace Audune.Localization.Editor
 {
   // Class that defines an editor window for exploring localized strings in the project

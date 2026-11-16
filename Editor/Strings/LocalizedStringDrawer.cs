@@ -11,7 +11,11 @@ namespace Audune.Localization.Editor
     // Draw the property GUI
     public override void OnGUI(Rect rect, SerializedProperty property, GUIContent label)
     {
+      #if UNITY_6000_0_OR_NEWER
+      var localizationSystem = Object.FindFirstObjectByType<LocalizationSystem>();
+      #else
       var localizationSystem = Object.FindObjectOfType<LocalizationSystem>();
+      #endif
       if (localizationSystem != null)
         localizationSystem.InitializeIfNoLocaleSelected();
 
